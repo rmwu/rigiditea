@@ -1,0 +1,58 @@
+/* SASS EXTENSIONS AND MIXINS */
+.absolute-center, .relative-center, #wrapper #name, #wrapper #main, #wrapper #main #chart { position: absolute; left: 0; right: 0; margin-left: auto; margin-right: auto; }
+
+.relative-center, #wrapper #name, #wrapper #main, #wrapper #main #chart { position: relative; }
+
+.hidden { display: none; }
+
+/* CONTENT */
+html { height: 100%; overflow-x: hidden; overflow-y: hidden; background: #6cf; }
+
+body { font-family: "Gill Sans", "Helvetica Neue", Helvetica, Arial, sans-serif; font-weight: lighter; font-size: 20px; min-height: 500px; min-width: 500px; height: 100%; margin: 0; padding: 0; overflow: hidden; }
+
+a { text-decoration: none; color: inherit; }
+a:visited { color: inherit; }
+a:hover { color: #ff9; }
+
+.active { color: #ff9; }
+
+#wrapper { position: relative; display: block; min-height: 100%; height: 100%; min-width: 500px; color: #FFF; overflow: hidden; margin: 3em; padding: 0 15%; }
+#wrapper #name, #wrapper #main { display: block; width: 100%; text-align: center; color: #FFF; background-color: transparent; }
+#wrapper #name { height: 1.5em; font-size: 1.5em; }
+#wrapper #main { height: 100%; }
+#wrapper #main p { font-size: 0.8em; }
+#wrapper #main ul { font-size: 0.8em; }
+#wrapper #main ul li { list-style-type: none; cursor: pointer; display: inline-block; padding-right: 20px; }
+#wrapper #main ul li:hover { font-style: italic; color: #ff9; }
+#wrapper #main #chart { width: 600px; }
+
+.node { fill: #000; cursor: crosshair; }
+
+.node_selected { fill: #6cf; stroke: #6cf; }
+
+.drag_line, .drag_line_hidden { stroke: #999; stroke-width: 5; pointer-events: none; }
+
+.drag_line_hidden { stroke-width: 0; }
+
+.link { stroke: #999; stroke-width: 5; cursor: crosshair; }
+
+.link_selected { stroke: #6cf; }
+
+.icon, .icon-settings-2, .icon-share, .icon-edit, .icon-view, .icon-link, .icon-trash { background-image: url("img/icons.svg"); background-size: 18em 4.5em; background-clip: border-box; background-repeat: no-repeat; background-position: -3em 0; display: inline-block; width: 1.5em; height: 1.5em; position: relative; padding: 0; margin: 0; z-index: 100; }
+.icon:hover, .icon-settings-2:hover, .icon-share:hover, .icon-edit:hover, .icon-view:hover, .icon-link:hover, .icon-trash:hover { background-position-y: -3em; }
+
+#icon-container { width: 100%; height: 1.5em; position: relative; padding: 0.5em 0 0 0; }
+
+.icon-settings-2 { background-position: -7.5em 0; }
+
+.icon-share { background-position: -12em 0; }
+
+.icon-edit { background-position: -13.5em 0; }
+
+.icon-view { background-position: -16.5em 0; }
+
+.icon-link { background-position: -9em 0; }
+
+.icon-trash { background-position: -15em 0; }
+
+/*# sourceMappingURL=style.css.map */

@@ -1,12 +1,46 @@
-/*$(
+$(
     function()
     {
         console.log("ready");
     }
-);*/
+);
 
-var width = 600,
-    height = 500;
+function initGraph() {
+    var width = 600,
+        height = 500;
+    
+    var outer = d3.select("#chart")
+        .append("svg:svg")
+        .attr("width", width)
+        .attr("height", height)
+        .attr("pointer-events", "all");
+    
+    var vis = outer
+      .append('svg:g')
+        .call(d3.behavior.zoom().on("zoom", rescale))
+        .on("dblclick.zoom", null)
+      .append('svg:g')
+        .on("mousemove", mousemove)
+        .on("mousedown", mousedown)
+        .on("mouseup", mouseup);
+
+    vis.append('svg:rect')
+        .attr('width', width)
+        .attr('height', height)
+        .attr('fill', 'none');
+
+    // init force layout
+    var force = d3.layout.force()
+        .size([width, height])
+        .nodes([{}]) // initialize with a single node
+        .linkDistance(50)
+        .charge(-200)
+        .on("tick", tick);
+    
+    console.log("force layout initialized");
+}
+
+
 
 // mouse event vars
 var selected_node = null,
@@ -15,9 +49,11 @@ var selected_node = null,
     mousedown_node = null,
     mouseup_node = null;
 
-// init svg
+var width = 600,
+    height = 500;
+
 var outer = d3.select("#chart")
-  .append("svg:svg")
+    .append("svg:svg")
     .attr("width", width)
     .attr("height", height)
     .attr("pointer-events", "all");
@@ -34,7 +70,7 @@ var vis = outer
 vis.append('svg:rect')
     .attr('width', width)
     .attr('height', height)
-    .attr('fill', 'white');
+    .attr('fill', 'none');
 
 // init force layout
 var force = d3.layout.force()

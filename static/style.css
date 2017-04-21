@@ -24,7 +24,7 @@ a:hover { color: #ff9; }
 #wrapper #main ul { font-size: 0.8em; }
 #wrapper #main ul li { list-style-type: none; cursor: pointer; display: inline-block; padding-right: 20px; }
 #wrapper #main ul li:hover { font-style: italic; color: #ff9; }
-#wrapper #main #chart { width: 600px; }
+#wrapper #main #chart { width: 600px; background: #FFF; }
 
 .node { fill: #000; cursor: crosshair; }
 

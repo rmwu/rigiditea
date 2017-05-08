@@ -8,12 +8,17 @@ Params:
  */
 
 (function() {
-  var drawGraph, edge, graph, node;
+  var Edge, Graph, Node;
 
-  graph = function(nodes, edges) {
-    this.nodes = nodes;
-    return this.edges = edges;
-  };
+  Graph = (function() {
+    function Graph(nodes, edges) {
+      this.nodes = nodes;
+      this.edges = edges;
+    }
+
+    return Graph;
+
+  })();
 
 
   /*
@@ -25,13 +30,17 @@ Params:
       attr: list is attributes
    */
 
-  edge = function(id, source, target, attr) {
-    this.id = id;
-    this.source = source;
-    this.target = target;
-    this.attr = attr;
-    return id;
-  };
+  Edge = (function() {
+    function Edge(id, source, target, attr) {
+      this.id = id;
+      this.source = source;
+      this.target = target;
+      this.attr = attr;
+    }
+
+    return Edge;
+
+  })();
 
 
   /*
@@ -42,24 +51,16 @@ Params:
       attr: list of attributes
    */
 
-  node = function(id, x, y, attr) {
-    this.id = id;
-    this.x = x;
-    this.y = y;
-    this.attr = attr;
-    return id;
-  };
+  Node = (function() {
+    function Node(id, x, y, attr) {
+      this.id = id;
+      this.x = x;
+      this.y = y;
+      this.attr = attr;
+    }
 
+    return Node;
 
-  /*
-  drawGraph draws a Graph object
-  Params:
-      graph: Graph object
-      svg: svg canvas to which we append the drawing
-   */
-
-  drawGraph = function(graph, svg) {
-    return console.log("k");
-  };
+  })();
 
 }).call(this);

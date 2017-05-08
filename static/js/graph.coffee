@@ -7,28 +7,33 @@ Params:
 graph = (nodes, edges) ->
     this.nodes = nodes
     this.edges = edges
+    true
 
 ###
 Constructor for Edge object
 Params:
+    id: unique identifier
     source: source Node object
     target: target Node object
-    weight: numeric
+    attr: list is attributes
 ###
-edge = (source, target, weight) ->
+edge = (id, source, target, attr) ->
+    this.id = id
     this.source = source
     this.target = target
-    this.weight = weight
+    this.attr = attr
+    id
     
 ###
 Constructor for Node object
 Params:
-    name: string name
-    position: tuple of (x,y)
+    id: unique identifier
+    x, y: locations
     attr: list of attributes
 ###
-node = (name, position, attr) ->
-    this.name = name
-    this.x = position[0]
-    this.y = position[1]
+node = (id, x, y, attr) ->
+    this.id = id
+    this.x = x
+    this.y = y
     this.attr = attr
+    id

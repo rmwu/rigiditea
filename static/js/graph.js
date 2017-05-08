@@ -8,7 +8,7 @@ Params:
  */
 
 (function() {
-  var edge, graph, node;
+  var drawGraph, edge, graph, node;
 
   graph = function(nodes, edges) {
     this.nodes = nodes;
@@ -19,31 +19,47 @@ Params:
   /*
   Constructor for Edge object
   Params:
+      id: unique identifier
       source: source Node object
       target: target Node object
-      weight: numeric
+      attr: list is attributes
    */
 
-  edge = function(source, target, weight) {
+  edge = function(id, source, target, attr) {
+    this.id = id;
     this.source = source;
     this.target = target;
-    return this.weight = weight;
+    this.attr = attr;
+    return id;
   };
 
 
   /*
   Constructor for Node object
   Params:
-      name: string name
-      position: tuple of (x,y)
+      id: unique identifier
+      x, y: locations
       attr: list of attributes
    */
 
-  node = function(name, position, attr) {
-    this.name = name;
-    this.x = position[0];
-    this.y = position[1];
-    return this.attr = attr;
+  node = function(id, x, y, attr) {
+    this.id = id;
+    this.x = x;
+    this.y = y;
+    this.attr = attr;
+    return id;
+  };
+
+
+  /*
+  drawGraph draws a Graph object
+  Params:
+      graph: Graph object
+      svg: svg canvas to which we append the drawing
+   */
+
+  drawGraph = function(graph, svg) {
+    return console.log("k");
   };
 
 }).call(this);

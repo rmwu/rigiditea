@@ -4,10 +4,8 @@ Params:
     nodes: list of Node objects
     edges: list of Edge objects
 ###
-graph = (nodes, edges) ->
-    this.nodes = nodes
-    this.edges = edges
-    true
+class Graph
+    constructor: (@nodes, @edges) ->
 
 ###
 Constructor for Edge object
@@ -17,12 +15,8 @@ Params:
     target: target Node object
     attr: list is attributes
 ###
-edge = (id, source, target, attr) ->
-    this.id = id
-    this.source = source
-    this.target = target
-    this.attr = attr
-    id
+class Edge
+    constructor: (@id, @source, @target, @attr) ->
     
 ###
 Constructor for Node object
@@ -31,9 +25,5 @@ Params:
     x, y: locations
     attr: list of attributes
 ###
-node = (id, x, y, attr) ->
-    this.id = id
-    this.x = x
-    this.y = y
-    this.attr = attr
-    id
+class Node
+    constructor: (@id, @x, @y, @attr) ->

@@ -1,7 +1,7 @@
 /* SASS EXTENSIONS AND MIXINS */
-.absolute-center, .relative-center, #wrapper #name, #wrapper #main, #wrapper #main #chart { position: absolute; left: 0; right: 0; margin-left: auto; margin-right: auto; }
+.absolute-center, .relative-center, #wrapper #name, #wrapper #main, #wrapper #main #graph { position: absolute; left: 0; right: 0; margin-left: auto; margin-right: auto; }
 
-.relative-center, #wrapper #name, #wrapper #main, #wrapper #main #chart { position: relative; }
+.relative-center, #wrapper #name, #wrapper #main, #wrapper #main #graph { position: relative; }
 
 .hidden { display: none; }
 
@@ -24,7 +24,7 @@ a:hover { color: #ff9; }
 #wrapper #main ul { font-size: 0.8em; }
 #wrapper #main ul li { list-style-type: none; cursor: pointer; display: inline-block; padding-right: 20px; }
 #wrapper #main ul li:hover { font-style: italic; color: #ff9; }
-#wrapper #main #chart { width: 600px; background: #FFF; }
+#wrapper #main #graph { width: 600px; background: #FFF; }
 
 .node { fill: #000; cursor: crosshair; }
 

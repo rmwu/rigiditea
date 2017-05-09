@@ -1,3 +1,8 @@
-.DS_STORE
 *.swp
-
+**.map
+static/img/*
+**.sass-cache/*
+**.sassc
+old/*
+.DS_Store
+*.pdf

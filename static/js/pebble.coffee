@@ -1,4 +1,5 @@
-
+import { Graph } from 'graph.coffee'
+# `require(graph.js)`
 
 class PebbleGraph extends Graph
   constructor: (@nodes, @edges, @attr) ->
@@ -47,7 +48,7 @@ class PebbleGraph extends Graph
     seen = {vertex: false for vertex in @nodes}
     path = {vertex: -1 for vertex in @nodes}
   
-    left, right = edge.source, edge.target
+    [left, right] = [edge.source, edge.target]
     found = this.findPebble(left, seen, path)
     if found
       this.rearrangePebbles(left, seen)
@@ -69,13 +70,13 @@ class PebbleGraph extends Graph
       return true
   
     # taken from the paper; probably should clean up code smell
-    (x, xedge), (y, yedge) = this.pebbledEdgesAndNeighbors(vertex)
+    [[x, xedge], [y, yedge]] = this.pebbledEdgesAndNeighbors(vertex)
     if not seen[x]
-      path[vertex] = x, xedge
+      path[vertex] = [x, xedge]
       if this.findPebble(x, seen, path)
         return true
     if not seen[y]
-      path[vertex] = y, yedge
+      path[vertex] = [y, yedge]
       if this.findPebble(y, seen, path)
         return true
     return false
@@ -83,11 +84,11 @@ class PebbleGraph extends Graph
   
   rearrangePebbles: (vertex, path) ->
     while (path[vertex] != -1)
-      w, edge = path[vertex]
+      [w, edge] = path[vertex]
       if path[w] == -1
         this.allocatePebble(w, edge)
       else
-        _, oldedge = path[w]
+        [_, oldedge] = path[w]
         this.reallocatePebble(w, oldedge, edge)
       vertex = w
   

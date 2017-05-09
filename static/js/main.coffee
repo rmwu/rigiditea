@@ -1,6 +1,6 @@
 $ ->
     initGraph()
-    console.log("boba is yummy")
+    console.log("boba is yummy (initGraph)")
     
     test()
 
@@ -17,11 +17,13 @@ vars =
 
 # selected, mouse down/up
 graphVars =
+    graph: null
     nodeS: null
     linkS: null
     nodeMD: null
     linkMD: null
     nodeMU: null
+    attr: [vars.fill]
 
 d3Vars =
     svg: null
@@ -36,26 +38,48 @@ initGraph = () ->
     d3Vars.svg = d3.select("#graph").append("svg")
         .attr("width", vars.width)
         .attr("height", vars.height)
-        .attr("fill", "none")
+        .style("fill", "none")
+        .on("click", onClick)
+    graphVars.graph = new Graph [], [], []
+
+onClick = () ->
+    coords = d3.mouse this
+    [x, y] = coords
+    node = new Node nodeGenID(), x, y, graphVars.attr
+    graphVars.graph.addNode node
+    redraw()
+    
+onClickNode = () ->
+    d3.select(this).data()[0].setFill "#CEF"
+    console.log "once"
+    console.log graphVars.graph
+    redraw()
 
 redraw = () ->
-    "boba is yummy"
+    drawGraph graphVars.graph, d3Vars.svg
+    console.log "boba is sweet (redraw)"
     
 ###################
 # GRAPH UTILITIES
 ###################
 
 ###
-Constructor for Graph object
+Graph object
 Params:
     nodes: list of Node objects
     edges: list of Edge objects
 ###
 class Graph
-    constructor: (@nodes, @edges) ->
+    constructor: (@nodes, @edges, @attr) ->
+    # addNode appends a new node to nodes
+    addNode: (node) ->
+        @nodes.push node
+    # addEdge appends a new edge to edges
+    addEdge: (edge) ->
+        @edges.push edge
 
 ###
-Constructor for Edge object
+Edge object
 Params:
     id: unique identifier
     source: source Node object
@@ -66,7 +90,7 @@ class Edge
     constructor: (@id, @source, @target, @attr) ->
     
 ###
-Constructor for Node object
+Node object
 Params:
     id: unique identifier
     x, y: locations
@@ -74,16 +98,23 @@ Params:
 ###
 class Node
     constructor: (@id, @x, @y, @attr) ->
+    getFill: () -> @attr[0]
+    setFill: (fill) -> @attr[0] = fill
 
 drawGraph = (graph, svg) ->
+    svg.selectAll("*").remove() # clear
+    graphVars.graph = graph # set new graph
     edges = svg.selectAll("link")
         .data(graph.edges).enter()
         .append("line")
         .attr("class","edge")
         .attr("x1", (edge) -> edge.source.x)
-        .attr("y1", (edge) -> edge.source.x)
+        .attr("y1", (edge) -> edge.source.y)
         .attr("x2", (edge) -> edge.target.x)
-        .attr("y2", (edge) -> edge.target.x)
+        .attr("y2", (edge) -> edge.target.y)
+        .style("fill", "none")
+        .attr("stroke", "#000")
+        .attr("stroke-width", "5")
     nodes = svg.selectAll("node")
         .data(graph.nodes).enter()
         .append("circle")
@@ -91,16 +122,26 @@ drawGraph = (graph, svg) ->
         .attr("cx", (node) -> node.x)
         .attr("cy", (node) -> node.y)
         .attr("r", vars.radius)
-        .attr("fill", vars.fill)
+        .attr("id", (node) -> node.id)
+        .style("fill", (node) -> node.getFill())
+    svg.selectAll("circle")
+        .on("mouseover", onClickNode)
+    console.log("boba is delicious (drawGraph)")
     
-    console.log("k")
-
+nodeGenID = () -> Math.random().toString(36).substr(2, 5)
+    
 test = () ->
     nodes = []
     for n in [0 .. 9]
-        node = new Node n, n*25, n*25, 1
+        node = new Node nodeGenID(), 100+n*Math.random()*100, 100+n*Math.random()*100, ["#000"]
         nodes.push node
+        
+    edges = []
+    for i in [0 ... 8]
+        node1 = nodes[i]
+        node2 = nodes[i+1]
+        edges.push new Edge nodeGenID(), node1, node2, 1
 
-    graph = new Graph nodes, []
+    graph = new Graph nodes, edges
 
     drawGraph(graph, d3Vars.svg)

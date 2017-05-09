@@ -48,12 +48,17 @@ onClick = () ->
     node = new Node nodeGenID(), x, y, graphVars.attr
     graphVars.graph.addNode node
     redraw()
-    
+
 onClickNode = () ->
-    d3.select(this).data()[0].setFill "#CEF"
-    console.log "once"
-    console.log graphVars.graph
+    circle = d3.select(this)
+    node = circle.data()[0]
+    
+    nodeS = node # selected node update
+    node.setFill "#CEF"
+    
+    # if circle.attr("id") == node.id
     redraw()
+    # console.log node.id
 
 redraw = () ->
     drawGraph graphVars.graph, d3Vars.svg
@@ -133,7 +138,7 @@ nodeGenID = () -> Math.random().toString(36).substr(2, 5)
 test = () ->
     nodes = []
     for n in [0 .. 9]
-        node = new Node nodeGenID(), 100+n*Math.random()*100, 100+n*Math.random()*100, ["#000"]
+        node = new Node nodeGenID(), 100+n*Math.random()*100, 100+n*Math.random()*100, graphVars.attr.slice()
         nodes.push node
         
     edges = []

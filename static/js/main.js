@@ -47,9 +47,11 @@
   };
 
   onClickNode = function() {
-    d3.select(this).data()[0].setFill("#CEF");
-    console.log("once");
-    console.log(graphVars.graph);
+    var circle, node, nodeS;
+    circle = d3.select(this);
+    node = circle.data()[0];
+    nodeS = node;
+    node.setFill("#CEF");
     return redraw();
   };
 
@@ -170,7 +172,7 @@
     var edges, graph, i, j, k, n, node, node1, node2, nodes;
     nodes = [];
     for (n = j = 0; j <= 9; n = ++j) {
-      node = new Node(nodeGenID(), 100 + n * Math.random() * 100, 100 + n * Math.random() * 100, ["#000"]);
+      node = new Node(nodeGenID(), 100 + n * Math.random() * 100, 100 + n * Math.random() * 100, graphVars.attr.slice());
       nodes.push(node);
     }
     edges = [];

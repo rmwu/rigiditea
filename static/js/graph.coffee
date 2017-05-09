@@ -4,7 +4,7 @@ Params:
     nodes: list of Node objects
     edges: list of Edge objects
 ###
-class Graph
+export class Graph
     constructor: (@nodes, @edges, @attr) ->
 
 ###

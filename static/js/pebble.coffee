@@ -37,56 +37,57 @@ class PebbleGraph extends Graph
     return [[otherVertex(e), e] for e in pebbleAssignments when e isnt -1]
   
 
-###
-Cover enlargement for the pebble algorithm.
-Params:
-   graph: trivial
-   edge: Edge object we'd like to cover with pebbles.
-###
-enlargeCover = (graph, edge) ->
-  seen = {vertex: false for vertex in graph.nodes}
-  path = {vertex: -1 for vertex in graph.nodes}
-
-  left, right = edge.source, edge.target
-  found = findPebble(graph, left, seen, path)
-  if found
-    rearrangePebbles(graph, left, seen)
-    return true
+  ###
+  Cover enlargement for the pebble algorithm.
+  Params:
+     graph: trivial
+     edge: Edge object we'd like to cover with pebbles.
+  ###
+  enlargeCover: (edge) ->
+    seen = {vertex: false for vertex in @nodes}
+    path = {vertex: -1 for vertex in @nodes}
   
-  if not seen[right]
-    found = findPebble(graph, right, seen, path)
+    left, right = edge.source, edge.target
+    found = this.findPebble(left, seen, path)
     if found
-      rearrangePebbles(graph, right, path)
+      this.rearrangePebbles(left, seen)
       return true
-
-  return false
-
-findPebble = (graph, vertex, seen, path) ->
-  seen[vertex] = true
-  path[vertex] = -1
-  if graph.hasFreePebble(vertex)
-    return true
-
-  # taken from the paper; probably should clean up code smell
-  (x, xedge), (y, yedge) = pebbledEdgesAndNeighbors(vertex)
-  if not seen[x]
-    path[vertex] = x, xedge
-    if findPebble(graph, x, seen, path)
+    
+    if not seen[right]
+      found = this.findPebble(right, seen, path)
+      if found
+        this.rearrangePebbles(right, path)
+        return true
+  
+    return false
+  
+  
+  findPebble: (vertex, seen, path) ->
+    seen[vertex] = true
+    path[vertex] = -1
+    if this.hasFreePebble(vertex)
       return true
-  if not seen[y]
-    path[vertex] = y, yedge
-    if findPebble(graph, y, seen, path)
-      return true
-  return false
-
-
-rearrangePebbles = (graph, vertex, path) ->
-  while (path[vertex] != -1)
-    w, edge = path[vertex]
-    if path[w] == -1
-      graph.allocatePebble(w, edge)
-    else
-      _, oldedge = path[w]
-      graph.reallocatePebble(w, oldedge, edge)
-    vertex = w
-
+  
+    # taken from the paper; probably should clean up code smell
+    (x, xedge), (y, yedge) = this.pebbledEdgesAndNeighbors(vertex)
+    if not seen[x]
+      path[vertex] = x, xedge
+      if this.findPebble(x, seen, path)
+        return true
+    if not seen[y]
+      path[vertex] = y, yedge
+      if this.findPebble(y, seen, path)
+        return true
+    return false
+  
+  
+  rearrangePebbles: (vertex, path) ->
+    while (path[vertex] != -1)
+      w, edge = path[vertex]
+      if path[w] == -1
+        this.allocatePebble(w, edge)
+      else
+        _, oldedge = path[w]
+        this.reallocatePebble(w, oldedge, edge)
+      vertex = w
+  

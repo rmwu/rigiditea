@@ -5,7 +5,7 @@ Params:
     edges: list of Edge objects
 ###
 class Graph
-    constructor: (@nodes, @edges) ->
+    constructor: (@nodes, @edges, @attr) ->
 
 ###
 Constructor for Edge object

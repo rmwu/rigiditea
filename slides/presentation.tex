@@ -30,8 +30,21 @@
 	
 	\begin{enumerate}
 	    \item created an interface for designing and manipulating linkages,
-	    \item implemented and visualized iterations of the Pebble algorithm [TODO ref],
+	    \item implemented and visualized iterations of the Pebble algorithm,
 	    \item and implemented an infinitesimal rigidity tester.
+	\end{enumerate}
+}
+
+\frame{
+    \frametitle{Design goals}
+    	In building a web application, we had the following goals in mind.
+	
+	\begin{enumerate}
+	    \item Web interface should be easy to use and understand,
+	    especially for users unfamiliar with linkages.
+	    \item Algorithms should be visualized in an ``intuitive'' way,
+	    to facilitate their understanding.
+	    \item Try out CoffeeScript! (and polish up on \texttt{d3.js}?)
 	\end{enumerate}
 }
 
@@ -46,9 +59,22 @@
 	\item step through the Pebble algorithm,
 	one iteration at a time.
     \end{enumerate}
+    \begin{center}
+    	\includegraphics[scale=.2]{fig/fig-gui-basic}
+    \end{center}
 
     In the near future, we will add infinitesimal rigidity visualization,
     whose backend has already been written.
+}
+
+\frame{
+    \frametitle{Underlying linkage representation}
+    \begin{itemize}
+    \item We represent linkages as \texttt{PebbleGraph} objects,
+    or undirected graphs in adjacency list form.
+    \item Each graph has vertices and edges,
+    which carry their own attributes (e.g. number of pebbles)
+    \end{itemize}
 }
 
 
@@ -76,7 +102,17 @@
 
 \section{Extensions}
 
-
+\begin{frame}
+    \frametitle{Work yet to be completed}
+    There are several items we plan to complete.
+    \begin{enumerate}
+        \item Smooth out the GUI with animations
+        and possibly, user-friendly keyboard shortcuts.
+        \item Introduce more granularity in each ``step'' of the Pebble algorithm.
+        \item Animate or visualize infinitesimal rigidity results on the graph as well.
+    \end{enumerate}
+    In general, we plan to improve the GUI for a user-friendly and intuitive experience.
+\end{frame}
 
 
 

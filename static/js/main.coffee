@@ -365,9 +365,9 @@ class PebbleGraph extends Graph
         @curCandIndEdge = -1
 
     pebbleIndex: () ->
-        return @pebbleIndex
+        @pebbleIndex
 
-    pebbleCounts: () ->
+    algorithmStatus: () ->
         edgeCounts = {edge.id: 0 for edge in @edges}
         vertexCounts = {v.id: 0 for v in @nodes}
 
@@ -382,7 +382,11 @@ class PebbleGraph extends Graph
 
         (updateCounts(vid, entries) for vid, entries in @pebbleIndex)
 
-        return {"edgeCounts": edgeCounts, "vertexCounts": vertexCounts}
+        {
+            "edgeCounts": edgeCounts,
+            "vertexCounts": vertexCounts,
+            "independentEdges": @independentEdges
+        }
 
     _reassignPebble: (vertex, oldval, newval) ->
         index = @pebbleIndex[vertex.id].indexOf(edge)

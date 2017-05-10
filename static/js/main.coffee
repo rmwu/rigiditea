@@ -37,8 +37,7 @@ graphVars =
 
 d3Vars =
     svg: null
-    nodes: null
-    edges: null
+    drag: null
     
 ###################
 # PEBBLE RUNNING
@@ -53,11 +52,17 @@ drawPebble = () ->
     if graphVars.edgeS != null
         graph = graphVars.graph
         graphP = new PebbleGraph graph.nodes, graph.edges, {}
+        console.log graphP
         graphP.enlargeCover graphVars.edgeS
         
-        for item in graphP.pebbleCounts
-            counts = item[1]
-            item.setColor getColor counts
+        counts = graphP.pebbleCounts
+        for node in graphP.nodes
+            count = counts[node.id]
+            node.setColor getColor count
+        
+        for edge in graphP.edges
+            count = counts[edges.id]
+            edges.setColor getColor count
             
 getColor = (count) ->
     rgb = 255 * count / vars.maxCount
@@ -76,6 +81,12 @@ initGraph = () ->
         .on("click", onClick)
         .on("mouseup", onMouseUpNode)
     graphVars.graph = new Graph [], []
+    
+#    d3Vars.drag = d3.drag()
+#        .on("drag", dragEdge)
+    d3.selectAll("circle")
+        .call(d3.drag().on("start", dragEdge))
+        
     console.log("boba is yummy (initGraph)")
 
 onClick = () ->
@@ -90,7 +101,7 @@ onClick = () ->
 
         redraw()
     
-onMouseDown = () ->
+onMouseUp = () ->
     coords = d3.mouse this
     [x, y] = coords
 
@@ -114,7 +125,7 @@ onMouseUpNode = () ->
             drawEdgeEnd()
          else
             drawEdgeDrop()
-
+        graphVars.canAdd = true
 # must leave current node to perform new actions
 onMouseOutNode = () ->
     graphVars.canSelect = true
@@ -142,7 +153,15 @@ onMouseDownEdge = () ->
 # must leave current node to perform new actions
 onMouseOutEdge = () ->
     graphVars.canAdd = true
-
+    
+dragEdge = (d) ->
+    if graphVars.edgeN != null
+        [x,y] = [d3.event.x, d3.event.y]
+        d3.select(graphVars.edgeN)
+            .attr("x2", x)
+            .attr("y2", y)
+    console.log "green bean milk tea (dragEdge)"
+        
 redraw = () ->
     drawGraph graphVars.graph, d3Vars.svg
     console.log "boba is sweet (redraw)"
@@ -225,7 +244,6 @@ drawEdgeStart = () ->
     
 drawEdgeEnd = () ->
     console.log "milk grass jelly (edge end)"
-    graphVars.canAdd = true
     graphVars.edgeN.setTarget graphVars.nodeME
     graphVars.graph.addEdge graphVars.edgeN
     graphVars.edgeN = null
@@ -233,9 +251,7 @@ drawEdgeEnd = () ->
     redraw()
     
 drawEdgeDrop = () ->
-    console.log "hokkaido milk tea (edge drop)"
-    graphVars.canAdd = true
-    
+    console.log "hokkaido milk tea (edge drop)"    
     graphVars.edgeN = null
     
 nodeGenID = () -> Math.random().toString(36).substr(2, 5)

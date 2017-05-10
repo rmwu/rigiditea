@@ -52,7 +52,6 @@ drawPebble = () ->
     if graphVars.edgeS != null
         graph = graphVars.graph
         graphP = new PebbleGraph graph.nodes, graph.edges, {}
-        console.log graphP
         graphP.enlargeCover graphVars.edgeS
         
         counts = graphP.pebbleCounts
@@ -61,8 +60,8 @@ drawPebble = () ->
             node.setColor getColor count
         
         for edge in graphP.edges
-            count = counts[edges.id]
-            edges.setColor getColor count
+            count = counts[edge.id]
+            edge.setColor getColor count
             
 getColor = (count) ->
     rgb = 255 * count / vars.maxCount
@@ -506,6 +505,7 @@ class PebbleGraph extends Graph
     rearrangePebbles: (vertex, path) ->
         while (path[vertex.id] != -1)
             [w, edge] = path[vertex.id]
+            console.log path
             if path[w.id] == -1
                 this.allocatePebble(w, edge)
             else

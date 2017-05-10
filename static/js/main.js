@@ -52,7 +52,6 @@
     if (graphVars.edgeS !== null) {
       graph = graphVars.graph;
       graphP = new PebbleGraph(graph.nodes, graph.edges, {});
-      console.log(graphP);
       graphP.enlargeCover(graphVars.edgeS);
       counts = graphP.pebbleCounts;
       ref = graphP.nodes;
@@ -65,8 +64,8 @@
       results = [];
       for (l = 0, len1 = ref1.length; l < len1; l++) {
         edge = ref1[l];
-        count = counts[edges.id];
-        results.push(edges.setColor(getColor(count)));
+        count = counts[edge.id];
+        results.push(edge.setColor(getColor(count)));
       }
       return results;
     }
@@ -74,7 +73,7 @@
 
   getColor = function(count) {
     var rgb;
-    rgb = 255 * count / vars.maxCount;
+    rgb = 100 + 155 * count / vars.maxCount;
     return "rgb(" + rgb + "," + rgb + "," + rgb + ")";
   };
 
@@ -471,6 +470,7 @@
       this.edges = edges1;
       this.attr = attr;
       PebbleGraph.__super__.constructor.call(this, this.nodes, this.edges, this.attr);
+      this.pebbleIndex = {};
       ref = this.nodes;
       for (k = 0, len = ref.length; k < len; k++) {
         vertex = ref[k];
@@ -486,7 +486,7 @@
       return this.pebbleIndex;
     };
 
-    PebbleGraph.prototype.algorithmStatus = function() {
+    PebbleGraph.prototype.algorithmState = function() {
       var edge, entries, k, l, len, len1, len2, m, ref, ref1, ref2, vertex, vertexCounts, vid;
       ref = this.edges;
       for (k = 0, len = ref.length; k < len; k++) {
@@ -677,6 +677,7 @@
       results = [];
       while (path[vertex.id] !== -1) {
         ref = path[vertex.id], w = ref[0], edge = ref[1];
+        console.log(path);
         if (path[w.id] === -1) {
           this.allocatePebble(w, edge);
         } else {

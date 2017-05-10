@@ -243,17 +243,34 @@ class Node
 class PebbleGraph extends Graph
     constructor: (@nodes, @edges, @attr) ->
         super(@nodes, @edges, @attr)
-        @attr._pebbleIndex = {vertex: [-1, -1] for vertex in @nodes}
+        @pebbleIndex = {vertex: [-1, -1] for vertex in @nodes}
 
     pebbleIndex: () ->
-        return @attr._pebbleIndex
+        return @pebbleIndex
+
+    pebbleCounts: () ->
+        edgeCounts = {edge: 0 for edge in @edges}
+        vertexCounts = {v: 0 for v in @nodes}
+
+        handleEntry: (vertex, entry) ->
+            if entry == -1
+                vertexCounts[vertex] += 1
+            else
+                edgeCounts[entry] += 1
+
+        updateCounts: (vertex, pebbleIndEntries) ->
+            (handleEntry(vertex, x) for x in pebbleIndEntries)
+
+        (updateCounts(v, entries) for v, entries in @pebbleIndex)
+
+        return {"edgeCounts": edgeCounts, "vertexCounts": vertexCounts}
 
     _reassignPebble: (vertex, oldval, newval) ->
-        index = @attr._pebbleIndex[vertex].indexOf(edge)
+        index = @pebbleIndex[vertex].indexOf(edge)
         if index == -1
             return false
         
-        @attr._pebbleIndex[vertex][index] = newval
+        @pebbleIndex[vertex][index] = newval
         return true
 
     allocatePebble: (vertex, edge) ->
@@ -267,7 +284,7 @@ class PebbleGraph extends Graph
         return this._reassignPebble(vertex, oldedge, newedge)
 
     hasFreePebble: (vertex) ->
-        return -1 != @attr._pebbleIndex[vertex].indexOf(-1)
+        return -1 != @pebbleIndex[vertex].indexOf(-1)
 
     pebbledEdgesAndNeighbors: (vertex) ->
         otherVertex = (edge) ->
@@ -275,7 +292,6 @@ class PebbleGraph extends Graph
 
         pebbleAssignments = this.pebbleIndex[vertex]
         return [[otherVertex(e), e] for e in pebbleAssignments when e isnt -1]
-    
 
     ###
     Cover enlargement for the pebble algorithm.

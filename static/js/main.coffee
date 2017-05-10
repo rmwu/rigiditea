@@ -129,6 +129,8 @@ initGraph = () ->
         .style("fill", "none")
         .on("click", onClick)
         .on("mouseup", onMouseUpNode)
+        .on("keydown", onKeyDown)
+        .on("keyup", onKeyUp)
     graphVars.graph = new Graph [], []
     
 #    d3Vars.drag = d3.drag()
@@ -149,6 +151,12 @@ onClick = () ->
         # prevent selection of newly added node
 
         redraw()
+        
+onKeyDown = () ->
+    d3Vars.svg.style("cursor", "move")
+    
+onKeyUp = () ->
+    d3Vars.svg.style("cursor", "crosshair")
     
 onMouseUp = () ->
     coords = d3.mouse this

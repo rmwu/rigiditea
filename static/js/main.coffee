@@ -374,7 +374,8 @@ class Node
 class PebbleGraph extends Graph
     constructor: (@nodes, @edges, @attr) ->
         super(@nodes, @edges, @attr)
-        @pebbleIndex = {vertex.id: [-1, -1] for vertex in @nodes}
+        for vertex in @nodes
+            @pebbleIndex[vertex.id.toString()] = [-1,1]
         @independentEdges = []
         @remainingEdges = $.extend(@edges)
         @enlargeCoverIteration = 0
@@ -384,8 +385,11 @@ class PebbleGraph extends Graph
         @pebbleIndex
 
     algorithmStatus: () ->
-        edgeCounts = {edge.id: 0 for edge in @edges}
-        vertexCounts = {v.id: 0 for v in @nodes}
+        for edge in @edges
+            @pebbleIndex[edge.id.toString()] = 0
+        vertexCounts = {}
+        for vertex in @edges
+            vertexCounts[vertex.id.toString()] = 0
 
         handleEntry: (vertexid, entry) ->
             if entry == -1
@@ -458,8 +462,10 @@ class PebbleGraph extends Graph
          edge: Edge object we'd like to cover with pebbles.
     ###
     enlargeCover: (edge) ->
-        seen = {vertex.id: false for vertex in @nodes}
-        path = {vertex.id: -1 for vertex in @nodes}
+        [seen, path] = [{},{}]
+        for vertex in @nodes
+            seen[vertex.id.toString()] = false
+            path[vertex.id.toString()] = -1
     
         [left, right] = [edge.source, edge.target]
         found = this.findPebble(left, seen, path)

@@ -254,8 +254,10 @@
 
   drawEdgeEnd = function() {
     console.log("milk grass jelly (edge end)");
-    graphVars.edgeN.setTarget(graphVars.nodeME);
-    graphVars.graph.addEdge(graphVars.edgeN);
+    if (graphVars.nodeME !== graphVars.edgeN.source) {
+      graphVars.edgeN.setTarget(graphVars.nodeME);
+      graphVars.graph.addEdge(graphVars.edgeN);
+    }
     graphVars.edgeN = null;
     return redraw();
   };

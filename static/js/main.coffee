@@ -18,6 +18,7 @@ vars =
 # selected, mouse down/up
 graphVars =
     graph: null
+    graphP: null
     
     canSelect: true # mutex style flags
     canAdd: true
@@ -50,16 +51,17 @@ drawPebble = () ->
     # TODO can display original state later
     console.log "lychee black tea (drawPebble)"
     if graphVars.edgeS != null
-        graph = graphVars.graph
-        graphP = new PebbleGraph graph.nodes, graph.edges, {}
-        graphP.enlargeCover graphVars.edgeS
+        if graphVars.graphP == null
+            graph = graphVars.graph
+            graphP = new PebbleGraph graph.nodes, graph.edges, {}
+            graphP.enlargeCover graphVars.edgeS
         
-        algState = graphP.algorithmState()
+        algState = graphVars.graphP.algorithmState()
         console.log("xcxc")
         console.log algState
         console.log("xcxc")
 
-        for node in graphP.nodes
+        for node in graphVars.graphP.nodes
             count = algState.vertexCounts[node.id]
             node.setColor getColor(count)
             console.log node.getColor()
@@ -256,8 +258,10 @@ drawEdgeStart = () ->
     
 drawEdgeEnd = () ->
     console.log "milk grass jelly (edge end)"
-    graphVars.edgeN.setTarget graphVars.nodeME
-    graphVars.graph.addEdge graphVars.edgeN
+    # no self loops
+    if graphVars.nodeME != graphVars.edgeN.source
+        graphVars.edgeN.setTarget graphVars.nodeME
+        graphVars.graph.addEdge graphVars.edgeN
     graphVars.edgeN = null
     
     redraw()

@@ -61,14 +61,19 @@ drawPebble = () ->
 
         for node in graphP.nodes
             count = algState.vertexCounts[node.id]
-            node.setColor getColor count
+            node.setColor getColor(count)
+            console.log node.getColor()
         
         for edge in graphP.edges
             count = algState.edgeCounts[edge.id]
-            edge.setColor getColor count
+            edge.setColor getColor(count)
             
 getColor = (count) ->
     rgb = 137 * count / vars.maxCount
+    rgb = rgb.toString()
+    console.log "count " + count.toString()
+    console.log "rgb(" + rgb + "," + rgb + "," + rgb + ")"
+    console.log rgb
     "rgb(" + rgb + "," + rgb + "," + rgb + ")"
 
 
@@ -195,7 +200,7 @@ drawGraph = (graph, svg) ->
         .attr("cy", (node) -> node.y)
         .attr("r", vars.radius)
         .attr("id", (node) -> node.id)
-        .style("fill", (node) -> node.getFill())
+        .style("fill", (node) -> node.getColor())
     svg.selectAll("circle")
         .on("click", onClickNode)
         .on("mousedown", onMouseDownNode)
@@ -371,7 +376,7 @@ Params:
 ###
 class Node
     constructor: (@id, @x, @y, @attr) ->
-    getFill: () -> @attr.fill
+    getColor: () -> @attr.fill
     setColor: (fill) -> @attr.fill = fill
 
 class PebbleGraph extends Graph

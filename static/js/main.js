@@ -62,6 +62,7 @@
         node = ref[k];
         count = algState.vertexCounts[node.id];
         node.setColor(getColor(count));
+        console.log(node.getColor());
       }
       ref1 = graphP.edges;
       results = [];
@@ -77,6 +78,10 @@
   getColor = function(count) {
     var rgb;
     rgb = 137 * count / vars.maxCount;
+    rgb = rgb.toString();
+    console.log("count " + count.toString());
+    console.log("rgb(" + rgb + "," + rgb + "," + rgb + ")");
+    console.log(rgb);
     return "rgb(" + rgb + "," + rgb + "," + rgb + ")";
   };
 
@@ -197,7 +202,7 @@
     }).attr("r", vars.radius).attr("id", function(node) {
       return node.id;
     }).style("fill", function(node) {
-      return node.getFill();
+      return node.getColor();
     });
     svg.selectAll("circle").on("click", onClickNode).on("mousedown", onMouseDownNode).on("mouseup", onMouseUpNode).on("mouseout", onMouseOutNode).on("mouseenter", onMouseEnterNode);
     return svg.selectAll("line").on("click", onClickEdge).on("mousedown", onMouseDownEdge).on("mouseout", onMouseOutEdge);
@@ -452,7 +457,7 @@
       this.attr = attr;
     }
 
-    Node.prototype.getFill = function() {
+    Node.prototype.getColor = function() {
       return this.attr.fill;
     };
 

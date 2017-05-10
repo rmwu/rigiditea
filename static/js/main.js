@@ -14,7 +14,7 @@
     height: 500,
     radius: 15,
     fill: "#CCC",
-    maxCount: 10
+    maxCount: 5
   };
 
   graphVars = {
@@ -48,7 +48,7 @@
   });
 
   drawPebble = function() {
-    var algState, count, edge, graph, k, l, len, len1, node, ref, ref1, results;
+    var algState, count, edge, graph, k, l, len, len1, node, ref, ref1;
     console.log("lychee black tea (drawPebble)");
     if (graphVars.edgeS !== null) {
       if (graphVars.graphP === null) {
@@ -65,19 +65,18 @@
         console.log(node.getColor());
       }
       ref1 = graphVars.graphP.edges;
-      results = [];
       for (l = 0, len1 = ref1.length; l < len1; l++) {
         edge = ref1[l];
         count = algState.edgeCounts[edge.id];
-        results.push(edge.setColor(getColor(count)));
+        edge.setColor(getColor(count));
       }
-      return results;
     }
+    return redraw();
   };
 
   getColor = function(count) {
     var rgb;
-    rgb = 137 * count / vars.maxCount;
+    rgb = Math.floor(255 * count / vars.maxCount);
     rgb = rgb.toString();
     console.log("count " + count.toString());
     console.log("rgb(" + rgb + "," + rgb + "," + rgb + ")");

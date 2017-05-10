@@ -333,34 +333,34 @@ class Node
 class PebbleGraph extends Graph
     constructor: (@nodes, @edges, @attr) ->
         super(@nodes, @edges, @attr)
-        @pebbleIndex = {vertex: [-1, -1] for vertex in @nodes}
+        @pebbleIndex = {vertex.id: [-1, -1] for vertex in @nodes}
 
     pebbleIndex: () ->
         return @pebbleIndex
 
     pebbleCounts: () ->
-        edgeCounts = {edge: 0 for edge in @edges}
-        vertexCounts = {v: 0 for v in @nodes}
+        edgeCounts = {edge.id: 0 for edge in @edges}
+        vertexCounts = {v.id: 0 for v in @nodes}
 
-        handleEntry: (vertex, entry) ->
+        handleEntry: (vertexid, entry) ->
             if entry == -1
-                vertexCounts[vertex] += 1
+                vertexCounts[vertexid] += 1
             else
-                edgeCounts[entry] += 1
+                edgeCounts[entry.id] += 1
 
-        updateCounts: (vertex, pebbleIndEntries) ->
-            (handleEntry(vertex, x) for x in pebbleIndEntries)
+        updateCounts: (vertexid, pebbleIndEntries) ->
+            (handleEntry(vertexid, x) for x in pebbleIndEntries)
 
-        (updateCounts(v, entries) for v, entries in @pebbleIndex)
+        (updateCounts(vid, entries) for vid, entries in @pebbleIndex)
 
         return {"edgeCounts": edgeCounts, "vertexCounts": vertexCounts}
 
     _reassignPebble: (vertex, oldval, newval) ->
-        index = @pebbleIndex[vertex].indexOf(edge)
+        index = @pebbleIndex[vertex.id].indexOf(edge)
         if index == -1
             return false
         
-        @pebbleIndex[vertex][index] = newval
+        @pebbleIndex[vertex.id][index] = newval
         return true
 
     allocatePebble: (vertex, edge) ->
@@ -374,7 +374,7 @@ class PebbleGraph extends Graph
         return this._reassignPebble(vertex, oldedge, newedge)
 
     hasFreePebble: (vertex) ->
-        return -1 != @pebbleIndex[vertex].indexOf(-1)
+        return @pebbleIndex[vertex.id].indexOf(-1) != -1
 
     pebbledEdgesAndNeighbors: (vertex) ->
         otherVertex = (edge) ->
@@ -390,8 +390,8 @@ class PebbleGraph extends Graph
          edge: Edge object we'd like to cover with pebbles.
     ###
     enlargeCover: (edge) ->
-        seen = {vertex: false for vertex in @nodes}
-        path = {vertex: -1 for vertex in @nodes}
+        seen = {vertex.id: false for vertex in @nodes}
+        path = {vertex.id: -1 for vertex in @nodes}
     
         [left, right] = [edge.source, edge.target]
         found = this.findPebble(left, seen, path)
@@ -399,7 +399,7 @@ class PebbleGraph extends Graph
             this.rearrangePebbles(left, seen)
             return true
         
-        if not seen[right]
+        if not seen[right.id]
             found = this.findPebble(right, seen, path)
             if found
                 this.rearrangePebbles(right, path)
@@ -409,31 +409,31 @@ class PebbleGraph extends Graph
     
     
     findPebble: (vertex, seen, path) ->
-        seen[vertex] = true
-        path[vertex] = -1
+        seen[vertex.id] = true
+        path[vertex.id] = -1
         if this.hasFreePebble(vertex)
             return true
     
         # taken from the paper; probably should clean up code smell
         [[x, xedge], [y, yedge]] = this.pebbledEdgesAndNeighbors(vertex)
-        if not seen[x]
-            path[vertex] = [x, xedge]
+        if not seen[x.id]
+            path[vertex.id] = [x, xedge]
             if this.findPebble(x, seen, path)
                 return true
-        if not seen[y]
-            path[vertex] = [y, yedge]
+        if not seen[y.id]
+            path[vertex.id] = [y, yedge]
             if this.findPebble(y, seen, path)
                 return true
         return false
     
     
     rearrangePebbles: (vertex, path) ->
-        while (path[vertex] != -1)
-            [w, edge] = path[vertex]
-            if path[w] == -1
+        while (path[vertex.id] != -1)
+            [w, edge] = path[vertex.id]
+            if path[w.id] == -1
                 this.allocatePebble(w, edge)
             else
-                [_, oldedge] = path[w]
+                [_, oldedge] = path[w.id]
                 this.reallocatePebble(w, oldedge, edge)
             vertex = w
 

@@ -53,8 +53,8 @@ drawPebble = () ->
     if graphVars.edgeS != null
         if graphVars.graphP == null
             graph = graphVars.graph
-            graphP = new PebbleGraph graph.nodes, graph.edges, {}
-            graphP.enlargeCover graphVars.edgeS
+            graphVars.graphP = new PebbleGraph graphVars.graph.nodes, graphVars.graph.edges, {}
+            graphVars.graphP.enlargeCover graphVars.edgeS
         
         algState = graphVars.graphP.algorithmState()
         console.log("xcxc")

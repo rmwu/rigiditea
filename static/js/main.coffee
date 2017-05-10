@@ -501,6 +501,10 @@ class PebbleGraph extends Graph
         true if algorithm is complete, false otherwise
     ###
     stepAlgorithm: () ->
+        if @remainingEdges.length == 0
+            alert "algorithm complete!"
+            return ""
+
         if @enlargeCoverIteration == 0
             @curCandIndEdge = @remainingEdges.pop()
 
@@ -513,6 +517,7 @@ class PebbleGraph extends Graph
         else
             @enlargeCoverIteration = 0
 
+        console.log @remainingEdges
         return @remainingEdges.length == 0
 
     ###

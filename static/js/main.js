@@ -626,6 +626,10 @@
 
     PebbleGraph.prototype.stepAlgorithm = function() {
       var enlargementSuccessful;
+      if (this.remainingEdges.length === 0) {
+        alert("algorithm complete!");
+        return "";
+      }
       if (this.enlargeCoverIteration === 0) {
         this.curCandIndEdge = this.remainingEdges.pop();
       }
@@ -639,6 +643,7 @@
       } else {
         this.enlargeCoverIteration = 0;
       }
+      console.log(this.remainingEdges);
       return this.remainingEdges.length === 0;
     };
 

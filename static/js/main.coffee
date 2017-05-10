@@ -2,7 +2,7 @@ $ ->
     initGraph()
     console.log("boba is yummy (initGraph)")
     
-    test()
+    # test()
 
 ###################
 # GLOBAL VARIABLES
@@ -19,15 +19,21 @@ vars =
 graphVars =
     graph: null
     
-    canSelect: true
+    canSelect: true # mutex style flags
     canAdd: true
-    nodeS: null
-    linkS: null
     
-    nodeMD: null
-    linkMD: null
-    nodeMU: null
-    attr: [vars.fill]
+    mouseDown: false # flags for mouse events
+    mouseUp: true
+    mouseOut: true
+    mouseEnter: false
+    
+    nodeS: null # selected (clicked)
+    edgeS: null
+    edgeN: null # new edge
+    nodeME: null # mouseenter
+    
+    nodeAttr: {fill: vars.fill}
+    edgeAttr: {stroke: vars.fill}
 
 d3Vars =
     svg: null
@@ -44,13 +50,14 @@ initGraph = () ->
         .attr("height", vars.height)
         .style("fill", "none")
         .on("click", onClick)
+        .on("mouseup", onMouseUpNode)
     graphVars.graph = new Graph [], [], []
 
 onClick = () ->
     coords = d3.mouse this
     [x, y] = coords
     if graphVars.canAdd
-        node = new Node nodeGenID(), x, y, graphVars.attr.slice()
+        node = new Node nodeGenID(), x, y, Object.assign({}, graphVars.nodeAttr)
 
         graphVars.graph.addNode node
         graphVars.canSelect = false
@@ -61,31 +68,54 @@ onClick = () ->
 onMouseDown = () ->
     coords = d3.mouse this
     [x, y] = coords
+
+onClickNode = () ->
+    if graphVars.canSelect
+        toggleNodeSelect(this)
     
 onMouseDownNode = () ->
     # don't add new node when selecting
     graphVars.canAdd = false
-    if graphVars.canSelect
-        # reset old selected color
-        if graphVars.nodeS != null
-            graphVars.nodeS.setFill vars.fill
-
-        circle = d3.select(this)
-        node = circle.data()[0]
-        # deselect selected nodes
-        if graphVars.nodeS == node
-            graphVars.nodeS = null
-        else
-            graphVars.nodeS = node # selected node update
-            node.setFill "#ADF"
-        redraw()
+    graphVars.mouseDown = true
+    graphVars.mouseUp = false
             
 onMouseUpNode = () ->
-#    graphVars.canAdd = true
+    graphVars.mouseDown = false
+    graphVars.mouseUp = true
+    
+    console.log "thai milk tea (mouse up)"
+    if graphVars.edgeN != null
+        if graphVars.mouseEnter
+            drawEdgeEnd()
+         else
+            drawEdgeDrop()
 
 # must leave current node to perform new actions
 onMouseOutNode = () ->
     graphVars.canSelect = true
+    graphVars.canAdd = true
+    graphVars.mouseOut = true
+    graphVars.mouseEnter = false
+        
+    if graphVars.mouseDown
+        drawEdgeStart()
+    
+onMouseEnterNode = () ->
+    graphVars.mouseOut = false
+    graphVars.mouseEnter = true
+    
+    graphVars.nodeME = d3.select(this).data()[0]
+    
+onClickEdge = () ->
+    if graphVars.canSelect
+        toggleEdgeSelect(this)
+        
+onMouseDownEdge = () ->
+    # don't add new node when selecting
+    graphVars.canAdd = false
+
+# must leave current node to perform new actions
+onMouseOutEdge = () ->
     graphVars.canAdd = true
 
 redraw = () ->
@@ -108,7 +138,7 @@ drawGraph = (graph, svg) ->
         .attr("x2", (edge) -> edge.target.x)
         .attr("y2", (edge) -> edge.target.y)
         .style("fill", "none")
-        .attr("stroke", "#000")
+        .attr("stroke", (edge) -> edge.attr.stroke)
         .attr("stroke-width", "5")
     nodes = svg.selectAll("node")
         .data(graph.nodes).enter()
@@ -120,17 +150,75 @@ drawGraph = (graph, svg) ->
         .attr("id", (node) -> node.id)
         .style("fill", (node) -> node.getFill())
     svg.selectAll("circle")
+        .on("click", onClickNode)
         .on("mousedown", onMouseDownNode)
         .on("mouseup", onMouseUpNode)
         .on("mouseout", onMouseOutNode)
+        .on("mouseenter", onMouseEnterNode)
+    svg.selectAll("line")
+        .on("click", onClickEdge)
+        .on("mousedown", onMouseDownEdge)
+        .on("mouseout", onMouseOutEdge)
     # console.log("boba is delicious (drawGraph)")
+
+# toggles currently selected node
+toggleNodeSelect = (circle) ->
+    # reset old selected color
+    if graphVars.nodeS != null
+        graphVars.nodeS.setFill vars.fill
+
+    node = d3.select(circle).data()[0]
+    # deselect selected nodes
+    if graphVars.nodeS == node
+        graphVars.nodeS = null
+    else
+        graphVars.nodeS = node # selected node update
+        node.setFill "#ADF"
+    redraw()
+    
+toggleEdgeSelect = (line) ->
+    # reset old selected color
+    console.log "red bean milk tea (edge select)"
+    if graphVars.edgeS != null
+        graphVars.edgeS.setStroke vars.fill
+
+    edge = d3.select(line).data()[0]
+    # deselect selected nodes
+    if graphVars.edgeS == edge
+        graphVars.edgeS = null
+    else
+        graphVars.edgeS = edge # selected node update
+        edge.setStroke "#ADF"
+    redraw()
+
+# three functions that work together to draw a new edge
+drawEdgeStart = () ->
+    console.log "panda milk tea (edge start)"
+    graphVars.canAdd = false
+    source = graphVars.nodeS
+    graphVars.edgeN = new Edge nodeGenID(), source
+    
+drawEdgeEnd = () ->
+    console.log "milk grass jelly (edge end)"
+    graphVars.canAdd = true
+    graphVars.edgeN.setTarget graphVars.nodeME
+    graphVars.graph.addEdge graphVars.edgeN
+    graphVars.edgeN = null
+    
+    redraw()
+    
+drawEdgeDrop = () ->
+    console.log "hokkaido milk tea (edge drop)"
+    graphVars.canAdd = true
+    
+    graphVars.edgeN = null
     
 nodeGenID = () -> Math.random().toString(36).substr(2, 5)
     
 test = () ->
     nodes = []
     for n in [0 .. 9]
-        node = new Node nodeGenID(), 100+n*Math.random()*100, 100+n*Math.random()*100, graphVars.attr.slice()
+        node = new Node nodeGenID(), 100+n*Math.random()*100, 100+n*Math.random()*100, Object.assign({}, graphVars.nodeAttr)
         nodes.push node
         
     edges = []
@@ -226,7 +314,9 @@ Params:
     attr: list is attributes
 ###
 class Edge
-    constructor: (@id, @source, @target, @attr) ->
+    constructor: (@id, @source, @target = null, @attr = Object.assign({}, graphVars.edgeAttr)) ->
+    setTarget: (target) -> @target = target
+    setStroke: (stroke) -> @attr.stroke = stroke
     
 ###
 Node object

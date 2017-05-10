@@ -19,7 +19,8 @@ vars =
 graphVars =
     graph: null
     
-    initNoS: false
+    canSelect: true
+    canAdd: true
     nodeS: null
     linkS: null
     
@@ -48,34 +49,44 @@ initGraph = () ->
 onClick = () ->
     coords = d3.mouse this
     [x, y] = coords
-    node = new Node nodeGenID(), x, y, graphVars.attr.slice()
+    if graphVars.canAdd
+        node = new Node nodeGenID(), x, y, graphVars.attr.slice()
+
+        graphVars.graph.addNode node
+        graphVars.canSelect = false
+        # prevent selection of newly added node
+
+        redraw()
     
-    graphVars.graph.addNode node
-    graphVars.initNoS = true # prevent selection of new nodes
+onMouseDown = () ->
+    coords = d3.mouse this
+    [x, y] = coords
     
-    redraw()
-    
-onClickNode = () ->
-    if ! graphVars.initNoS
+onMouseDownNode = () ->
+    # don't add new node when selecting
+    graphVars.canAdd = false
+    if graphVars.canSelect
         # reset old selected color
         if graphVars.nodeS != null
             graphVars.nodeS.setFill vars.fill
-        console.log graphVars.nodeS
 
         circle = d3.select(this)
         node = circle.data()[0]
-        
-        console.log d3.select(this)
-
-        graphVars.nodeS = node # selected node update
-        node.setFill "#CEF"
-
-        # if circle.attr("id") == node.id
+        # deselect selected nodes
+        if graphVars.nodeS == node
+            graphVars.nodeS = null
+        else
+            graphVars.nodeS = node # selected node update
+            node.setFill "#ADF"
         redraw()
-        # console.log node.id
-    
+            
+onMouseUpNode = () ->
+#    graphVars.canAdd = true
+
+# must leave current node to perform new actions
 onMouseOutNode = () ->
-    graphVars.initNoS = false
+    graphVars.canSelect = true
+    graphVars.canAdd = true
 
 redraw = () ->
     drawGraph graphVars.graph, d3Vars.svg
@@ -109,7 +120,8 @@ drawGraph = (graph, svg) ->
         .attr("id", (node) -> node.id)
         .style("fill", (node) -> node.getFill())
     svg.selectAll("circle")
-        .on("mouseover", onClickNode)
+        .on("mousedown", onMouseDownNode)
+        .on("mouseup", onMouseUpNode)
         .on("mouseout", onMouseOutNode)
     # console.log("boba is delicious (drawGraph)")
     

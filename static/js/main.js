@@ -19,6 +19,7 @@
 
   graphVars = {
     graph: null,
+    graphP: null,
     canSelect: true,
     canAdd: true,
     mouseDown: false,
@@ -47,21 +48,23 @@
   });
 
   drawPebble = function() {
-    var algState, count, edge, graph, graphP, k, l, len, len1, node, ref, ref1, results;
+    var algState, count, edge, graph, k, l, len, len1, node, ref, ref1, results;
     console.log("lychee black tea (drawPebble)");
     if (graphVars.edgeS !== null) {
-      graph = graphVars.graph;
-      graphP = new PebbleGraph(graph.nodes, graph.edges, {});
-      graphP.enlargeCover(graphVars.edgeS);
-      algState = graphP.algorithmState();
-      ref = graphP.nodes;
+      if (graphVars.graphP === null) {
+        graph = graphVars.graph;
+        graphVars.graphP = new PebbleGraph(graphVars.graph.nodes, graphVars.graph.edges, {});
+        graphVars.graphP.enlargeCover(graphVars.edgeS);
+      }
+      algState = graphVars.graphP.algorithmState();
+      ref = graphVars.graphP.nodes;
       for (k = 0, len = ref.length; k < len; k++) {
         node = ref[k];
         count = algState.vertexCounts[node.id];
         node.setColor(getColor(count));
         console.log(node.getColor());
       }
-      ref1 = graphP.edges;
+      ref1 = graphVars.graphP.edges;
       results = [];
       for (l = 0, len1 = ref1.length; l < len1; l++) {
         edge = ref1[l];

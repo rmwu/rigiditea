@@ -63,7 +63,7 @@ drawPebble = () ->
             node.setColor getColor(count)
             console.log node.getColor()
         
-        for edge in graphP.edges
+        for edge in graphVars.graphP.edges
             count = algState.edgeCounts[edge.id]
             edge.setColor getColor(count)
             

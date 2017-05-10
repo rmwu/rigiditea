@@ -12,7 +12,7 @@ vars =
     width: 600
     height: 500
     radius: 15
-    fill: "#000"
+    fill: "#CCC"
     maxCount: 10
 
 # selected, mouse down/up

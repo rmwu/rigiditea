@@ -56,9 +56,6 @@ drawPebble = () ->
         graphP.enlargeCover graphVars.edgeS
         
         algState = graphP.algorithmState()
-        console.log("xcxc")
-        console.log algState
-        console.log("xcxc")
 
         for node in graphP.nodes
             count = algState.vertexCounts[node.id]
@@ -323,7 +320,7 @@ class Graph
 
         firstCoords = vertexConfiguration[@nodes[0]]
         embedDim = firstCoords.length
-        displacements = [numeric.sub(coords, firstCoords) for node, coords in vertexConfiguration]
+        displacements = [numeric.sub(coords, firstCoords) for node, coords of vertexConfiguration]
         configDim = matrixRank(displacements)
 
         rmatRank = matrixRank rigidityMatrix vertexConfiguration
@@ -381,7 +378,7 @@ class PebbleGraph extends Graph
 
         @pebbleIndex = {}
         for vertex in @nodes
-            @pebbleIndex[vertex.id.toString()] = [-1,1]
+            @pebbleIndex[vertex.id.toString()] = [-1,-1]
         @independentEdges = []
         @remainingEdges = $.extend(@edges)
         @enlargeCoverIteration = 0
@@ -395,19 +392,15 @@ class PebbleGraph extends Graph
         for edge in @edges
             edgeCounts[edge.id.toString()] = 0
         vertexCounts = {}
-        for vertex in @edges
+        for vertex in @nodes
             vertexCounts[vertex.id.toString()] = 0
 
-        handleEntry: (vertexid, entry) ->
-            if entry == -1
-                vertexCounts[vertexid] += 1
-            else
-                edgeCounts[entry.id] += 1
-
-        updateCounts: (vertexid, pebbleIndEntries) ->
-            (handleEntry(vertexid, x) for x in pebbleIndEntries)
-
-        (updateCounts(vid, entries) for vid, entries in @pebbleIndex)
+        for vertexid, entries of @pebbleIndex
+            for entry in entries
+                if entry == -1
+                    vertexCounts[vertexid] += 1
+                else
+                    edgeCounts[entry.id] += 1
 
         {
             "edgeCounts": edgeCounts,
@@ -416,10 +409,9 @@ class PebbleGraph extends Graph
         }
 
     _reassignPebble: (vertex, oldval, newval) ->
-        index = @pebbleIndex[vertex.id].indexOf(edge)
+        index = @pebbleIndex[vertex.id].indexOf(oldval)
         if index == -1
             return false
-
         @pebbleIndex[vertex.id][index] = newval
         return true
 
@@ -494,8 +486,6 @@ class PebbleGraph extends Graph
         path[vertex.id.toString()] = -1
         if this.hasFreePebble(vertex)
             return true
-
-        console.log(path[vertex.id.toString()]);
     
         # taken from the paper; probably should clean up code smell
         [[x, xedge], [y, yedge]] = this.pebbledEdgesAndNeighbors(vertex)
@@ -511,22 +501,25 @@ class PebbleGraph extends Graph
     
     
     rearrangePebbles: (vertex, edge, path) ->
-        while (path[vertex.id] != -1)
-            [w, newedge] = path[vertex.id]
-            if path[w.id.toString()] == -1
-                this.allocatePebble(w, newedge)
-            else
-                [_, oldedge] = path[w.id.toString()]
-                this.reallocatePebble(w, oldedge, newedge)
-            vertex = w
-        # w = vertex
-        # newedge = edge
         # while (path[vertex.id] != -1)
+        #     [w, newedge] = path[vertex.id]
         #     if path[w.id.toString()] == -1
         #         this.allocatePebble(w, newedge)
         #     else
         #         [_, oldedge] = path[w.id.toString()]
         #         this.reallocatePebble(w, oldedge, newedge)
         #     vertex = w
-        #     [w, newedge] = path[vertex.id]
+        w = vertex
+        newedge = edge
+        while (w != -1)
+            if path[w.id.toString()] == -1
+                this.allocatePebble(w, newedge)
+            else
+                [_, oldedge] = path[w.id.toString()]
+                this.reallocatePebble(w, oldedge, newedge)
+            vertex = w
+            if path[vertex.id] == -1
+                w = -1
+            else
+                [w, newedge] = path[vertex.id]
 

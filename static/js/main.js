@@ -71,29 +71,34 @@
   });
 
   drawPebble = function() {
-    var algState, count, edge, graph, graphP, k, l, len, len1, node, ref, ref1;
+    var algState, algorithmDone, count, edge, graph, k, l, len, len1, node, ref, ref1;
     console.log("lychee black tea (drawPebble)");
-    if (graphVars.edgeS !== null) {
-      if (graphVars.graphP === null) {
-        graph = graphVars.graph;
-        graphVars.graphP = new PebbleGraph(graph.nodes, graph.edges, {});
-      }
-      graphP = graphVars.graphP;
-      algState = graphP.algorithmState();
-      ref = graphP.nodes;
-      for (k = 0, len = ref.length; k < len; k++) {
-        node = ref[k];
-        count = algState.vertexCounts[node.id];
-        node.setColor(getColor(count));
-        node.saveColor();
-      }
-      ref1 = graphP.edges;
-      for (l = 0, len1 = ref1.length; l < len1; l++) {
-        edge = ref1[l];
-        count = algState.edgeCounts[edge.id];
-        edge.setColor(getColor(count));
-        edge.saveColor();
-      }
+    if (graphVars.graphP === null) {
+      graph = graphVars.graph;
+      graphVars.graphP = new PebbleGraph(graph.nodes, graph.edges, {});
+    }
+    algorithmDone = graphVars.graphP.stepAlgorithm();
+    if (algorithmDone) {
+      console.log("pebble algorithm complete!");
+    }
+    algState = graphVars.graphP.algorithmState();
+    console.log(graphVars.graphP);
+    console.log(algState);
+    ref = graphVars.graphP.nodes;
+    for (k = 0, len = ref.length; k < len; k++) {
+      node = ref[k];
+      count = algState.vertexCounts[node.id];
+      node.setColor(getColor(count));
+      node.saveColor();
+    }
+    ref1 = graphVars.graphP.edges;
+    for (l = 0, len1 = ref1.length; l < len1; l++) {
+      edge = ref1[l];
+      count = algState.edgeCounts[edge.id];
+      edge.setColor(getColor(count));
+      console.log(edge.getSavedColor());
+      edge.saveColor();
+      console.log(edge.getSavedColor());
     }
     return redraw();
   };
@@ -306,20 +311,18 @@
 
   matrixRank = function(matrix) {
     var x;
-    return [
-      (function() {
-        var k, len, ref, results;
-        ref = numeric.svd(matrix).S;
-        results = [];
-        for (k = 0, len = ref.length; k < len; k++) {
-          x = ref[k];
-          if (x !== 0) {
-            results.push(x);
-          }
+    return ((function() {
+      var k, len, ref, results;
+      ref = numeric.svd(matrix).S;
+      results = [];
+      for (k = 0, len = ref.length; k < len; k++) {
+        x = ref[k];
+        if (x !== 0) {
+          results.push(x);
         }
-        return results;
-      })()
-    ].length;
+      }
+      return results;
+    })()).length;
   };
 
 
@@ -360,17 +363,15 @@
       }
       firstCoords = vertexConfiguration[this.nodes[0]];
       embedDim = firstCoords.length;
-      displacements = [
-        (function() {
-          var results;
-          results = [];
-          for (node in vertexConfiguration) {
-            coords = vertexConfiguration[node];
-            results.push(numeric.sub(coords, firstCoords));
-          }
-          return results;
-        })()
-      ];
+      displacements = (function() {
+        var results;
+        results = [];
+        for (node in vertexConfiguration) {
+          coords = vertexConfiguration[node];
+          results.push(numeric.sub(coords, firstCoords));
+        }
+        return results;
+      })();
       configDim = matrixRank(displacements);
       rmatRank = matrixRank(rigidityMatrix(vertexConfiguration));
       euclIsomDim = (embedDim + 1) * embedDim / 2;
@@ -389,16 +390,14 @@
           ref = [edge.source, edge.target], left = ref[0], right = ref[1];
           ref1 = [embedDim * this.nodes.indexOf(left), embedDim * this.nodes.indexOf(right)], leftInd = ref1[0], rightInd = ref1[1];
           edgeDisplacement = numeric.sub(vertexConfiguration[right], vertexConfiguration[left]);
-          row = [
-            (function() {
-              var k, ref2, results;
-              results = [];
-              for (k = 0, ref2 = numVertices * embedDim; 0 <= ref2 ? k < ref2 : k > ref2; 0 <= ref2 ? k++ : k--) {
-                results.push(0);
-              }
-              return results;
-            })()
-          ];
+          row = (function() {
+            var k, ref2, results;
+            results = [];
+            for (k = 0, ref2 = numVertices * embedDim; 0 <= ref2 ? k < ref2 : k > ref2; 0 <= ref2 ? k++ : k--) {
+              results.push(0);
+            }
+            return results;
+          })();
           for (i = k = 0, ref2 = embedDim; 0 <= ref2 ? k < ref2 : k > ref2; i = 0 <= ref2 ? ++k : --k) {
             row[leftInd + i] = -edgeDisplacement;
           }
@@ -408,18 +407,16 @@
           return row;
         }
       });
-      return [
-        (function() {
-          var k, len, ref, results;
-          ref = this.edges;
-          results = [];
-          for (k = 0, len = ref.length; k < len; k++) {
-            edge = ref[k];
-            results.push(rigidityMatrixRow(edge));
-          }
-          return results;
-        }).call(this)
-      ];
+      return (function() {
+        var k, len, ref, results;
+        ref = this.edges;
+        results = [];
+        for (k = 0, len = ref.length; k < len; k++) {
+          edge = ref[k];
+          results.push(rigidityMatrixRow(edge));
+        }
+        return results;
+      }).call(this);
     };
 
     return Graph;
@@ -519,7 +516,7 @@
         this.pebbleIndex[vertex.id.toString()] = [-1, -1];
       }
       this.independentEdges = [];
-      this.remainingEdges = $.extend(this.edges);
+      this.remainingEdges = this.edges.slice();
       this.enlargeCoverIteration = 0;
       this.curCandIndEdge = -1;
     }
@@ -579,7 +576,7 @@
     };
 
     PebbleGraph.prototype.reallocatePebble = function(vertex, oldedge, newedge) {
-      if (vertex !== edge.source && vertex !== edge.target) {
+      if (vertex !== newedge.source && vertex !== newedge.target) {
         raise(ValueError("Edge " + edge + " not incident to vertex " + vertex));
       }
       return this._reassignPebble(vertex, oldedge, newedge);
@@ -593,35 +590,31 @@
       var e, otherVertex, pebbleAssignments;
       otherVertex = function(edge) {
         var x;
-        return [
-          (function() {
-            var k, len, ref, results;
-            ref = [edge.source, edge.target];
-            results = [];
-            for (k = 0, len = ref.length; k < len; k++) {
-              x = ref[k];
-              if (x !== vertex) {
-                results.push(x);
-              }
-            }
-            return results;
-          })()
-        ][0];
-      };
-      pebbleAssignments = this.pebbleIndex[vertex];
-      return [
-        (function() {
-          var k, len, results;
+        return ((function() {
+          var k, len, ref, results;
+          ref = [edge.source, edge.target];
           results = [];
-          for (k = 0, len = pebbleAssignments.length; k < len; k++) {
-            e = pebbleAssignments[k];
-            if (e !== -1) {
-              results.push([otherVertex(e), e]);
+          for (k = 0, len = ref.length; k < len; k++) {
+            x = ref[k];
+            if (x !== vertex) {
+              results.push(x);
             }
           }
           return results;
-        })()
-      ];
+        })())[0];
+      };
+      pebbleAssignments = this.pebbleIndex[vertex.id];
+      return (function() {
+        var k, len, results;
+        results = [];
+        for (k = 0, len = pebbleAssignments.length; k < len; k++) {
+          e = pebbleAssignments[k];
+          if (e !== -1) {
+            results.push([otherVertex(e), e]);
+          }
+        }
+        return results;
+      })();
     };
 
 
@@ -688,6 +681,7 @@
       if (this.hasFreePebble(vertex)) {
         return true;
       }
+      console.log(this.pebbledEdgesAndNeighbors(vertex));
       ref = this.pebbledEdgesAndNeighbors(vertex), (ref1 = ref[0], x = ref1[0], xedge = ref1[1]), (ref2 = ref[1], y = ref2[0], yedge = ref2[1]);
       if (!seen[x.id.toString()]) {
         path[vertex.id.toString()] = [x, xedge];

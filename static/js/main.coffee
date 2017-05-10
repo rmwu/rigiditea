@@ -76,24 +76,32 @@ $("#reset").on "click", () ->
 drawPebble = () ->
     # TODO can display original state later
     console.log "lychee black tea (drawPebble)"
-    if graphVars.edgeS != null
-        if graphVars.graphP == null
-            graph = graphVars.graph
-            graphVars.graphP = new PebbleGraph graph.nodes, graph.edges, {}
-        
-        graphP = graphVars.graphP
-        # graphP.enlargeCover graphVars.edgeS
-        algState = graphP.algorithmState()
 
-        for node in graphP.nodes
-            count = algState.vertexCounts[node.id]
-            node.setColor getColor(count)
-            node.saveColor()
-        
-        for edge in graphP.edges
-            count = algState.edgeCounts[edge.id]
-            edge.setColor getColor(count)
-            edge.saveColor()
+    # if graphVars.edgeS != null
+    if graphVars.graphP == null
+        graph = graphVars.graph
+        graphVars.graphP = new PebbleGraph graph.nodes, graph.edges, {}
+        # graphVars.graphP.enlargeCover graphVars.edgeS
+    
+    algorithmDone = graphVars.graphP.stepAlgorithm()
+    if algorithmDone
+        console.log "pebble algorithm complete!"
+    
+    algState = graphVars.graphP.algorithmState()
+    console.log graphVars.graphP
+    console.log(algState)
+
+    for node in graphVars.graphP.nodes
+        count = algState.vertexCounts[node.id]
+        node.setColor getColor(count)
+        node.saveColor()
+    
+    for edge in graphVars.graphP.edges
+        count = algState.edgeCounts[edge.id]
+        edge.setColor getColor(count)
+        console.log(edge.getSavedColor())
+        edge.saveColor()
+        console.log(edge.getSavedColor())
             
     redraw()
             
@@ -336,7 +344,7 @@ Params:
 ###
 matrixRank = (matrix) ->
     # count nonzero singular values
-    return [x for x in numeric.svd(matrix).S when x != 0].length
+    return (x for x in numeric.svd(matrix).S when x != 0).length
 
 
 
@@ -371,7 +379,7 @@ class Graph
 
         firstCoords = vertexConfiguration[@nodes[0]]
         embedDim = firstCoords.length
-        displacements = [numeric.sub(coords, firstCoords) for node, coords of vertexConfiguration]
+        displacements = (numeric.sub(coords, firstCoords) for node, coords of vertexConfiguration)
         configDim = matrixRank(displacements)
 
         rmatRank = matrixRank rigidityMatrix vertexConfiguration
@@ -391,12 +399,12 @@ class Graph
             edgeDisplacement =
                 numeric.sub(vertexConfiguration[right],vertexConfiguration[left])
 
-            row = [0 for [0...(numVertices*embedDim)]]
+            row = (0 for [0...(numVertices*embedDim)])
             (row[leftInd+i] = -edgeDisplacement for i in [0...embedDim])
             (row[rightInd+j] = edgeDisplacement for j in [0...embedDim])
             return row
 
-        return [rigidityMatrixRow(edge) for edge in @edges]
+        return (rigidityMatrixRow(edge) for edge in @edges)
 
 ###
 Edge object
@@ -439,7 +447,7 @@ class PebbleGraph extends Graph
         for vertex in @nodes
             @pebbleIndex[vertex.id.toString()] = [-1,-1]
         @independentEdges = []
-        @remainingEdges = $.extend(@edges)
+        @remainingEdges = @edges.slice()
         @enlargeCoverIteration = 0
         @curCandIndEdge = -1  # "current candidate independent edge"
 
@@ -480,7 +488,7 @@ class PebbleGraph extends Graph
         return this._reassignPebble(vertex, -1, edge)
 
     reallocatePebble: (vertex, oldedge, newedge) ->
-        if vertex not in [edge.source, edge.target]
+        if vertex not in [newedge.source, newedge.target]
             raise ValueError("Edge #{edge} not incident to vertex #{vertex}")
         return this._reassignPebble(vertex, oldedge, newedge)
 
@@ -489,10 +497,10 @@ class PebbleGraph extends Graph
 
     pebbledEdgesAndNeighbors: (vertex) ->
         otherVertex = (edge) ->
-            return [x for x in [edge.source, edge.target] when x isnt vertex][0]
+            return (x for x in [edge.source, edge.target] when x isnt vertex)[0]
 
-        pebbleAssignments = this.pebbleIndex[vertex]
-        return [[otherVertex(e), e] for e in pebbleAssignments when e isnt -1]
+        pebbleAssignments = this.pebbleIndex[vertex.id]
+        return ([otherVertex(e), e] for e in pebbleAssignments when e isnt -1)
 
     ###
     Returns:
@@ -547,6 +555,7 @@ class PebbleGraph extends Graph
             return true
     
         # taken from the paper; probably should clean up code smell
+        console.log this.pebbledEdgesAndNeighbors(vertex)
         [[x, xedge], [y, yedge]] = this.pebbledEdgesAndNeighbors(vertex)
         if not seen[x.id.toString()]
             path[vertex.id.toString()] = [x, xedge]

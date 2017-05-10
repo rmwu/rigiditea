@@ -6,3 +6,12 @@ static/img/*
 old/*
 .DS_Store
 *.pdf
+
+*.aux
+*.log
+*.nav
+*.out
+*.snm
+*.synctex.gz
+*.toc
+*.vrb

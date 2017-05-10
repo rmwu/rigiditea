@@ -1,5 +1,6 @@
 $ ->
     initGraph()
+    attachBindings()
     
     # test()
 
@@ -63,14 +64,18 @@ resetGraphVars = () ->
 ###################
 # BUTTON BINDINGS
 ###################
-    
-$("#pebble").on "click", () ->
-    drawPebble()
-    disableDraw()
-    
-$("#reset").on "click", () ->
-    resetGraphVars()
-    initGraph()
+
+attachBindings = () ->
+    $("#pebble").on "click", () ->
+        drawPebble()
+        disableDraw()
+
+    $("#reset").on "click", () ->
+        resetGraphVars()
+        initGraph()
+
+    $(document).keydown onKeyDown
+    $(document).keyup onKeyUp
     
 ###################
 # PEBBLE RUNNING
@@ -129,8 +134,6 @@ initGraph = () ->
         .style("fill", "none")
         .on("click", onClick)
         .on("mouseup", onMouseUpNode)
-        .on("keydown", onKeyDown)
-        .on("keyup", onKeyUp)
     graphVars.graph = new Graph [], []
     
 #    d3Vars.drag = d3.drag()
@@ -152,10 +155,14 @@ onClick = () ->
 
         redraw()
         
-onKeyDown = () ->
-    d3Vars.svg.style("cursor", "move")
+onKeyDown = (e) ->
+    if !e
+        e = event;
+    if e.altKey
+        console.log "lemon black tea (alt down)"
+        d3Vars.svg.style("cursor", "move")
     
-onKeyUp = () ->
+onKeyUp = (e) ->
     d3Vars.svg.style("cursor", "crosshair")
     
 onMouseUp = () ->

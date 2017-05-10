@@ -117,6 +117,11 @@
   };
 
   onMouseDownNode = function() {
+    if (graphVars.nodeS === null) {
+      if (graphVars.canSelect) {
+        toggleNodeSelect(this);
+      }
+    }
     graphVars.canAdd = false;
     graphVars.mouseDown = true;
     return graphVars.mouseUp = false;

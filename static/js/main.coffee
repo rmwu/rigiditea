@@ -118,7 +118,11 @@ onClickNode = () ->
         toggleNodeSelect(this)
 
 onMouseDownNode = () ->
-    # don't add new node when selecting
+    # don't add new node when selecting normally
+    if graphVars.nodeS == null
+        if graphVars.canSelect
+            toggleNodeSelect(this)
+        
     graphVars.canAdd = false
     graphVars.mouseDown = true
     graphVars.mouseUp = false

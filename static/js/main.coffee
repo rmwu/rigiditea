@@ -2,7 +2,7 @@ $ ->
     initGraph()
     console.log("boba is yummy (initGraph)")
     
-    test()
+    # test()
 
 ###################
 # GLOBAL VARIABLES
@@ -19,14 +19,18 @@ vars =
 graphVars =
     graph: null
     
-    canSelect: true
+    canSelect: true # mutex style flags
     canAdd: true
-    nodeS: null
-    linkS: null
     
-    nodeMD: null
-    linkMD: null
-    nodeMU: null
+    mouseDown: false # flags for mouse events
+    mouseUp: true
+    mouseOut: true
+    mouseEnter: false
+    
+    nodeS: null # selected (clicked)
+    edgeS: null
+    nodeME: null # mouseenter
+    
     attr: [vars.fill]
 
 d3Vars =
@@ -44,6 +48,7 @@ initGraph = () ->
         .attr("height", vars.height)
         .style("fill", "none")
         .on("click", onClick)
+        .on("mouseup", onMouseUpNode)
     graphVars.graph = new Graph [], [], []
 
 onClick = () ->
@@ -61,32 +66,43 @@ onClick = () ->
 onMouseDown = () ->
     coords = d3.mouse this
     [x, y] = coords
+
+onClickNode = () ->
+    if graphVars.canSelect
+        toggleSelect(this)
     
 onMouseDownNode = () ->
     # don't add new node when selecting
     graphVars.canAdd = false
-    if graphVars.canSelect
-        # reset old selected color
-        if graphVars.nodeS != null
-            graphVars.nodeS.setFill vars.fill
-
-        circle = d3.select(this)
-        node = circle.data()[0]
-        # deselect selected nodes
-        if graphVars.nodeS == node
-            graphVars.nodeS = null
-        else
-            graphVars.nodeS = node # selected node update
-            node.setFill "#ADF"
-        redraw()
+    graphVars.mouseDown = true
+    graphVars.mouseUp = false
             
 onMouseUpNode = () ->
-#    graphVars.canAdd = true
+    graphVars.mouseDown = false
+    graphVars.mouseUp = true
+    
+    console.log "thai milk tea (mouse up)"
+    if graphVars.edgeS != null
+        if graphVars.mouseEnter
+            drawEdgeEnd()
+         else
+            drawEdgeDrop()
 
 # must leave current node to perform new actions
 onMouseOutNode = () ->
     graphVars.canSelect = true
     graphVars.canAdd = true
+    graphVars.mouseOut = true
+    graphVars.mouseEnter = false
+        
+    if graphVars.mouseDown
+        drawEdgeStart()
+    
+onMouseEnterNode = () ->
+    graphVars.mouseOut = false
+    graphVars.mouseEnter = true
+    
+    graphVars.nodeME = d3.select(this).data()[0]
 
 redraw = () ->
     drawGraph graphVars.graph, d3Vars.svg
@@ -120,12 +136,47 @@ drawGraph = (graph, svg) ->
         .attr("id", (node) -> node.id)
         .style("fill", (node) -> node.getFill())
     svg.selectAll("circle")
+        .on("click", onClickNode)
         .on("mousedown", onMouseDownNode)
         .on("mouseup", onMouseUpNode)
         .on("mouseout", onMouseOutNode)
+        .on("mouseenter", onMouseEnterNode)
     # console.log("boba is delicious (drawGraph)")
+
+# toggles currently selected node
+toggleSelect = (circle) ->
+    # reset old selected color
+    if graphVars.nodeS != null
+        graphVars.nodeS.setFill vars.fill
+
+    node = d3.select(circle).data()[0]
+    # deselect selected nodes
+    if graphVars.nodeS == node
+        graphVars.nodeS = null
+    else
+        graphVars.nodeS = node # selected node update
+        node.setFill "#ADF"
+    redraw()
     
 nodeGenID = () -> Math.random().toString(36).substr(2, 5)
+
+# three functions that work together to draw a new edge
+drawEdgeStart = () ->
+    console.log "panda milk tea (edge start)"
+    source = graphVars.nodeS
+    graphVars.edgeS = new Edge nodeGenID(), source
+    
+drawEdgeEnd = () ->
+    console.log "milk grass jelly (edge end)"
+    graphVars.edgeS.setTarget graphVars.nodeME
+    graphVars.graph.addEdge graphVars.edgeS
+    graphVars.edgeS = null
+    
+    redraw()
+    
+drawEdgeDrop = () ->
+    console.log "hokkaido milk tea (edge drop)"
+    graphVars.edgeS = null
     
 test = () ->
     nodes = []
@@ -172,7 +223,8 @@ Params:
     attr: list is attributes
 ###
 class Edge
-    constructor: (@id, @source, @target, @attr) ->
+    constructor: (@id, @source, @target = null, @attr = []) ->
+    setTarget: (target) -> @target = target
     
 ###
 Node object

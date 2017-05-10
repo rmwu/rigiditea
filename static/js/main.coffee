@@ -1,6 +1,5 @@
 $ ->
     initGraph()
-    console.log("boba is yummy (initGraph)")
     
     # test()
 
@@ -14,6 +13,7 @@ vars =
     height: 500
     radius: 15
     fill: "#000"
+    maxCount: 10
 
 # selected, mouse down/up
 graphVars =
@@ -39,6 +39,30 @@ d3Vars =
     svg: null
     nodes: null
     edges: null
+    
+###################
+# PEBBLE RUNNING
+###################
+
+$("#pebble").on "click", () ->
+    drawPebble()
+
+drawPebble = () ->
+    # TODO can display original state later
+    console.log "lychee black tea (drawPebble)"
+    if graphVars.edgeS != null
+        graph = graphVars.graph
+        graphP = new PebbleGraph graph.nodes, graph.edges, {}
+        graphP.enlargeCover graphVars.edgeS
+        
+        for item in graphP.pebbleCounts
+            counts = item[1]
+            item.setColor getColor counts
+            
+getColor = (count) ->
+    rgb = 255 * count / vars.maxCount
+    "rgb(" + rgb + "," + rgb + "," + rgb + ")"
+
 
 ###################
 # d3 FUNCTIONS
@@ -51,7 +75,8 @@ initGraph = () ->
         .style("fill", "none")
         .on("click", onClick)
         .on("mouseup", onMouseUpNode)
-    graphVars.graph = new Graph [], [], []
+    graphVars.graph = new Graph [], []
+    console.log("boba is yummy (initGraph)")
 
 onClick = () ->
     coords = d3.mouse this
@@ -72,7 +97,7 @@ onMouseDown = () ->
 onClickNode = () ->
     if graphVars.canSelect
         toggleNodeSelect(this)
-    
+
 onMouseDownNode = () ->
     # don't add new node when selecting
     graphVars.canAdd = false
@@ -165,7 +190,7 @@ drawGraph = (graph, svg) ->
 toggleNodeSelect = (circle) ->
     # reset old selected color
     if graphVars.nodeS != null
-        graphVars.nodeS.setFill vars.fill
+        graphVars.nodeS.setColor vars.fill
 
     node = d3.select(circle).data()[0]
     # deselect selected nodes
@@ -173,14 +198,14 @@ toggleNodeSelect = (circle) ->
         graphVars.nodeS = null
     else
         graphVars.nodeS = node # selected node update
-        node.setFill "#ADF"
+        node.setColor "#ADF"
     redraw()
     
 toggleEdgeSelect = (line) ->
     # reset old selected color
     console.log "red bean milk tea (edge select)"
     if graphVars.edgeS != null
-        graphVars.edgeS.setStroke vars.fill
+        graphVars.edgeS.setColor vars.fill
 
     edge = d3.select(line).data()[0]
     # deselect selected nodes
@@ -188,7 +213,7 @@ toggleEdgeSelect = (line) ->
         graphVars.edgeS = null
     else
         graphVars.edgeS = edge # selected node update
-        edge.setStroke "#ADF"
+        edge.setColor "#ADF"
     redraw()
 
 # three functions that work together to draw a new edge
@@ -316,7 +341,7 @@ Params:
 class Edge
     constructor: (@id, @source, @target = null, @attr = Object.assign({}, graphVars.edgeAttr)) ->
     setTarget: (target) -> @target = target
-    setStroke: (stroke) -> @attr.stroke = stroke
+    setColor: (stroke) -> @attr.stroke = stroke
     
 ###
 Node object
@@ -328,7 +353,7 @@ Params:
 class Node
     constructor: (@id, @x, @y, @attr) ->
     getFill: () -> @attr.fill
-    setFill: (fill) -> @attr.fill = fill
+    setColor: (fill) -> @attr.fill = fill
 
 class PebbleGraph extends Graph
     constructor: (@nodes, @edges, @attr) ->

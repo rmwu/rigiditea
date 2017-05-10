@@ -76,6 +76,7 @@ $("#reset").on "click", () ->
 drawPebble = () ->
     # TODO can display original state later
     console.log "lychee black tea (drawPebble)"
+
     # if graphVars.edgeS != null
     if graphVars.graphP == null
         graph = graphVars.graph
@@ -126,8 +127,8 @@ initGraph = () ->
     
 #    d3Vars.drag = d3.drag()
 #        .on("drag", dragEdge)
-    d3.selectAll("circle")
-        .call(d3.drag().on("start", dragEdge))
+#    d3.selectAll("circle")
+#        .call(d3.drag().on("start", dragEdge))
         
     console.log("boba is yummy (initGraph)")
 
@@ -180,7 +181,7 @@ onMouseOutNode = () ->
     graphVars.mouseEnter = false
         
     if graphVars.mouseDown
-        drawEdgeStart()
+        drawEdgeStart(this)
     
 onMouseEnterNode = () ->
     graphVars.mouseOut = false
@@ -200,12 +201,15 @@ onMouseDownEdge = () ->
 onMouseOutEdge = () ->
     graphVars.canAdd = true
     
-dragEdge = (d) ->
+dragEdge = (mouseThis, line) ->
     if graphVars.edgeN != null
-        [x,y] = [d3.event.x, d3.event.y]
-        d3.select(graphVars.edgeN)
+        coords = d3.mouse mouseThis
+        [x,y] = coords
+        d3.select(line)
             .attr("x2", x)
             .attr("y2", y)
+            
+    # redraw()
     console.log "green bean milk tea (dragEdge)"
         
 redraw = () ->
@@ -256,7 +260,6 @@ toggleNodeSelect = (circle) ->
     # reset old selected color
     if graphVars.nodeS != null
         console.log "passionfruit green tea (nodeSelect reset)"
-        console.log graphVars.nodeS.getSavedColor()
         graphVars.nodeS.setColor graphVars.nodeS.getSavedColor()
 
     node = d3.select(circle).data()[0]
@@ -288,11 +291,14 @@ toggleEdgeSelect = (line) ->
     redraw()
 
 # three functions that work together to draw a new edge
-drawEdgeStart = () ->
+drawEdgeStart = (elmt) ->
     console.log "panda milk tea (edge start)"
     graphVars.canAdd = false
     source = graphVars.nodeS
     graphVars.edgeN = new Edge nodeGenID(), source, null, Object.assign({}, graphVars.edgeAttr)
+    
+#    while graphVars.mouseDown
+#        dragEdge(mouseElmt, line)
     
 drawEdgeEnd = () ->
     console.log "milk grass jelly (edge end)"

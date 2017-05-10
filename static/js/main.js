@@ -114,7 +114,6 @@
     $("#graph").html("");
     d3Vars.svg = d3.select("#graph").append("svg").attr("width", vars.width).attr("height", vars.height).style("fill", "none").on("click", onClick).on("mouseup", onMouseUpNode);
     graphVars.graph = new Graph([], []);
-    d3.selectAll("circle").call(d3.drag().on("start", dragEdge));
     return console.log("boba is yummy (initGraph)");
   };
 
@@ -173,7 +172,7 @@
     graphVars.mouseOut = true;
     graphVars.mouseEnter = false;
     if (graphVars.mouseDown) {
-      return drawEdgeStart();
+      return drawEdgeStart(this);
     }
   };
 
@@ -197,11 +196,12 @@
     return graphVars.canAdd = true;
   };
 
-  dragEdge = function(d) {
-    var ref, x, y;
+  dragEdge = function(mouseThis, line) {
+    var coords, x, y;
     if (graphVars.edgeN !== null) {
-      ref = [d3.event.x, d3.event.y], x = ref[0], y = ref[1];
-      d3.select(graphVars.edgeN).attr("x2", x).attr("y2", y);
+      coords = d3.mouse(mouseThis);
+      x = coords[0], y = coords[1];
+      d3.select(line).attr("x2", x).attr("y2", y);
     }
     return console.log("green bean milk tea (dragEdge)");
   };
@@ -243,7 +243,6 @@
     var node;
     if (graphVars.nodeS !== null) {
       console.log("passionfruit green tea (nodeSelect reset)");
-      console.log(graphVars.nodeS.getSavedColor());
       graphVars.nodeS.setColor(graphVars.nodeS.getSavedColor());
     }
     node = d3.select(circle).data()[0];
@@ -276,7 +275,7 @@
     return redraw();
   };
 
-  drawEdgeStart = function() {
+  drawEdgeStart = function(elmt) {
     var source;
     console.log("panda milk tea (edge start)");
     graphVars.canAdd = false;

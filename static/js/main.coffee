@@ -196,6 +196,21 @@ test = () ->
 
 
 ###################
+# NUMERIC ALGORITHMS
+###################
+
+###
+Find the rank of a matrix; algorithm based on SVD.
+Params:
+    matrix: the matrix lmao
+###
+matrixRank = (matrix) ->
+    # count nonzero singular values
+    return [x for x in numeric.svd(matrix).S when x != 0].length
+
+
+
+###################
 # GRAPH CLASSES
 ###################
 
@@ -213,6 +228,45 @@ class Graph
     # addEdge appends a new edge to edges
     addEdge: (edge) ->
         @edges.push edge
+
+    ###
+    Find the numer of infinitesimal degrees of freedom.
+    Params:
+        vertexConfiguration: associative array {node: embedding coordinates}
+    ###
+    infinitesimalDOF: (vertexConfiguration) ->
+        numVertices = @nodes.length
+        if numVertices == 0
+            return 0
+
+        firstCoords = vertexConfiguration[@nodes[0]]
+        embedDim = firstCoords.length
+        displacements = [numeric.sub(coords, firstCoords) for node, coords in vertexConfiguration]
+        configDim = matrixRank(displacements)
+
+        rmatRank = matrixRank rigidityMatrix vertexConfiguration
+        euclIsomDim = (embedDim + 1) * embedDim / 2
+        symGroupDim = (embedDim - configDim) * (embedDim - configDim - 1) / 2
+
+        return embedDim * numVertices - rmatRank - euclIsomDim + symGroupDim
+
+    rigidityMatrix: (vertexConfiguration) ->
+        numVertices = @nodes.length
+        firstCoords = vertexConfiguration[@nodes[0]]
+        embedDim = firstCoords.length
+
+        rigidityMatrixRow: (edge) ->
+            [left, right] = [edge.source, edge.target]
+            [leftInd, rightInd] = [embedDim * @nodes.indexOf(left), embedDim * @nodes.indexOf(right)]
+            edgeDisplacement =
+                numeric.sub(vertexConfiguration[right],vertexConfiguration[left])
+
+            row = [0 for [0...(numVertices*embedDim)]]
+            (row[leftInd+i] = -edgeDisplacement for i in [0...embedDim])
+            (row[rightInd+j] = edgeDisplacement for j in [0...embedDim])
+            return row
+
+        return [rigidityMatrixRow(edge) for edge in @edges]
 
 ###
 Edge object
@@ -235,8 +289,8 @@ Params:
 ###
 class Node
     constructor: (@id, @x, @y, @attr) ->
-    getFill: () -> @attr[0]
-    setFill: (fill) -> @attr[0] = fill
+    getFill: () -> @attr.fill
+    setFill: (fill) -> @attr.fill = fill
 
 class PebbleGraph extends Graph
     constructor: (@nodes, @edges, @attr) ->
@@ -328,5 +382,7 @@ class PebbleGraph extends Graph
                 [_, oldedge] = path[w]
                 this.reallocatePebble(w, oldedge, edge)
             vertex = w
-    
+
+
+
 

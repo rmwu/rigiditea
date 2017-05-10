@@ -12,7 +12,8 @@ vars =
     width: 600
     height: 500
     radius: 15
-    fill: "#CCC"
+    color: "#CCC"
+    colorS: "#0CF"
     maxCount: 5
 
 # selected, mouse down/up
@@ -33,8 +34,8 @@ graphVars =
     edgeN: null # new edge
     nodeME: null # mouseenter
     
-    nodeAttr: {fill: vars.fill}
-    edgeAttr: {stroke: vars.fill}
+    nodeAttr: {fill: vars.color}
+    edgeAttr: {stroke: vars.color}
 
 d3Vars =
     svg: null
@@ -53,28 +54,29 @@ drawPebble = () ->
     if graphVars.edgeS != null
         if graphVars.graphP == null
             graph = graphVars.graph
-            graphVars.graphP = new PebbleGraph graphVars.graph.nodes, graphVars.graph.edges, {}
+            graphVars.graphP = new PebbleGraph graph.nodes, graph.edges, {}
             graphVars.graphP.enlargeCover graphVars.edgeS
+        
+        graphP = graphVars.graphP
+        algState = graphP.algorithmState()
 
-        algState = graphVars.graphP.algorithmState()
-
-        for node in graphVars.graphP.nodes
+        for node in graphP.nodes
             count = algState.vertexCounts[node.id]
             node.setColor getColor(count)
-            console.log node.getColor()
+            node.saveColor()
         
-        for edge in graphVars.graphP.edges
+        for edge in graphP.edges
             count = algState.edgeCounts[edge.id]
             edge.setColor getColor(count)
+            console.log(edge.getSavedColor())
+            edge.saveColor()
+            console.log(edge.getSavedColor())
             
     redraw()
             
 getColor = (count) ->
     rgb = Math.floor(255 * count / vars.maxCount)
     rgb = rgb.toString()
-    console.log "count " + count.toString()
-    console.log "rgb(" + rgb + "," + rgb + "," + rgb + ")"
-    console.log rgb
     "rgb(" + rgb + "," + rgb + "," + rgb + ")"
 
 
@@ -222,7 +224,9 @@ drawGraph = (graph, svg) ->
 toggleNodeSelect = (circle) ->
     # reset old selected color
     if graphVars.nodeS != null
-        graphVars.nodeS.setColor vars.fill
+        console.log "passionfruit green tea (nodeSelect reset)"
+        console.log graphVars.nodeS.getSavedColor()
+        graphVars.nodeS.setColor graphVars.nodeS.getSavedColor()
 
     node = d3.select(circle).data()[0]
     # deselect selected nodes
@@ -230,22 +234,26 @@ toggleNodeSelect = (circle) ->
         graphVars.nodeS = null
     else
         graphVars.nodeS = node # selected node update
-        node.setColor "#ADF"
+        node.saveColor()
+        node.setColor vars.colorS
     redraw()
     
 toggleEdgeSelect = (line) ->
     # reset old selected color
     console.log "red bean milk tea (edge select)"
     if graphVars.edgeS != null
-        graphVars.edgeS.setColor vars.fill
+        console.log "red bean slush (edgeSelect reset)"
+        console.log graphVars.edgeS.getSavedColor()
+        graphVars.edgeS.setColor graphVars.edgeS.getSavedColor()
 
     edge = d3.select(line).data()[0]
-    # deselect selected nodes
+    # deselect selected edges
     if graphVars.edgeS == edge
         graphVars.edgeS = null
     else
         graphVars.edgeS = edge # selected node update
-        edge.setColor "#ADF"
+        edge.saveColor()
+        edge.setColor vars.colorS
     redraw()
 
 # three functions that work together to draw a new edge
@@ -253,7 +261,7 @@ drawEdgeStart = () ->
     console.log "panda milk tea (edge start)"
     graphVars.canAdd = false
     source = graphVars.nodeS
-    graphVars.edgeN = new Edge nodeGenID(), source
+    graphVars.edgeN = new Edge nodeGenID(), source, null, Object.assign({}, graphVars.edgeAttr)
     
 drawEdgeEnd = () ->
     console.log "milk grass jelly (edge end)"
@@ -271,26 +279,26 @@ drawEdgeDrop = () ->
     
 nodeGenID = () -> Math.random().toString(36).substr(2, 5)
     
-test = () ->
-    nodes = []
-    for n in [0 .. 9]
-        node = new Node nodeGenID(), 100+n*Math.random()*100, 100+n*Math.random()*100, Object.assign({}, graphVars.nodeAttr)
-        nodes.push node
-        
-    edges = []
-    for i in [0 ... 8]
-        node1 = nodes[i]
-        node2 = nodes[i+1]
-        edges.push new Edge nodeGenID(), node1, node2, 1
+#test = () ->
+#    nodes = []
+#    for n in [0 .. 9]
+#        node = new Node nodeGenID(), 100+n*Math.random()*100, 100+n*Math.random()*100, Object.assign({}, graphVars.nodeAttr)
+#        nodes.push node
+#        
+#    edges = []
+#    for i in [0 ... 8]
+#        node1 = nodes[i]
+#        node2 = nodes[i+1]
+#        edges.push new Edge nodeGenID(), node1, node2, 1
+#
+#    graph = new Graph nodes, edges
+#
+#    drawGraph(graph, d3Vars.svg)
 
-    graph = new Graph nodes, edges
 
-    drawGraph(graph, d3Vars.svg)
-
-
-###################
+#####################
 # NUMERIC ALGORITHMS
-###################
+#####################
 
 ###
 Find the rank of a matrix; algorithm based on SVD.
@@ -370,9 +378,13 @@ Params:
     attr: list is attributes
 ###
 class Edge
-    constructor: (@id, @source, @target = null, @attr = Object.assign({}, graphVars.edgeAttr)) ->
+    constructor: (@id, @source, @target, @attr) ->
+        this.saveColor()
     setTarget: (target) -> @target = target
     setColor: (stroke) -> @attr.stroke = stroke
+    
+    saveColor: () -> @attr.strokeOld = @attr.stroke
+    getSavedColor: () -> @attr.strokeOld
     
 ###
 Node object
@@ -383,8 +395,12 @@ Params:
 ###
 class Node
     constructor: (@id, @x, @y, @attr) ->
+        this.saveColor()
     getColor: () -> @attr.fill
     setColor: (fill) -> @attr.fill = fill
+    
+    saveColor: () -> @attr.fillOld = @attr.fill
+    getSavedColor: () -> @attr.fillOld
 
 class PebbleGraph extends Graph
     constructor: (@nodes, @edges, @attr) ->

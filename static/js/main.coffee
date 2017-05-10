@@ -18,6 +18,7 @@ vars =
 # selected, mouse down/up
 graphVars =
     graph: null
+    graphP: null
     
     canSelect: true # mutex style flags
     canAdd: true
@@ -50,23 +51,27 @@ drawPebble = () ->
     # TODO can display original state later
     console.log "lychee black tea (drawPebble)"
     if graphVars.edgeS != null
-        graph = graphVars.graph
-        graphP = new PebbleGraph graph.nodes, graph.edges, {}
-        console.log graphP
-        graphP.enlargeCover graphVars.edgeS
-        
-        algState = graphP.algorithmState()
+        if graphVars.graphP == null
+            graph = graphVars.graph
+            graphP = new PebbleGraph graph.nodes, graph.edges, {}
+            graphP.enlargeCover graphVars.edgeS
+        algState = graphVars.graphP.algorithmState()
 
-        for node in graphP.nodes
+        for node in graphVars.graphP.nodes
             count = algState.vertexCounts[node.id]
-            node.setColor getColor count
+            node.setColor getColor(count)
+            console.log node.getColor()
         
         for edge in graphP.edges
             count = algState.edgeCounts[edge.id]
-            edge.setColor getColor count
+            edge.setColor getColor(count)
             
 getColor = (count) ->
     rgb = 137 * count / vars.maxCount
+    rgb = rgb.toString()
+    console.log "count " + count.toString()
+    console.log "rgb(" + rgb + "," + rgb + "," + rgb + ")"
+    console.log rgb
     "rgb(" + rgb + "," + rgb + "," + rgb + ")"
 
 
@@ -111,7 +116,11 @@ onClickNode = () ->
         toggleNodeSelect(this)
 
 onMouseDownNode = () ->
-    # don't add new node when selecting
+    # don't add new node when selecting normally
+    if graphVars.nodeS == null
+        if graphVars.canSelect
+            toggleNodeSelect(this)
+        
     graphVars.canAdd = false
     graphVars.mouseDown = true
     graphVars.mouseUp = false
@@ -193,7 +202,7 @@ drawGraph = (graph, svg) ->
         .attr("cy", (node) -> node.y)
         .attr("r", vars.radius)
         .attr("id", (node) -> node.id)
-        .style("fill", (node) -> node.getFill())
+        .style("fill", (node) -> node.getColor())
     svg.selectAll("circle")
         .on("click", onClickNode)
         .on("mousedown", onMouseDownNode)
@@ -245,8 +254,10 @@ drawEdgeStart = () ->
     
 drawEdgeEnd = () ->
     console.log "milk grass jelly (edge end)"
-    graphVars.edgeN.setTarget graphVars.nodeME
-    graphVars.graph.addEdge graphVars.edgeN
+    # no self loops
+    if graphVars.nodeME != graphVars.edgeN.source
+        graphVars.edgeN.setTarget graphVars.nodeME
+        graphVars.graph.addEdge graphVars.edgeN
     graphVars.edgeN = null
     
     redraw()
@@ -369,7 +380,7 @@ Params:
 ###
 class Node
     constructor: (@id, @x, @y, @attr) ->
-    getFill: () -> @attr.fill
+    getColor: () -> @attr.fill
     setColor: (fill) -> @attr.fill = fill
 
 class PebbleGraph extends Graph

@@ -8,6 +8,8 @@
 
 \input{6up.tex}
 \newcommand{\vocab}[1]{\textcolor{blue}{\textbf{#1}}}
+\newcommand{\abs}[1]{|#1|}
+
 
 %\usepackage{beamerthemesplit} % Activate for custom appearance
 
@@ -71,7 +73,8 @@
     \frametitle{Underlying linkage representation}
     \begin{itemize}
     \item We represent linkages as \texttt{PebbleGraph} objects,
-    or undirected graphs in adjacency list form.
+    which are undirected graphs specified with a set of vertices
+    and a set of edges.
     \item Each graph has vertices and edges,
     which carry their own attributes (e.g. number of pebbles)
     \end{itemize}
@@ -81,22 +84,76 @@
 \section{The pebble game}
 
 \frame{
-    \frametitle{Conditions for rigidity}
-    
+    \frametitle{Preliminaries}
+    \begin{itemize}
+    \item
+    We'd like to determine the generic rigidity
+    of undirected graph $G = (V, E)$.
+    \item
+    Let $n = \abs{V}$ and $m = \abs{E}$.
+    \end{itemize}
+}
+
+\frame{
+    \frametitle{Independence}
+    \begin{itemize}
+    \item<1->
+    A subset of the edges in the graph is \vocab{independent}
+    if, in a generic realization of the graph,
+    the constraints imposed by those edges (rows in the rigidity matrix)
+    are linearly independent.
+    \item<2->
+    A \vocab{maximal independent set} is one that cannot be enlarged while preserving independence.
+    \end{itemize}
+}
+
+
+\frame{
+    \frametitle{Laman rigidity}
+    \begin{itemize}
+    \item<1->
+    $n$ free vertices have $2n-3$ degrees of freedom in the plane.
+    (Two per vertex, three dimensional isometry space.)
+    \item<2->
+    Laman:
+    the edges of graph $G$ are independent in two dimensions
+    if no subgraph induced by $n'$ vertices
+    has more than $2n' - 3$ edges.
+    \item<3->
+    Corollary: if $G$ has $2n-3$ edges
+    and no induced subgraph has more than $2n'-3$,
+    $G$ is minimally generically rigid.
+    \item<4->
+    Corollary: $G$ is generically rigid if it has $2n-3$ independent edges.
+    \end{itemize}
 }
 
 \frame{
     \frametitle{The game}
     \begin{itemize}
-        \item
+        \item<1->
         Given undirected graph $G = (V, E)$,
         give two pebbles to each vertex.
         Each vertex can use its pebbles to cover incident edges.
-        \item
+        \item<2->
         A \vocab{pebble covering} is an assignment of pebbles
         such that each edge is covered by a pebble.
-        \item
-        
+        \item<3->
+        Theorem: Given independent edge set $\hat E$,
+        another edge $e$ is independent iff there exists a pebble covering
+        of the graph $G_{4e}$ consisting of $\hat E$ and four copies of $e$.
+    \end{itemize}
+}
+
+\frame{
+    \frametitle{The algorithm}
+    \begin{itemize}
+    \item<1->
+    To test rigidity, we want to check whether maximal independent edge set has $2n-3$ elements.
+    \item<2->
+    We build up an independent edge set $\hat E$
+    by greedily adding edges if they are independent
+    (tested by playing the pebble game on $G_{4e}$).
     \end{itemize}
 }
 

@@ -367,7 +367,7 @@ class PebbleGraph extends Graph
     pebbleIndex: () ->
         @pebbleIndex
 
-    algorithmStatus: () ->
+    algorithmState: () ->
         edgeCounts = {edge.id: 0 for edge in @edges}
         vertexCounts = {v.id: 0 for v in @nodes}
 

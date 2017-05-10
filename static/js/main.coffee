@@ -41,12 +41,37 @@ d3Vars =
     svg: null
     drag: null
     
+resetGraphVars = () ->
+    graph: null
+    graphP: null
+    
+    canSelect: true # mutex style flags
+    canAdd: true
+    
+    mouseDown: false # flags for mouse events
+    mouseUp: true
+    mouseOut: true
+    mouseEnter: false
+    
+    nodeS: null # selected (clicked)
+    edgeS: null
+    edgeN: null # new edge
+    nodeME: null # mouseenter
+    
+###################
+# BUTTON BINDINGS
+###################
+    
+$("#pebble").on "click", () ->
+    drawPebble()
+    
+$("#reset").on "click", () ->
+    resetGraphVars()
+    initGraph()
+    
 ###################
 # PEBBLE RUNNING
 ###################
-
-$("#pebble").on "click", () ->
-    drawPebble()
 
 drawPebble = () ->
     # TODO can display original state later
@@ -85,6 +110,7 @@ getColor = (count) ->
 ###################
     
 initGraph = () ->
+    $("#graph").html ""
     d3Vars.svg = d3.select("#graph").append("svg")
         .attr("width", vars.width)
         .attr("height", vars.height)

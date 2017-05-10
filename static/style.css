@@ -26,6 +26,10 @@ a:hover { color: #ff9; }
 #wrapper #main ul li:hover { font-style: italic; color: #ff9; }
 #wrapper #main #graph { width: 600px; background: #FFF; }
 
+svg { cursor: crosshair; }
+
+circle { cursor: crosshair; }
+
 .node { fill: #000; cursor: crosshair; }
 
 .node_selected { fill: #6cf; stroke: #6cf; }

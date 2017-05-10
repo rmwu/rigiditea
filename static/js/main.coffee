@@ -29,9 +29,10 @@ graphVars =
     
     nodeS: null # selected (clicked)
     edgeS: null
+    edgeN: null # new edge
     nodeME: null # mouseenter
     
-    attr: [vars.fill]
+    attr: {fill: vars.fill}
 
 d3Vars =
     svg: null
@@ -55,7 +56,7 @@ onClick = () ->
     coords = d3.mouse this
     [x, y] = coords
     if graphVars.canAdd
-        node = new Node nodeGenID(), x, y, graphVars.attr.slice()
+        node = new Node nodeGenID(), x, y, Object.assign({}, graphVars.attr)
 
         graphVars.graph.addNode node
         graphVars.canSelect = false
@@ -82,7 +83,7 @@ onMouseUpNode = () ->
     graphVars.mouseUp = true
     
     console.log "thai milk tea (mouse up)"
-    if graphVars.edgeS != null
+    if graphVars.edgeN != null
         if graphVars.mouseEnter
             drawEdgeEnd()
          else
@@ -164,24 +165,24 @@ nodeGenID = () -> Math.random().toString(36).substr(2, 5)
 drawEdgeStart = () ->
     console.log "panda milk tea (edge start)"
     source = graphVars.nodeS
-    graphVars.edgeS = new Edge nodeGenID(), source
+    graphVars.edgeN = new Edge nodeGenID(), source
     
 drawEdgeEnd = () ->
     console.log "milk grass jelly (edge end)"
-    graphVars.edgeS.setTarget graphVars.nodeME
-    graphVars.graph.addEdge graphVars.edgeS
-    graphVars.edgeS = null
+    graphVars.edgeN.setTarget graphVars.nodeME
+    graphVars.graph.addEdge graphVars.edgeN
+    graphVars.edgeN = null
     
     redraw()
     
 drawEdgeDrop = () ->
     console.log "hokkaido milk tea (edge drop)"
-    graphVars.edgeS = null
+    graphVars.edgeN = null
     
 test = () ->
     nodes = []
     for n in [0 .. 9]
-        node = new Node nodeGenID(), 100+n*Math.random()*100, 100+n*Math.random()*100, graphVars.attr.slice()
+        node = new Node nodeGenID(), 100+n*Math.random()*100, 100+n*Math.random()*100, Object.assign({}, graphVars.attr)
         nodes.push node
         
     edges = []

@@ -54,17 +54,21 @@ drawPebble = () ->
         graphP = new PebbleGraph graph.nodes, graph.edges, {}
         graphP.enlargeCover graphVars.edgeS
         
-        counts = graphP.pebbleCounts
+        algState = graphP.algorithmState()
+        console.log("xcxc")
+        console.log algState
+        console.log("xcxc")
+
         for node in graphP.nodes
-            count = counts[node.id]
+            count = algState.vertexCounts[node.id]
             node.setColor getColor count
         
         for edge in graphP.edges
-            count = counts[edge.id]
+            count = algState.edgeCounts[edge.id]
             edge.setColor getColor count
             
 getColor = (count) ->
-    rgb = 255 * count / vars.maxCount
+    rgb = 137 * count / vars.maxCount
     "rgb(" + rgb + "," + rgb + "," + rgb + ")"
 
 
@@ -380,14 +384,15 @@ class PebbleGraph extends Graph
         @independentEdges = []
         @remainingEdges = $.extend(@edges)
         @enlargeCoverIteration = 0
-        @curCandIndEdge = -1
+        @curCandIndEdge = -1  # "current candidate independent edge"
 
     pebbleIndex: () ->
         @pebbleIndex
 
     algorithmState: () ->
+        edgeCounts = {}
         for edge in @edges
-            @pebbleIndex[edge.id.toString()] = 0
+            edgeCounts[edge.id.toString()] = 0
         vertexCounts = {}
         for vertex in @edges
             vertexCounts[vertex.id.toString()] = 0
@@ -471,45 +476,56 @@ class PebbleGraph extends Graph
         [left, right] = [edge.source, edge.target]
         found = this.findPebble(left, seen, path)
         if found
-            this.rearrangePebbles(left, seen)
+            this.rearrangePebbles(left, edge, path)
             return true
         
         if not seen[right.id]
             found = this.findPebble(right, seen, path)
             if found
-                this.rearrangePebbles(right, path)
+                this.rearrangePebbles(right, edge, path)
                 return true
 
         return false
     
     
     findPebble: (vertex, seen, path) ->
-        seen[vertex.id] = true
-        path[vertex.id] = -1
+        seen[vertex.id.toString()] = true
+        path[vertex.id.toString()] = -1
         if this.hasFreePebble(vertex)
             return true
+
+        console.log(path[vertex.id.toString()]);
     
         # taken from the paper; probably should clean up code smell
         [[x, xedge], [y, yedge]] = this.pebbledEdgesAndNeighbors(vertex)
-        if not seen[x.id]
-            path[vertex.id] = [x, xedge]
+        if not seen[x.id.toString()]
+            path[vertex.id.toString()] = [x, xedge]
             if this.findPebble(x, seen, path)
                 return true
-        if not seen[y.id]
-            path[vertex.id] = [y, yedge]
+        if not seen[y.id.toString()]
+            path[vertex.id.toString()] = [y, yedge]
             if this.findPebble(y, seen, path)
                 return true
         return false
     
     
-    rearrangePebbles: (vertex, path) ->
+    rearrangePebbles: (vertex, edge, path) ->
         while (path[vertex.id] != -1)
-            [w, edge] = path[vertex.id]
-            console.log path
-            if path[w.id] == -1
-                this.allocatePebble(w, edge)
+            [w, newedge] = path[vertex.id]
+            if path[w.id.toString()] == -1
+                this.allocatePebble(w, newedge)
             else
-                [_, oldedge] = path[w.id]
-                this.reallocatePebble(w, oldedge, edge)
+                [_, oldedge] = path[w.id.toString()]
+                this.reallocatePebble(w, oldedge, newedge)
             vertex = w
+        # w = vertex
+        # newedge = edge
+        # while (path[vertex.id] != -1)
+        #     if path[w.id.toString()] == -1
+        #         this.allocatePebble(w, newedge)
+        #     else
+        #         [_, oldedge] = path[w.id.toString()]
+        #         this.reallocatePebble(w, oldedge, newedge)
+        #     vertex = w
+        #     [w, newedge] = path[vertex.id]
 

@@ -359,6 +359,10 @@ class PebbleGraph extends Graph
     constructor: (@nodes, @edges, @attr) ->
         super(@nodes, @edges, @attr)
         @pebbleIndex = {vertex.id: [-1, -1] for vertex in @nodes}
+        @independentEdges = []
+        @remainingEdges = $.extend(@edges)
+        @enlargeCoverIteration = 0
+        @curCandIndEdge = -1
 
     pebbleIndex: () ->
         return @pebbleIndex
@@ -384,7 +388,7 @@ class PebbleGraph extends Graph
         index = @pebbleIndex[vertex.id].indexOf(edge)
         if index == -1
             return false
-        
+
         @pebbleIndex[vertex.id][index] = newval
         return true
 
@@ -409,6 +413,25 @@ class PebbleGraph extends Graph
         return [[otherVertex(e), e] for e in pebbleAssignments when e isnt -1]
 
     ###
+    Returns:
+        true if algorithm is complete, false otherwise
+    ###
+    stepAlgorithm: () ->
+        if @enlargeCoverIteration == 0
+            @curCandIndEdge = @remainingEdges.pop()
+
+        enlargementSuccessful = this.enlargeCover(@curCandIndEdge)
+        if enlargementSuccessful
+            @enlargeCoverIteration += 1
+            if @enlargeCoverIteration == 4
+                @independentEdges.push(@curCandIndEdge)
+                @enlargeCoverIteration = 0
+        else
+            @enlargeCoverIteration = 0
+
+        return @remainingEdges.length == 0
+
+    ###
     Cover enlargement for the pebble algorithm.
     Params:
          graph: trivial
@@ -429,7 +452,7 @@ class PebbleGraph extends Graph
             if found
                 this.rearrangePebbles(right, path)
                 return true
-    
+
         return false
     
     
@@ -461,7 +484,4 @@ class PebbleGraph extends Graph
                 [_, oldedge] = path[w.id]
                 this.reallocatePebble(w, oldedge, edge)
             vertex = w
-
-
-
 

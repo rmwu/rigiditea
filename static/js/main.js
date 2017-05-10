@@ -47,26 +47,29 @@
   });
 
   drawPebble = function() {
-    var count, counts, edge, graph, graphP, k, l, len, len1, node, ref, ref1, results;
+    var algState, count, edge, graph, graphP, k, l, len, len1, node, ref, ref1, results;
     console.log("lychee black tea (drawPebble)");
     if (graphVars.edgeS !== null) {
       graph = graphVars.graph;
       graphP = new PebbleGraph(graph.nodes, graph.edges, {});
       console.log(graphP);
       graphP.enlargeCover(graphVars.edgeS);
-      counts = graphP.pebbleCounts;
+      algState = graphP.algorithmState();
+      console.log("xcxc");
+      console.log(algState);
+      console.log("xcxc");
       ref = graphP.nodes;
       for (k = 0, len = ref.length; k < len; k++) {
         node = ref[k];
-        count = counts[node.id];
+        count = algState.vertexCounts[node.id];
         node.setColor(getColor(count));
       }
       ref1 = graphP.edges;
       results = [];
       for (l = 0, len1 = ref1.length; l < len1; l++) {
         edge = ref1[l];
-        count = counts[edges.id];
-        results.push(edges.setColor(getColor(count)));
+        count = algState.edgeCounts[edge.id];
+        results.push(edge.setColor(getColor(count)));
       }
       return results;
     }
@@ -74,7 +77,7 @@
 
   getColor = function(count) {
     var rgb;
-    rgb = 255 * count / vars.maxCount;
+    rgb = 137 * count / vars.maxCount;
     return "rgb(" + rgb + "," + rgb + "," + rgb + ")";
   };
 
@@ -471,6 +474,7 @@
       this.edges = edges1;
       this.attr = attr;
       PebbleGraph.__super__.constructor.call(this, this.nodes, this.edges, this.attr);
+      this.pebbleIndex = {};
       ref = this.nodes;
       for (k = 0, len = ref.length; k < len; k++) {
         vertex = ref[k];
@@ -486,12 +490,13 @@
       return this.pebbleIndex;
     };
 
-    PebbleGraph.prototype.algorithmStatus = function() {
-      var edge, entries, k, l, len, len1, len2, m, ref, ref1, ref2, vertex, vertexCounts, vid;
+    PebbleGraph.prototype.algorithmState = function() {
+      var edge, edgeCounts, entries, k, l, len, len1, len2, m, ref, ref1, ref2, vertex, vertexCounts, vid;
+      edgeCounts = {};
       ref = this.edges;
       for (k = 0, len = ref.length; k < len; k++) {
         edge = ref[k];
-        this.pebbleIndex[edge.id.toString()] = 0;
+        edgeCounts[edge.id.toString()] = 0;
       }
       vertexCounts = {};
       ref1 = this.edges;
@@ -636,13 +641,13 @@
       ref2 = [edge.source, edge.target], left = ref2[0], right = ref2[1];
       found = this.findPebble(left, seen, path);
       if (found) {
-        this.rearrangePebbles(left, seen);
+        this.rearrangePebbles(left, edge, path);
         return true;
       }
       if (!seen[right.id]) {
         found = this.findPebble(right, seen, path);
         if (found) {
-          this.rearrangePebbles(right, path);
+          this.rearrangePebbles(right, edge, path);
           return true;
         }
       }
@@ -651,20 +656,21 @@
 
     PebbleGraph.prototype.findPebble = function(vertex, seen, path) {
       var ref, ref1, ref2, x, xedge, y, yedge;
-      seen[vertex.id] = true;
-      path[vertex.id] = -1;
+      seen[vertex.id.toString()] = true;
+      path[vertex.id.toString()] = -1;
       if (this.hasFreePebble(vertex)) {
         return true;
       }
+      console.log(path[vertex.id.toString()]);
       ref = this.pebbledEdgesAndNeighbors(vertex), (ref1 = ref[0], x = ref1[0], xedge = ref1[1]), (ref2 = ref[1], y = ref2[0], yedge = ref2[1]);
-      if (!seen[x.id]) {
-        path[vertex.id] = [x, xedge];
+      if (!seen[x.id.toString()]) {
+        path[vertex.id.toString()] = [x, xedge];
         if (this.findPebble(x, seen, path)) {
           return true;
         }
       }
-      if (!seen[y.id]) {
-        path[vertex.id] = [y, yedge];
+      if (!seen[y.id.toString()]) {
+        path[vertex.id.toString()] = [y, yedge];
         if (this.findPebble(y, seen, path)) {
           return true;
         }
@@ -672,16 +678,16 @@
       return false;
     };
 
-    PebbleGraph.prototype.rearrangePebbles = function(vertex, path) {
-      var _, edge, oldedge, ref, ref1, results, w;
+    PebbleGraph.prototype.rearrangePebbles = function(vertex, edge, path) {
+      var _, newedge, oldedge, ref, ref1, results, w;
       results = [];
       while (path[vertex.id] !== -1) {
-        ref = path[vertex.id], w = ref[0], edge = ref[1];
-        if (path[w.id] === -1) {
-          this.allocatePebble(w, edge);
+        ref = path[vertex.id], w = ref[0], newedge = ref[1];
+        if (path[w.id.toString()] === -1) {
+          this.allocatePebble(w, newedge);
         } else {
-          ref1 = path[w.id], _ = ref1[0], oldedge = ref1[1];
-          this.reallocatePebble(w, oldedge, edge);
+          ref1 = path[w.id.toString()], _ = ref1[0], oldedge = ref1[1];
+          this.reallocatePebble(w, oldedge, newedge);
         }
         results.push(vertex = w);
       }

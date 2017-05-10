@@ -13,7 +13,7 @@ vars =
     height: 500
     radius: 15
     fill: "#CCC"
-    maxCount: 10
+    maxCount: 5
 
 # selected, mouse down/up
 graphVars =
@@ -67,8 +67,10 @@ drawPebble = () ->
             count = algState.edgeCounts[edge.id]
             edge.setColor getColor(count)
             
+    redraw()
+            
 getColor = (count) ->
-    rgb = 137 * count / vars.maxCount
+    rgb = Math.floor(255 * count / vars.maxCount)
     rgb = rgb.toString()
     console.log "count " + count.toString()
     console.log "rgb(" + rgb + "," + rgb + "," + rgb + ")"

@@ -1,0 +1,78 @@
+% TODO change date
+
+%\documentclass[handout,notes]{beamer}
+\documentclass[]{beamer}
+\usetheme{Singapore}
+\usecolortheme{dolphin}
+\usepackage{tikz}
+
+\input{6up.tex}
+\newcommand{\vocab}[1]{\textcolor{blue}{\textbf{#1}}}
+
+%\usepackage{beamerthemesplit} % Activate for custom appearance
+
+\title{Rigiditea}
+\author{Rachel Wu, Tony Zhang}
+\date{May 10, 2017}
+
+\begin{document}
+
+\frame{\titlepage}
+
+\section[Outline]{}
+\frame{\tableofcontents}
+
+\frame{
+  \frametitle{Caveat emptor}
+  \begin{itemize}
+  \item<1-> I will say some true things. I will also say some false things.
+  \item<2-> There will be math.
+  \item<3-> There will be handwaving.
+  \end{itemize}
+}
+
+
+\section{Interface}
+
+
+
+
+
+\section{The pebble game}
+
+\frame{
+    \frametitle{Conditions for rigidity}
+    
+}
+
+\frame{
+    \frametitle{The game}
+    \begin{itemize}
+        \item
+        Given undirected graph $G = (V, E)$,
+        give two pebbles to each vertex.
+        Each vertex can use its pebbles to cover incident edges.
+        \item
+        A \vocab{pebble covering} is an assignment of pebbles
+        such that each edge is covered by a pebble.
+        \item
+        
+    \end{itemize}
+}
+
+\section{Extensions}
+
+
+
+
+
+\begin{frame}
+  \frametitle{Further Reading}
+  \begin{thebibliography}{10}
+  \beamertemplatebookbibitems
+  \bibitem{pebble}
+  Donald J. Jacobs, Bruce Hendrickson, An Algorithm for Two-Dimensional Rigidity Percolation: The Pebble Game, \textit{J.~Comp.~Phys.} 137, 346-365 (1997)
+  \end{thebibliography}
+\end{frame}
+
+\end{document}

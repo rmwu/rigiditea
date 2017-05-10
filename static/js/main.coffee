@@ -23,6 +23,7 @@ graphVars =
     
     canSelect: true # mutex style flags
     canAdd: true
+    frozen: false
     
     mouseDown: false # flags for mouse events
     mouseUp: true
@@ -42,21 +43,22 @@ d3Vars =
     drag: null
     
 resetGraphVars = () ->
-    graph: null
-    graphP: null
+    graphVars.graph = null
+    graphVars.graphP = null
     
-    canSelect: true # mutex style flags
-    canAdd: true
+    graphVars.canSelect = true # mutex style flags
+    graphVars.canAdd = true
+    graphVars.frozen = false
     
-    mouseDown: false # flags for mouse events
-    mouseUp: true
-    mouseOut: true
-    mouseEnter: false
+    graphVars.mouseDown = false # flags for mouse events
+    graphVars.mouseUp = true
+    graphVars.mouseOut = true
+    graphVars.mouseEnter = false
     
-    nodeS: null # selected (clicked)
-    edgeS: null
-    edgeN: null # new edge
-    nodeME: null # mouseenter
+    graphVars.nodeS = null # selected (clicked)
+    graphVars.edgeS = null
+    graphVars.edgeN = null # new edge
+    graphVars.nodeME = null # mouseenter
     
 ###################
 # BUTTON BINDINGS
@@ -64,6 +66,7 @@ resetGraphVars = () ->
     
 $("#pebble").on "click", () ->
     drawPebble()
+    disableDraw()
     
 $("#reset").on "click", () ->
     resetGraphVars()
@@ -72,6 +75,9 @@ $("#reset").on "click", () ->
 ###################
 # PEBBLE RUNNING
 ###################
+
+disableDraw = () ->
+    graphVars.frozen = true
 
 drawPebble = () ->
     # TODO can display original state later
@@ -135,7 +141,7 @@ initGraph = () ->
 onClick = () ->
     coords = d3.mouse this
     [x, y] = coords
-    if graphVars.canAdd
+    if graphVars.canAdd && ! graphVars.frozen
         node = new Node nodeGenID(), x, y, Object.assign({}, graphVars.nodeAttr)
 
         graphVars.graph.addNode node
@@ -179,8 +185,8 @@ onMouseOutNode = () ->
     graphVars.canAdd = true
     graphVars.mouseOut = true
     graphVars.mouseEnter = false
-        
-    if graphVars.mouseDown
+    
+    if graphVars.mouseDown && ! graphVars.frozen
         drawEdgeStart(this)
     
 onMouseEnterNode = () ->

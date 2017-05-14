@@ -73,6 +73,12 @@ attachBindings = () ->
     $("#reset").on "click", () ->
         resetGraphVars()
         initGraph()
+        
+    $("#about").on "click", () ->
+        showHelp()
+        
+    $("#exit").on "click", () ->
+        hideHelp()
 
     $(document).keydown onKeyDown
     $(document).keyup onKeyUp
@@ -619,3 +625,13 @@ class PebbleGraph extends Graph
             else
                 [w, newedge] = path[vertex.id]
 
+####################
+# PAGE FUNCTIONALITY
+####################
+
+showHelp = () ->
+    $("#aboutPanel").show()
+    
+hideHelp = () ->
+    console.log "yogurt milk tea"
+    $("#aboutPanel").hide()

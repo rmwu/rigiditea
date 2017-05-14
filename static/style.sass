@@ -85,7 +85,7 @@ a
     display: block
     min-height: 100%
     height: 100%
-    min-width: 500px
+    min-width: 600px
     
     color: $color-white
     overflow: hidden
@@ -127,11 +127,30 @@ a
             width: 600px
             background: $color-white
             
+        #aboutPanel
+            @extend .absolute-center
+            top: 3em
+            height: 400px
+            width: 500px
+            background: $color-highlight
+            
+            display: none
+            
+            #exit
+                position: absolute
+                right: 0
+                margin: .5em 1em
+                width: calc(100%-2em)
+                color: $color-bright
+                
+                font-size: .8em
+                cursor: pointer
+                &:hover
+                    color: $color-gray-medium
+            
 // svg drawing
 
 svg
-    cursor: crosshair
-circle
     cursor: crosshair
 
 

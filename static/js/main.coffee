@@ -64,6 +64,9 @@ resetGraphVars = () ->
 ###################
 
 attachBindings = () ->
+    $("#ctrlEdge").on "click", () ->
+        drawEdge()
+    
     $("#pebble").on "click", () ->
         drawPebble()
         disableDraw()
@@ -322,6 +325,17 @@ toggleEdgeSelect = (line) ->
         edge.setColor vars.colorS
     redraw()
 
+drawEdge = () ->
+    if null not in graphVars.nodeS
+        source = graphVars.nodeS[0]
+        target = graphVars.nodeS[1]
+        
+        graphVars.edgeN = new Edge nodeGenID(), source, target, Object.assign({}, graphVars.edgeAttr)
+        graphVars.graph.addEdge graphVars.edgeN
+    
+        graphVars.edgeN = null
+        redraw()
+    
 # three functions that work together to draw a new edge
 drawEdgeStart = (elmt) ->
     console.log "panda milk tea (edge start)"

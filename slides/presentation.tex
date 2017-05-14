@@ -154,6 +154,12 @@
     We build up an independent edge set $\hat E$
     by greedily adding edges if they are independent
     (tested by playing the pebble game on $G_{4e}$).
+    \item<3->
+    Starting from a pebble covering of $\hat E$,
+    we can enlarge it to include a new edge $e$
+    in $O(n)$ time (DFS).
+    \item<4->
+    Trying all edges $e$ gives an $O(mn)$ algorithm.
     \end{itemize}
 }
 

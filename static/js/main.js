@@ -119,11 +119,13 @@
   };
 
   getColor = function(count) {
-    var rbgColor, rgb;
-    rgb = Math.floor(255 * count / vars.maxCount);
-    rgb = rgb.toString();
-    rbgColor = 255 - rgb;
-    return "rgb(" + rbgColor + "," + rgb + "," + 255 + ")";
+    var b, g, r;
+    r = 96 + Math.floor(158 * count / vars.maxCount);
+    r = r.toString();
+    g = "255";
+    b = 255 - Math.floor(110 * count / vars.maxCount);
+    b = b.toString();
+    return "rgb(" + r + "," + g + "," + b + ")";
   };
 
   initGraph = function() {

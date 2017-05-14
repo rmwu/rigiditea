@@ -123,10 +123,15 @@ drawPebble = () ->
     redraw()
             
 getColor = (count) ->
-    rgb = Math.floor(255 * count / vars.maxCount)
-    rgb = rgb.toString()
-    rbgColor = 255 - rgb
-    "rgb(" + rbgColor + "," + rgb + "," + 255 + ")"
+    r = 96 + Math.floor(158 * count / vars.maxCount)
+    r = r.toString()
+    
+    g = "255"
+    
+    b = 255 - Math.floor(110 * count / vars.maxCount)
+    b = b.toString()
+    
+    "rgb(" + r + "," + g + "," + b + ")"
 
 
 ###################

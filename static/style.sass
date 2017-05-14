@@ -132,18 +132,27 @@ a
             top: 3em
             height: 400px
             width: 500px
+            padding: 1.5em 1em
+            overflow: hidden
+            
             background: $color-highlight
+            color: $color-gray-medium
+            font-size: .9em
             
             display: none
             
+            a:hover
+                color: $color-bright
+            
             #exit
                 position: absolute
+                top: -.2em
                 right: 0
                 margin: .5em 1em
                 width: calc(100%-2em)
                 color: $color-bright
                 
-                font-size: .8em
+                font-size: .9em
                 cursor: pointer
                 &:hover
                     color: $color-gray-medium

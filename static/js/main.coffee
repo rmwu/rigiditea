@@ -29,7 +29,7 @@ graphVars =
     mouseOut: true
     mouseEnter: false
     
-    nodeS: null # selected (clicked)
+    nodeS: [null, null] # selected (clicked)
     edgeS: null
     edgeN: null # new edge
     nodeME: null # mouseenter
@@ -119,7 +119,9 @@ drawPebble = () ->
         console.log(edge.getSavedColor())
             
     redraw()
-            
+ 
+# these magic numbers leave us in the
+# cyan green yellow range
 getColor = (count) ->
     r = 96 + Math.floor(158 * count / vars.maxCount)
     r = r.toString()
@@ -283,18 +285,21 @@ drawGraph = (graph, svg) ->
 
 # toggles currently selected node
 toggleNodeSelect = (circle) ->
-    # reset old selected color
-    if graphVars.nodeS != null
+    # reset old selected color of oldest node
+    if graphVars.nodeS[1] != null
         console.log "passionfruit green tea (nodeSelect reset)"
-        graphVars.nodeS.setColor graphVars.nodeS.getSavedColor()
+        graphVars.nodeS[1].setColor graphVars.nodeS[1].getSavedColor()
 
     node = d3.select(circle).data()[0]
     # d3.select(circle).attr("class","circle selected")
-    # deselect selected nodes
-    if graphVars.nodeS == node
-        graphVars.nodeS = null
+    # deselect selected nodes, 1 or 2
+    if graphVars.nodeS[0] == node
+        graphVars.nodeS[0] = null
+    if graphVars.nodeS[1] == node
+        graphVars.nodeS[1] = null
     else
-        graphVars.nodeS = node # selected node update
+        graphVars.nodeS[1] = graphVars.nodeS[0]
+        graphVars.nodeS[0] = node # selected node update
         node.saveColor()
         node.setColor vars.colorS
     redraw()

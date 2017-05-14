@@ -29,7 +29,7 @@
     mouseUp: true,
     mouseOut: true,
     mouseEnter: false,
-    nodeS: null,
+    nodeS: [null, null],
     edgeS: null,
     edgeN: null,
     nodeME: null,
@@ -273,15 +273,19 @@
 
   toggleNodeSelect = function(circle) {
     var node;
-    if (graphVars.nodeS !== null) {
+    if (graphVars.nodeS[1] !== null) {
       console.log("passionfruit green tea (nodeSelect reset)");
-      graphVars.nodeS.setColor(graphVars.nodeS.getSavedColor());
+      graphVars.nodeS[1].setColor(graphVars.nodeS[1].getSavedColor());
     }
     node = d3.select(circle).data()[0];
-    if (graphVars.nodeS === node) {
-      graphVars.nodeS = null;
+    if (graphVars.nodeS[0] === node) {
+      graphVars.nodeS[0] = null;
+    }
+    if (graphVars.nodeS[1] === node) {
+      graphVars.nodeS[1] = null;
     } else {
-      graphVars.nodeS = node;
+      graphVars.nodeS[1] = graphVars.nodeS[0];
+      graphVars.nodeS[0] = node;
       node.saveColor();
       node.setColor(vars.colorS);
     }

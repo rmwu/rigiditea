@@ -77,6 +77,18 @@ a
         color: inherit
     &:hover
         color: $color-highlight
+    
+ul
+    font-size: .8em
+    li
+        list-style-type: none
+        cursor: pointer
+
+        display: inline-block
+        padding-right: 20px
+        &:hover
+            font-style: italic
+            color: $color-highlight
 
 .active
     color: $color-highlight
@@ -112,21 +124,27 @@ a
         
         p
             font-size: .8em
-        ul
-            font-size: .8em
-            li
-                list-style-type: none
-                cursor: pointer
                 
-                display: inline-block
-                padding-right: 20px
-                &:hover
-                    font-style: italic
-                    color: $color-highlight
         #graph
             @extend .relative-center
             width: 600px
             background: $color-white
+            
+        #controls
+            position: absolute
+            width: 100%
+            height: 1.5em
+            font-size: .8em
+            z-index: 10
+
+            background: $color-highlight-translucent
+            color: $color-gray-medium
+            
+            ul
+                padding: 0
+                margin: .2em
+            ul li:hover
+                color: $color-bright
             
         #aboutPanel
             @extend .absolute-center

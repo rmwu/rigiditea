@@ -15,3 +15,6 @@ old/*
 *.synctex.gz
 *.toc
 *.vrb
+*.fdb_latexmk
+*.fls
+

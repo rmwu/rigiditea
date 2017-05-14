@@ -1,8 +1,6 @@
 $ ->
     initGraph()
     attachBindings()
-    
-    # test()
 
 ###################
 # GLOBAL VARIABLES
@@ -147,11 +145,6 @@ initGraph = () ->
         .on("click", onClick)
         .on("mouseup", onMouseUpNode)
     graphVars.graph = new Graph [], []
-    
-#    d3Vars.drag = d3.drag()
-#        .on("drag", dragEdge)
-#    d3.selectAll("circle")
-#        .call(d3.drag().on("start", dragEdge))
         
     console.log("boba is yummy (initGraph)")
 
@@ -349,23 +342,6 @@ drawEdgeDrop = () ->
     graphVars.edgeN = null
     
 nodeGenID = () -> Math.random().toString(36).substr(2, 5)
-    
-#test = () ->
-#    nodes = []
-#    for n in [0 .. 9]
-#        node = new Node nodeGenID(), 100+n*Math.random()*100, 100+n*Math.random()*100, Object.assign({}, graphVars.nodeAttr)
-#        nodes.push node
-#        
-#    edges = []
-#    for i in [0 ... 8]
-#        node1 = nodes[i]
-#        node2 = nodes[i+1]
-#        edges.push new Edge nodeGenID(), node1, node2, 1
-#
-#    graph = new Graph nodes, edges
-#
-#    drawGraph(graph, d3Vars.svg)
-
 
 #####################
 # NUMERIC ALGORITHMS
@@ -379,8 +355,6 @@ Params:
 matrixRank = (matrix) ->
     # count nonzero singular values
     return (x for x in numeric.svd(matrix).S when x != 0).length
-
-
 
 ###################
 # GRAPH CLASSES

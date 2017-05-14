@@ -113,10 +113,11 @@
   };
 
   getColor = function(count) {
-    var rgb;
+    var rbgColor, rgb;
     rgb = Math.floor(255 * count / vars.maxCount);
     rgb = rgb.toString();
-    return "rgb(" + rgb + "," + rgb + "," + rgb + ")";
+    rbgColor = 255 - rgb;
+    return "rgb(" + rbgColor + "," + rgb + "," + 255 + ")";
   };
 
   initGraph = function() {

@@ -119,7 +119,8 @@ drawPebble = () ->
 getColor = (count) ->
     rgb = Math.floor(255 * count / vars.maxCount)
     rgb = rgb.toString()
-    "rgb(" + rgb + "," + rgb + "," + rgb + ")"
+    rbgColor = 255 - rgb
+    "rgb(" + rbgColor + "," + rgb + "," + 255 + ")"
 
 
 ###################
@@ -284,6 +285,7 @@ toggleNodeSelect = (circle) ->
         graphVars.nodeS.setColor graphVars.nodeS.getSavedColor()
 
     node = d3.select(circle).data()[0]
+    # d3.select(circle).attr("class","circle selected")
     # deselect selected nodes
     if graphVars.nodeS == node
         graphVars.nodeS = null

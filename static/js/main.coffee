@@ -123,7 +123,7 @@ onClick = () ->
         
 onKeyDown = (e) ->
     if !e
-        e = event;
+        e = event
     if e.altKey
         console.log "lemon black tea (alt down)"
         d3Vars.svg.style("cursor", "move")
@@ -462,7 +462,8 @@ class PebbleGraph extends Graph
         {
             "edgeCounts": edgeCounts,
             "vertexCounts": vertexCounts,
-            "independentEdges": @independentEdges
+            "independentEdges": @independentEdges,
+            "candidateIndEdge": @curCandIndEdge
         }
 
     edgeRedundantlyCovered: (edge) ->
@@ -488,7 +489,11 @@ class PebbleGraph extends Graph
             return true
 
         pebIndVertEntry = @pebbleIndex[vertex.id]
-        redundantlyCoveredEdges = (x for x in pebIndVertEntry if (x != -1 and this.edgeRedundantlyCovered(x)))
+        console.log "xcxc pebIndVertEntry"
+        console.log pebIndVertEntry
+        redundantlyCoveredEdges = (x for x in pebIndVertEntry when (x != -1 and this.edgeRedundantlyCovered(x)))
+        console.log "xcxc redundantlyCoveredEdges"
+        console.log redundantlyCoveredEdges
         if redundantlyCoveredEdges.length > 0
             console.log("reassigning from edge " + redundantlyCoveredEdges[0].id)
             return this._reassignPebble(vertex, redundantlyCoveredEdges[0], edge)

@@ -590,7 +590,8 @@
       return {
         "edgeCounts": edgeCounts,
         "vertexCounts": vertexCounts,
-        "independentEdges": this.independentEdges
+        "independentEdges": this.independentEdges,
+        "candidateIndEdge": this.curCandIndEdge
       };
     };
 
@@ -624,17 +625,21 @@
         return true;
       }
       pebIndVertEntry = this.pebbleIndex[vertex.id];
-      redundantlyCoveredEdges = ((function() {
+      console.log("xcxc pebIndVertEntry");
+      console.log(pebIndVertEntry);
+      redundantlyCoveredEdges = (function() {
         var k, len, results;
-        if (x !== -1 && this.edgeRedundantlyCovered(x)) {
-          results = [];
-          for (k = 0, len = pebIndVertEntry.length; k < len; k++) {
-            x = pebIndVertEntry[k];
+        results = [];
+        for (k = 0, len = pebIndVertEntry.length; k < len; k++) {
+          x = pebIndVertEntry[k];
+          if (x !== -1 && this.edgeRedundantlyCovered(x)) {
             results.push(x);
           }
-          return results;
         }
-      }).call(this));
+        return results;
+      }).call(this);
+      console.log("xcxc redundantlyCoveredEdges");
+      console.log(redundantlyCoveredEdges);
       if (redundantlyCoveredEdges.length > 0) {
         console.log("reassigning from edge " + redundantlyCoveredEdges[0].id);
         return this._reassignPebble(vertex, redundantlyCoveredEdges[0], edge);

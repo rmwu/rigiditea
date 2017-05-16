@@ -72,6 +72,9 @@ attachBindings = () ->
         resetGraphVars()
         initGraph()
         
+    $("#inf").on "click", () ->
+        drawInfinite()
+        
     $("#about").on "click", () ->
         showAbout()
         
@@ -292,6 +295,10 @@ getColor = (count) ->
     
     "rgb(" + r + "," + g + "," + b + ")"
 
+drawInfinite = () ->
+    console.log "love you"
+    # tony = graphVars.
+    
 #####################
 # NUMERIC ALGORITHMS
 #####################
@@ -325,15 +332,17 @@ class Graph
         @edges.push edge
     # delete nodes and incident edges
     delNode: (node) ->
+        # loop backwards to delete
+        if @edges.length > 0
+            for i in [@edges.length-1..0]
+                edge = @edges[i]
+                console.log @edges
+                console.log edge
+                if edge.getTarget() == node or edge.getSource() == node
+                    @edges.splice i, 1 if i isnt -1
+        # now delete node itself
         index = @nodes.indexOf node
         @nodes.splice index, 1 if index isnt -1
-        
-        # loop backwards to delete
-        for i in [@edges.length-1..-1]
-            edge = @edges[i]
-            console.log @edges
-            if edge.getTarget() == node or edge.getSource() == node
-                @edges.splice i, 1 if i isnt -1
 
     ###
     Find the numer of infinitesimal degrees of freedom.

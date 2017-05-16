@@ -374,6 +374,17 @@ class Graph
 
         return embedDim * numVertices - rmatRank - euclIsomDim + symGroupDim
 
+    ###
+    Find, with high probability, the number of infinitesimal degrees of freedom
+    for a generic embedding of the graph in `dimension` dimensions.
+    ###
+    genericInfDOF: (dimension) ->
+        randomVertexConfig = {}
+        for node in @nodes
+            randomVertexConfig[node] = numeric.random([dimension])
+        return this.infinitesimalDOF(randomVertexConfig)
+
+
     rigidityMatrix: (vertexConfiguration) ->
         numVertices = @nodes.length
         firstCoords = vertexConfiguration[@nodes[0]]

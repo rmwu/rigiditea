@@ -64,9 +64,6 @@ resetGraphVars = () ->
 ###################
 
 attachBindings = () ->
-    $("#ctrlEdge").on "click", () ->
-        drawEdge()
-    
     $("#pebble").on "click", () ->
         drawPebble()
         disableDraw()
@@ -75,8 +72,17 @@ attachBindings = () ->
         resetGraphVars()
         initGraph()
         
+    $("#inf").on "click", () ->
+        drawInfinite()
+        
     $("#about").on "click", () ->
         showAbout()
+        
+    $("#ctrlEdge").on "click", () ->
+        drawEdge()
+        
+    $("#ctrlDel").on "click", () ->
+        deleteNodes()
         
     $("#ctrlHelp").on "click", () ->
         showHelp()
@@ -86,59 +92,6 @@ attachBindings = () ->
 
     $(document).keydown onKeyDown
     $(document).keyup onKeyUp
-    
-###################
-# PEBBLE RUNNING
-###################
-
-disableDraw = () ->
-    graphVars.frozen = true
-
-drawPebble = () ->
-    # TODO can display original state later
-    console.log "lychee black tea (drawPebble)"
-
-    # if graphVars.edgeS != null
-    if graphVars.graphP == null
-        graph = graphVars.graph
-        graphVars.graphP = new PebbleGraph graph.nodes, graph.edges, {}
-        # graphVars.graphP.enlargeCover graphVars.edgeS
-    
-    algorithmDone = graphVars.graphP.stepAlgorithm()
-    if algorithmDone
-        console.log "pebble algorithm complete!"
-    
-    algState = graphVars.graphP.algorithmState()
-    console.log graphVars.graphP
-    console.log(algState)
-
-    for node in graphVars.graphP.nodes
-        count = algState.vertexCounts[node.id]
-        node.setColor getColor(count)
-        node.saveColor()
-    
-    for edge in graphVars.graphP.edges
-        count = algState.edgeCounts[edge.id]
-        edge.setColor getColor(count)
-        console.log(edge.getSavedColor())
-        edge.saveColor()
-        console.log(edge.getSavedColor())
-            
-    redraw()
- 
-# these magic numbers leave us in the
-# cyan green yellow range
-getColor = (count) ->
-    r = 96 + Math.floor(158 * count / vars.maxCount)
-    r = r.toString()
-    
-    g = "255"
-    
-    b = 255 - Math.floor(110 * count / vars.maxCount)
-    b = b.toString()
-    
-    "rgb(" + r + "," + g + "," + b + ")"
-
 
 ###################
 # d3 FUNCTIONS
@@ -174,6 +127,12 @@ onKeyDown = (e) ->
     if e.altKey
         console.log "lemon black tea (alt down)"
         d3Vars.svg.style("cursor", "move")
+    # this is the "e" key
+    else if e.keyCode == 69
+        drawEdge()
+    # this is the "x" key
+    else if e.keyCode == 88
+        deleteNodes()
     
 onKeyUp = (e) ->
     d3Vars.svg.style("cursor", "crosshair")
@@ -269,7 +228,7 @@ toggleNodeSelect = (circle) ->
     redraw()
 
 drawEdge = () ->
-    if null not in graphVars.nodeS
+    if null not in graphVars.nodeS and not graphVars.frozen
         source = graphVars.nodeS[0]
         target = graphVars.nodeS[1]
         
@@ -278,9 +237,71 @@ drawEdge = () ->
     
         graphVars.edgeN = null
         redraw()
+        
+deleteNodes = () ->
+    for node in graphVars.nodeS
+        if node != null
+            index = graphVars.graph.delNode node
+    redraw()
 
 nodeGenID = () -> Math.random().toString(36).substr(2, 5)
 
+###################
+# PEBBLE RUNNING
+###################
+
+disableDraw = () ->
+    graphVars.frozen = true
+
+drawPebble = () ->
+    # TODO can display original state later
+    console.log "lychee black tea (drawPebble)"
+
+    # if graphVars.edgeS != null
+    if graphVars.graphP == null
+        graph = graphVars.graph
+        graphVars.graphP = new PebbleGraph graph.nodes, graph.edges, {}
+        # graphVars.graphP.enlargeCover graphVars.edgeS
+    
+    algorithmDone = graphVars.graphP.stepAlgorithm()
+    if algorithmDone
+        console.log "pebble algorithm complete!"
+    
+    algState = graphVars.graphP.algorithmState()
+    console.log graphVars.graphP
+    console.log(algState)
+
+    for node in graphVars.graphP.nodes
+        count = algState.vertexCounts[node.id]
+        node.setColor getColor(count)
+        node.saveColor()
+    
+    for edge in graphVars.graphP.edges
+        count = algState.edgeCounts[edge.id]
+        edge.setColor getColor(count)
+        console.log(edge.getSavedColor())
+        edge.saveColor()
+        console.log(edge.getSavedColor())
+            
+    redraw()
+ 
+# these magic numbers leave us in the
+# cyan green yellow range
+getColor = (count) ->
+    r = 96 + Math.floor(158 * count / vars.maxCount)
+    r = r.toString()
+    
+    g = "255"
+    
+    b = 255 - Math.floor(110 * count / vars.maxCount)
+    b = b.toString()
+    
+    "rgb(" + r + "," + g + "," + b + ")"
+
+drawInfinite = () ->
+    console.log "love you"
+    # tony = graphVars.
+    
 #####################
 # NUMERIC ALGORITHMS
 #####################
@@ -312,6 +333,19 @@ class Graph
     # addEdge appends a new edge to edges
     addEdge: (edge) ->
         @edges.push edge
+    # delete nodes and incident edges
+    delNode: (node) ->
+        # loop backwards to delete
+        if @edges.length > 0
+            for i in [@edges.length-1..0]
+                edge = @edges[i]
+                console.log @edges
+                console.log edge
+                if edge.getTarget() == node or edge.getSource() == node
+                    @edges.splice i, 1 if i isnt -1
+        # now delete node itself
+        index = @nodes.indexOf node
+        @nodes.splice index, 1 if index isnt -1
 
     ###
     Find the numer of infinitesimal degrees of freedom.
@@ -364,8 +398,10 @@ class Edge
     constructor: (@id, @source, @target, @attr) ->
         this.saveColor()
     setTarget: (target) -> @target = target
-    setColor: (stroke) -> @attr.stroke = stroke
+    getTarget: () -> @target
+    getSource: () -> @source
     
+    setColor: (stroke) -> @attr.stroke = stroke
     saveColor: () -> @attr.strokeOld = @attr.stroke
     getSavedColor: () -> @attr.strokeOld
     

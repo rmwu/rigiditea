@@ -253,7 +253,6 @@ toggleEdgeSelect = (line) ->
     # console.log "red bean milk tea (edge select)"
     if graphVars.edgeS != null
         # console.log "red bean slush (edgeSelect reset)"
-        console.log graphVars.edgeS.getSavedColor()
         graphVars.edgeS.setColor graphVars.edgeS.getSavedColor()
 
     edge = d3.select(line).data()[0]
@@ -280,7 +279,16 @@ drawEdge = () ->
 deleteNodes = () ->
     for node in graphVars.nodeS
         if node != null
-            index = graphVars.graph.delNode node
+            # deselect if selected
+            if node == graphVars.nodeS[0]
+                graphVars.nodeS[0] = null
+            else if node == graphVars.nodeS[1]
+                graphVars.nodeS[1] = null
+            graphVars.graph.delNode node
+            
+    if graphVars.edgeS != null
+        graphVars.graph.delEdge graphVars.edgeS
+    
     redraw()
 
 nodeGenID = () -> Math.random().toString(36).substr(2, 5)
@@ -379,13 +387,15 @@ class Graph
         if @edges.length > 0
             for i in [@edges.length-1..0]
                 edge = @edges[i]
-                console.log @edges
-                console.log edge
                 if edge.getTarget() == node or edge.getSource() == node
                     @edges.splice i, 1 if i isnt -1
         # now delete node itself
         index = @nodes.indexOf node
         @nodes.splice index, 1 if index isnt -1
+    # delete single edge
+    delEdge: (edge) ->
+        index = @edges.indexOf edge
+        @edges.splice index, 1 if index isnt -1
 
     ###
     Find the numer of infinitesimal degrees of freedom.

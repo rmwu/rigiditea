@@ -238,7 +238,6 @@
   toggleEdgeSelect = function(line) {
     var edge;
     if (graphVars.edgeS !== null) {
-      console.log(graphVars.edgeS.getSavedColor());
       graphVars.edgeS.setColor(graphVars.edgeS.getSavedColor());
     }
     edge = d3.select(line).data()[0];
@@ -265,13 +264,21 @@
   };
 
   deleteNodes = function() {
-    var index, k, len, node, ref;
+    var k, len, node, ref;
     ref = graphVars.nodeS;
     for (k = 0, len = ref.length; k < len; k++) {
       node = ref[k];
       if (node !== null) {
-        index = graphVars.graph.delNode(node);
+        if (node === graphVars.nodeS[0]) {
+          graphVars.nodeS[0] = null;
+        } else if (node === graphVars.nodeS[1]) {
+          graphVars.nodeS[1] = null;
+        }
+        graphVars.graph.delNode(node);
       }
+    }
+    if (graphVars.edgeS !== null) {
+      graphVars.graph.delEdge(graphVars.edgeS);
     }
     return redraw();
   };
@@ -382,8 +389,6 @@
       if (this.edges.length > 0) {
         for (i = k = ref = this.edges.length - 1; ref <= 0 ? k <= 0 : k >= 0; i = ref <= 0 ? ++k : --k) {
           edge = this.edges[i];
-          console.log(this.edges);
-          console.log(edge);
           if (edge.getTarget() === node || edge.getSource() === node) {
             if (i !== -1) {
               this.edges.splice(i, 1);
@@ -394,6 +399,14 @@
       index = this.nodes.indexOf(node);
       if (index !== -1) {
         return this.nodes.splice(index, 1);
+      }
+    };
+
+    Graph.prototype.delEdge = function(edge) {
+      var index;
+      index = this.edges.indexOf(edge);
+      if (index !== -1) {
+        return this.edges.splice(index, 1);
       }
     };
 

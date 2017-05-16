@@ -429,6 +429,10 @@ class PebbleGraph extends Graph
             "independentEdges": @independentEdges
         }
 
+    edgeRedundantlyCovered: (edge) ->
+        # second condition included for completeness; shouldn't ever be needed
+        return (this.edgePebbleCount(edge) > 1 and edge isnt @curCandIndEdge) or this.edgePebbleCount(edge) > 4
+        
     _reassignPebble: (vertex, oldval, newval) ->
         index = @pebbleIndex[vertex.id].indexOf(oldval)
         if index == -1
@@ -448,8 +452,9 @@ class PebbleGraph extends Graph
             return true
 
         pebIndVertEntry = @pebbleIndex[vertex.id]
-        redundantlyCoveredEdges = [x for x in pebIndVertEntry if x != -1 and edgeRedundantlyCovered(x)]
+        redundantlyCoveredEdges = (x for x in pebIndVertEntry if (x != -1 and this.edgeRedundantlyCovered(x)))
         if redundantlyCoveredEdges.length > 0
+            console.log("reassigning from edge " + redundantlyCoveredEdges[0].id)
             return this._reassignPebble(vertex, redundantlyCoveredEdges[0], edge)
         return false
 
@@ -468,17 +473,14 @@ class PebbleGraph extends Graph
     hasFreePebble: (vertex) ->
         pebIndVertEntry = @pebbleIndex[vertex.id]
         # candEdgeFirstOccurence = pebIndVertEntry.indexOf(@curCandIndEdge)
-        pebIndVertEntry.some(elt => elt == -1 or edgeRedundantlyCovered(elt))
+        me = this  # grumble mumble javascript scoping
+        pebIndVertEntry.some((elt) -> (elt == -1 or me.edgeRedundantlyCovered(elt)))
         # return pebIndVertEntry.indexOf(-1) != -1
 
     edgePebbleCount: (edge) ->
         [left, right] = [edge.source, edge.target]
         return countOccurences(@pebbleIndex[left.id], edge) + countOccurences(@pebbleIndex[right.id], edge)
 
-    edgeRedundantlyCovered: (edge) ->
-        # second condition included for completeness; shouldn't ever be needed
-        return (edgePebbleCount > 1 and edge isnt @curCandIndEdge) or edgePebbleCount > 4
-        
     pebbledEdgesAndNeighbors: (vertex) ->
         otherVertex = (edge) ->
             return (x for x in [edge.source, edge.target] when x isnt vertex)[0]
@@ -486,12 +488,15 @@ class PebbleGraph extends Graph
         pebbleAssignments = this.pebbleIndex[vertex.id]
         return ([otherVertex(e), e] for e in pebbleAssignments when e isnt -1)
 
+    algorithmComplete: () ->
+        @remainingEdges.length == @enlargeCoverIteration == 0
+
     ###
     Returns:
         true if algorithm is complete, false otherwise
     ###
     stepAlgorithm: () ->
-        if @remainingEdges.length == 0
+        if this.algorithmComplete()
             alert "algorithm complete!"
             return ""
 
@@ -508,7 +513,7 @@ class PebbleGraph extends Graph
             @enlargeCoverIteration = 0
 
         console.log @remainingEdges
-        return @remainingEdges.length == 0
+        return this.algorithmComplete()
 
     ###
     Cover enlargement for the pebble algorithm.

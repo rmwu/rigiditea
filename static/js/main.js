@@ -540,6 +540,10 @@
       };
     };
 
+    PebbleGraph.prototype.edgeRedundantlyCovered = function(edge) {
+      return (this.edgePebbleCount(edge) > 1 && edge !== this.curCandIndEdge) || this.edgePebbleCount(edge) > 4;
+    };
+
     PebbleGraph.prototype._reassignPebble = function(vertex, oldval, newval) {
       var index;
       index = this.pebbleIndex[vertex.id].indexOf(oldval);
@@ -566,20 +570,19 @@
         return true;
       }
       pebIndVertEntry = this.pebbleIndex[vertex.id];
-      redundantlyCoveredEdges = [
-        (function() {
-          var k, len, results;
-          if (x !== -1 && edgeRedundantlyCovered(x)) {
-            results = [];
-            for (k = 0, len = pebIndVertEntry.length; k < len; k++) {
-              x = pebIndVertEntry[k];
-              results.push(x);
-            }
-            return results;
+      redundantlyCoveredEdges = ((function() {
+        var k, len, results;
+        if (x !== -1 && this.edgeRedundantlyCovered(x)) {
+          results = [];
+          for (k = 0, len = pebIndVertEntry.length; k < len; k++) {
+            x = pebIndVertEntry[k];
+            results.push(x);
           }
-        })()
-      ];
+          return results;
+        }
+      }).call(this));
       if (redundantlyCoveredEdges.length > 0) {
+        console.log("reassigning from edge " + redundantlyCoveredEdges[0].id);
         return this._reassignPebble(vertex, redundantlyCoveredEdges[0], edge);
       }
       return false;
@@ -604,23 +607,18 @@
      */
 
     PebbleGraph.prototype.hasFreePebble = function(vertex) {
-      var pebIndVertEntry;
+      var me, pebIndVertEntry;
       pebIndVertEntry = this.pebbleIndex[vertex.id];
-      return pebIndVertEntry.some(elt((function(_this) {
-        return function() {
-          return elt === -1 || edgeRedundantlyCovered(elt);
-        };
-      })(this)));
+      me = this;
+      return pebIndVertEntry.some(function(elt) {
+        return elt === -1 || me.edgeRedundantlyCovered(elt);
+      });
     };
 
     PebbleGraph.prototype.edgePebbleCount = function(edge) {
       var left, ref, right;
       ref = [edge.source, edge.target], left = ref[0], right = ref[1];
       return countOccurences(this.pebbleIndex[left.id], edge) + countOccurences(this.pebbleIndex[right.id], edge);
-    };
-
-    PebbleGraph.prototype.edgeRedundantlyCovered = function(edge) {
-      return (edgePebbleCount > 1 && edge !== this.curCandIndEdge) || edgePebbleCount > 4;
     };
 
     PebbleGraph.prototype.pebbledEdgesAndNeighbors = function(vertex) {
@@ -654,6 +652,11 @@
       })();
     };
 
+    PebbleGraph.prototype.algorithmComplete = function() {
+      var ref;
+      return (this.remainingEdges.length === (ref = this.enlargeCoverIteration) && ref === 0);
+    };
+
 
     /*
     Returns:
@@ -662,7 +665,7 @@
 
     PebbleGraph.prototype.stepAlgorithm = function() {
       var enlargementSuccessful;
-      if (this.remainingEdges.length === 0) {
+      if (this.algorithmComplete()) {
         alert("algorithm complete!");
         return "";
       }
@@ -680,7 +683,7 @@
         this.enlargeCoverIteration = 0;
       }
       console.log(this.remainingEdges);
-      return this.remainingEdges.length === 0;
+      return this.algorithmComplete();
     };
 
 

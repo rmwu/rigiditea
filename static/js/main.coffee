@@ -66,7 +66,6 @@ resetGraphVars = () ->
 attachBindings = () ->
     $("#pebble").on "click", () ->
         drawPebble()
-        disableDraw()
 
     $("#reset").on "click", () ->
         resetGraphVars()
@@ -106,8 +105,7 @@ initGraph = () ->
         .on("click", onClick)
         .on("mouseup", onMouseUpNode)
     graphVars.graph = new Graph [], []
-        
-    console.log("boba is yummy (initGraph)")
+    # console.log("boba is yummy (initGraph)")
 
 onClick = () ->
     coords = d3.mouse this
@@ -133,6 +131,9 @@ onKeyDown = (e) ->
     # this is the "x" key
     else if e.keyCode == 88
         deleteNodes()
+    # this is the "right arrow" key
+    else if e.keyCode == 39
+        drawPebble()
     
 onKeyUp = (e) ->
     d3Vars.svg.style("cursor", "crosshair")
@@ -153,7 +154,7 @@ onMouseDownNode = () ->
 onMouseUpNode = () ->
     graphVars.mouseDown = false
     graphVars.mouseUp = true
-    console.log "thai milk tea (mouse up)"
+    # console.log "thai milk tea (mouse up)"
 
 # must leave current node to perform new actions
 onMouseOutNode = () ->
@@ -169,7 +170,7 @@ onMouseEnterNode = () ->
         
 redraw = () ->
     drawGraph graphVars.graph, d3Vars.svg
-    console.log "boba is sweet (redraw)"
+    # console.log "boba is sweet (redraw)"
     
 ###################
 # GRAPH UTILITIES
@@ -214,7 +215,7 @@ toggleNodeSelect = (circle) ->
     
     # deselect oldest node if there's a new young budding node
     if oldestNode != null and youngerNode != node
-        console.log "passionfruit green tea (nodeSelect reset)"
+        # console.log "passionfruit green tea (nodeSelect reset)"
         oldestNode.setColor oldestNode.getSavedColor()
 
     # deselect younger node
@@ -258,8 +259,9 @@ disableDraw = () ->
     graphVars.frozen = true
 
 drawPebble = () ->
+    disableDraw()
     # TODO can display original state later
-    console.log "lychee black tea (drawPebble)"
+    # console.log "lychee black tea (drawPebble)"
 
     # if graphVars.edgeS != null
     if graphVars.graphP == null
@@ -558,7 +560,6 @@ class PebbleGraph extends Graph
                 return true
         return false
     
-    
     rearrangePebbles: (vertex, edge, path) ->
         # while (path[vertex.id] != -1)
         #     [w, newedge] = path[vertex.id]
@@ -593,5 +594,5 @@ showHelp = () ->
     $("#helpPanel").show()
     
 hideHelp = (element) ->
-    console.log "yogurt milk tea"
+    # console.log "yogurt milk tea (hide parent)"
     $(element).parent().hide()

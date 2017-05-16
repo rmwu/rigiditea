@@ -76,10 +76,13 @@ attachBindings = () ->
         initGraph()
         
     $("#about").on "click", () ->
+        showAbout()
+        
+    $("#ctrlHelp").on "click", () ->
         showHelp()
         
-    $("#exit").on "click", () ->
-        hideHelp()
+    $(".exit").on "click", () ->
+        hideHelp(this)
 
     $(document).keydown onKeyDown
     $(document).keyup onKeyUp
@@ -543,9 +546,12 @@ class PebbleGraph extends Graph
 # PAGE FUNCTIONALITY
 ####################
 
-showHelp = () ->
+showAbout = () ->
     $("#aboutPanel").show()
     
-hideHelp = () ->
+showHelp = () ->
+    $("#helpPanel").show()
+    
+hideHelp = (element) ->
     console.log "yogurt milk tea"
-    $("#aboutPanel").hide()
+    $(element).parent().hide()

@@ -167,6 +167,18 @@ onMouseEnterNode = () ->
     graphVars.mouseOut = false
     graphVars.mouseEnter = true
     graphVars.nodeME = d3.select(this).data()[0]
+    
+onClickEdge = () ->
+    if graphVars.canSelect
+        toggleEdgeSelect(this)
+        
+onMouseDownEdge = () ->
+    # don't add new node when selecting
+    graphVars.canAdd = false
+
+# must leave current node to perform new actions
+onMouseOutEdge = () ->
+    graphVars.canAdd = true
         
 redraw = () ->
     drawGraph graphVars.graph, d3Vars.svg
@@ -205,6 +217,10 @@ drawGraph = (graph, svg) ->
         .on("mouseup", onMouseUpNode)
         .on("mouseout", onMouseOutNode)
         .on("mouseenter", onMouseEnterNode)
+    svg.selectAll("line")
+        .on("click", onClickEdge)
+        .on("mousedown", onMouseDownEdge)
+        .on("mouseout", onMouseOutEdge)
     # console.log("boba is delicious (drawGraph)")
 
 # toggles currently selected node
@@ -230,6 +246,24 @@ toggleNodeSelect = (circle) ->
             graphVars.nodeS[0] = node # selected node update
             node.saveColor()
             node.setColor vars.colorS
+    redraw()
+    
+toggleEdgeSelect = (line) ->
+    # reset old selected color
+    # console.log "red bean milk tea (edge select)"
+    if graphVars.edgeS != null
+        # console.log "red bean slush (edgeSelect reset)"
+        console.log graphVars.edgeS.getSavedColor()
+        graphVars.edgeS.setColor graphVars.edgeS.getSavedColor()
+
+    edge = d3.select(line).data()[0]
+    # deselect selected edges
+    if graphVars.edgeS == edge
+        graphVars.edgeS = null
+    else
+        graphVars.edgeS = edge # selected node update
+        edge.saveColor()
+        edge.setColor vars.colorS
     redraw()
 
 drawEdge = () ->

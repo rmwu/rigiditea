@@ -65,8 +65,7 @@
 
   attachBindings = function() {
     $("#pebble").on("click", function() {
-      drawPebble();
-      return disableDraw();
+      return drawPebble();
     });
     $("#reset").on("click", function() {
       resetGraphVars();
@@ -97,8 +96,7 @@
   initGraph = function() {
     $("#graph").html("");
     d3Vars.svg = d3.select("#graph").append("svg").attr("width", vars.width).attr("height", vars.height).style("fill", "none").on("click", onClick).on("mouseup", onMouseUpNode);
-    graphVars.graph = new Graph([], []);
-    return console.log("boba is yummy (initGraph)");
+    return graphVars.graph = new Graph([], []);
   };
 
   onClick = function() {
@@ -124,6 +122,8 @@
       return drawEdge();
     } else if (e.keyCode === 88) {
       return deleteNodes();
+    } else if (e.keyCode === 39) {
+      return drawPebble();
     }
   };
 
@@ -151,8 +151,7 @@
 
   onMouseUpNode = function() {
     graphVars.mouseDown = false;
-    graphVars.mouseUp = true;
-    return console.log("thai milk tea (mouse up)");
+    return graphVars.mouseUp = true;
   };
 
   onMouseOutNode = function() {
@@ -169,8 +168,7 @@
   };
 
   redraw = function() {
-    drawGraph(graphVars.graph, d3Vars.svg);
-    return console.log("boba is sweet (redraw)");
+    return drawGraph(graphVars.graph, d3Vars.svg);
   };
 
   drawGraph = function(graph, svg) {
@@ -206,7 +204,6 @@
     youngerNode = graphVars.nodeS[0];
     node = d3.select(circle).data()[0];
     if (oldestNode !== null && youngerNode !== node) {
-      console.log("passionfruit green tea (nodeSelect reset)");
       oldestNode.setColor(oldestNode.getSavedColor());
     }
     if (youngerNode === node) {
@@ -257,7 +254,7 @@
 
   drawPebble = function() {
     var algState, algorithmDone, count, edge, graph, k, l, len, len1, node, ref, ref1;
-    console.log("lychee black tea (drawPebble)");
+    disableDraw();
     if (graphVars.graphP === null) {
       graph = graphVars.graph;
       graphVars.graphP = new PebbleGraph(graph.nodes, graph.edges, {});
@@ -839,7 +836,6 @@
   };
 
   hideHelp = function(element) {
-    console.log("yogurt milk tea");
     return $(element).parent().hide();
   };
 

@@ -122,6 +122,8 @@
       return d3Vars.svg.style("cursor", "move");
     } else if (e.keyCode === 69) {
       return drawEdge();
+    } else if (e.keyCode === 88) {
+      return deleteNodes();
     }
   };
 

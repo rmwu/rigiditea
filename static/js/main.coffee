@@ -130,6 +130,9 @@ onKeyDown = (e) ->
     # this is the "e" key
     else if e.keyCode == 69
         drawEdge()
+    # this is the "x" key
+    else if e.keyCode == 88
+        deleteNodes()
     
 onKeyUp = (e) ->
     d3Vars.svg.style("cursor", "crosshair")

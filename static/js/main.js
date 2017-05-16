@@ -57,7 +57,7 @@
     graphVars.mouseUp = true;
     graphVars.mouseOut = true;
     graphVars.mouseEnter = false;
-    graphVars.nodeS = null;
+    graphVars.nodeS = [null, null];
     graphVars.edgeS = null;
     graphVars.edgeN = null;
     return graphVars.nodeME = null;

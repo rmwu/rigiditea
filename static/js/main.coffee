@@ -54,7 +54,7 @@ resetGraphVars = () ->
     graphVars.mouseOut = true
     graphVars.mouseEnter = false
     
-    graphVars.nodeS = null # selected (clicked)
+    graphVars.nodeS = [null, null] # selected (clicked)
     graphVars.edgeS = null
     graphVars.edgeN = null # new edge
     graphVars.nodeME = null # mouseenter

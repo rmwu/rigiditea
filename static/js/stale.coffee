@@ -54,7 +54,7 @@ resetGraphVars = () ->
     graphVars.mouseOut = true
     graphVars.mouseEnter = false
     
-    graphVars.nodeS = [null, null] # selected (clicked)
+    graphVars.nodeS = null # selected (clicked)
     graphVars.edgeS = null
     graphVars.edgeN = null # new edge
     graphVars.nodeME = null # mouseenter
@@ -76,13 +76,10 @@ attachBindings = () ->
         initGraph()
         
     $("#about").on "click", () ->
-        showAbout()
-        
-    $("#ctrlHelp").on "click", () ->
         showHelp()
         
-    $(".exit").on "click", () ->
-        hideHelp(this)
+    $("#exit").on "click", () ->
+        hideHelp()
 
     $(document).keydown onKeyDown
     $(document).keyup onKeyUp
@@ -187,6 +184,11 @@ onClickNode = () ->
         toggleNodeSelect(this)
 
 onMouseDownNode = () ->
+    # don't add new node when selecting normally
+    if graphVars.nodeS == null
+        if graphVars.canSelect
+            toggleNodeSelect(this)
+        
     graphVars.canAdd = false
     graphVars.mouseDown = true
     graphVars.mouseUp = false
@@ -194,8 +196,14 @@ onMouseDownNode = () ->
 onMouseUpNode = () ->
     graphVars.mouseDown = false
     graphVars.mouseUp = true
+    
     console.log "thai milk tea (mouse up)"
-
+    if graphVars.edgeN != null
+        if graphVars.mouseEnter
+            drawEdgeEnd()
+         else
+            drawEdgeDrop()
+        graphVars.canAdd = true
 # must leave current node to perform new actions
 onMouseOutNode = () ->
     graphVars.canSelect = true
@@ -203,10 +211,37 @@ onMouseOutNode = () ->
     graphVars.mouseOut = true
     graphVars.mouseEnter = false
     
+    if graphVars.mouseDown && ! graphVars.frozen
+        drawEdgeStart(this)
+    
 onMouseEnterNode = () ->
     graphVars.mouseOut = false
     graphVars.mouseEnter = true
+    
     graphVars.nodeME = d3.select(this).data()[0]
+    
+onClickEdge = () ->
+    if graphVars.canSelect
+        toggleEdgeSelect(this)
+        
+onMouseDownEdge = () ->
+    # don't add new node when selecting
+    graphVars.canAdd = false
+
+# must leave current node to perform new actions
+onMouseOutEdge = () ->
+    graphVars.canAdd = true
+    
+dragEdge = (mouseThis, line) ->
+    if graphVars.edgeN != null
+        coords = d3.mouse mouseThis
+        [x,y] = coords
+        d3.select(line)
+            .attr("x2", x)
+            .attr("y2", y)
+            
+    # redraw()
+    console.log "green bean milk tea (dragEdge)"
         
 redraw = () ->
     drawGraph graphVars.graph, d3Vars.svg
@@ -245,6 +280,10 @@ drawGraph = (graph, svg) ->
         .on("mouseup", onMouseUpNode)
         .on("mouseout", onMouseOutNode)
         .on("mouseenter", onMouseEnterNode)
+    svg.selectAll("line")
+        .on("click", onClickEdge)
+        .on("mousedown", onMouseDownEdge)
+        .on("mouseout", onMouseOutEdge)
     # console.log("boba is delicious (drawGraph)")
 
 # toggles currently selected node
@@ -267,6 +306,24 @@ toggleNodeSelect = (circle) ->
         node.saveColor()
         node.setColor vars.colorS
     redraw()
+    
+toggleEdgeSelect = (line) ->
+    # reset old selected color
+    console.log "red bean milk tea (edge select)"
+    if graphVars.edgeS != null
+        console.log "red bean slush (edgeSelect reset)"
+        console.log graphVars.edgeS.getSavedColor()
+        graphVars.edgeS.setColor graphVars.edgeS.getSavedColor()
+
+    edge = d3.select(line).data()[0]
+    # deselect selected edges
+    if graphVars.edgeS == edge
+        graphVars.edgeS = null
+    else
+        graphVars.edgeS = edge # selected node update
+        edge.saveColor()
+        edge.setColor vars.colorS
+    redraw()
 
 drawEdge = () ->
     if null not in graphVars.nodeS
@@ -278,7 +335,31 @@ drawEdge = () ->
     
         graphVars.edgeN = null
         redraw()
-
+    
+# three functions that work together to draw a new edge
+drawEdgeStart = (elmt) ->
+    console.log "panda milk tea (edge start)"
+    graphVars.canAdd = false
+    source = graphVars.nodeS
+    graphVars.edgeN = new Edge nodeGenID(), source, null, Object.assign({}, graphVars.edgeAttr)
+    
+#    while graphVars.mouseDown
+#        dragEdge(mouseElmt, line)
+    
+drawEdgeEnd = () ->
+    console.log "milk grass jelly (edge end)"
+    # no self loops
+    if graphVars.nodeME != graphVars.edgeN.source
+        graphVars.edgeN.setTarget graphVars.nodeME
+        graphVars.graph.addEdge graphVars.edgeN
+    graphVars.edgeN = null
+    
+    redraw()
+    
+drawEdgeDrop = () ->
+    console.log "hokkaido milk tea (edge drop)"    
+    graphVars.edgeN = null
+    
 nodeGenID = () -> Math.random().toString(36).substr(2, 5)
 
 #####################
@@ -385,14 +466,6 @@ class Node
     saveColor: () -> @attr.fillOld = @attr.fill
     getSavedColor: () -> @attr.fillOld
 
-countOccurences = (array, elt) ->
-    count = 0
-    cur_index = -1
-    while ((cur_index = array.indexOf(elt, cur_index + 1)) != -1)
-        count += 1
-    return count
-
-
 class PebbleGraph extends Graph
     constructor: (@nodes, @edges, @attr) ->
         super(@nodes, @edges, @attr)
@@ -436,49 +509,19 @@ class PebbleGraph extends Graph
         @pebbleIndex[vertex.id][index] = newval
         return true
 
-    ###
-    Attempt to allocate a free pebble from `vertex` to `edge`,
-    returning true if successful.
-    See `hasFreePebble` for a definition of "free pebble".
-    ###
     allocatePebble: (vertex, edge) ->
         if vertex not in [edge.source, edge.target]
             raise ValueError("Edge #{edge} not incident to vertex #{vertex}")
-        if this._reassignPebble(vertex, -1, edge)
-            return true
+        return this._reassignPebble(vertex, -1, edge)
 
-        pebIndVertEntry = @pebbleIndex[vertex.id]
-        redundantlyCoveredEdges = [x for x in pebIndVertEntry if x != -1 and edgeRedundantlyCovered(x)]
-        if redundantlyCoveredEdges.length > 0
-            return this._reassignPebble(vertex, redundantlyCoveredEdges[0], edge)
-        return false
-
-    ###
-    Reallocate a pebble belonging to `vertex` from `oldedge` to `newedge`.
-    ###
     reallocatePebble: (vertex, oldedge, newedge) ->
         if vertex not in [newedge.source, newedge.target]
             raise ValueError("Edge #{edge} not incident to vertex #{vertex}")
         return this._reassignPebble(vertex, oldedge, newedge)
 
-    ###
-    Return true iff `vertex` has a free pebble:
-    a pebble not assigned to an edge or assigned to a multiply-covered edge.
-    ###
     hasFreePebble: (vertex) ->
-        pebIndVertEntry = @pebbleIndex[vertex.id]
-        # candEdgeFirstOccurence = pebIndVertEntry.indexOf(@curCandIndEdge)
-        pebIndVertEntry.some(elt => elt == -1 or edgeRedundantlyCovered(elt))
-        # return pebIndVertEntry.indexOf(-1) != -1
+        return @pebbleIndex[vertex.id].indexOf(-1) != -1
 
-    edgePebbleCount: (edge) ->
-        [left, right] = [edge.source, edge.target]
-        return countOccurences(@pebbleIndex[left.id], edge) + countOccurences(@pebbleIndex[right.id], edge)
-
-    edgeRedundantlyCovered: (edge) ->
-        # second condition included for completeness; shouldn't ever be needed
-        return (edgePebbleCount > 1 and edge isnt @curCandIndEdge) or edgePebbleCount > 4
-        
     pebbledEdgesAndNeighbors: (vertex) ->
         otherVertex = (edge) ->
             return (x for x in [edge.source, edge.target] when x isnt vertex)[0]
@@ -584,13 +627,9 @@ class PebbleGraph extends Graph
 # PAGE FUNCTIONALITY
 ####################
 
-showAbout = () ->
+showHelp = () ->
     $("#aboutPanel").show()
     
-showHelp = () ->
-    $("#helpPanel").show()
-    
-hideHelp = (element) ->
+hideHelp = () ->
     console.log "yogurt milk tea"
-    $(element).parent().hide()
-
+    $("#aboutPanel").hide()

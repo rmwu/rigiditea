@@ -201,22 +201,24 @@
   };
 
   toggleNodeSelect = function(circle) {
-    var node;
-    if (graphVars.nodeS[1] !== null) {
-      console.log("passionfruit green tea (nodeSelect reset)");
-      graphVars.nodeS[1].setColor(graphVars.nodeS[1].getSavedColor());
-    }
+    var node, oldestNode, youngerNode;
+    oldestNode = graphVars.nodeS[1];
+    youngerNode = graphVars.nodeS[0];
     node = d3.select(circle).data()[0];
-    if (graphVars.nodeS[0] === node) {
-      graphVars.nodeS[0] = null;
+    if (oldestNode !== null && youngerNode !== node) {
+      console.log("passionfruit green tea (nodeSelect reset)");
+      oldestNode.setColor(oldestNode.getSavedColor());
     }
-    if (graphVars.nodeS[1] === node) {
-      graphVars.nodeS[1] = null;
+    if (youngerNode === node) {
+      graphVars.nodeS[0] = null;
+      youngerNode.setColor(youngerNode.getSavedColor());
     } else {
       graphVars.nodeS[1] = graphVars.nodeS[0];
-      graphVars.nodeS[0] = node;
-      node.saveColor();
-      node.setColor(vars.colorS);
+      if (oldestNode !== node) {
+        graphVars.nodeS[0] = node;
+        node.saveColor();
+        node.setColor(vars.colorS);
+      }
     }
     return redraw();
   };

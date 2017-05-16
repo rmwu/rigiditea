@@ -208,23 +208,27 @@ drawGraph = (graph, svg) ->
 
 # toggles currently selected node
 toggleNodeSelect = (circle) ->
-    # reset old selected color of oldest node
-    if graphVars.nodeS[1] != null
-        console.log "passionfruit green tea (nodeSelect reset)"
-        graphVars.nodeS[1].setColor graphVars.nodeS[1].getSavedColor()
-
+    oldestNode = graphVars.nodeS[1]
+    youngerNode = graphVars.nodeS[0]
     node = d3.select(circle).data()[0]
-    # d3.select(circle).attr("class","circle selected")
-    # deselect selected nodes, 1 or 2
-    if graphVars.nodeS[0] == node
+    
+    # deselect oldest node if there's a new young budding node
+    if oldestNode != null and youngerNode != node
+        console.log "passionfruit green tea (nodeSelect reset)"
+        oldestNode.setColor oldestNode.getSavedColor()
+
+    # deselect younger node
+    if youngerNode == node
         graphVars.nodeS[0] = null
-    if graphVars.nodeS[1] == node
-        graphVars.nodeS[1] = null
+        youngerNode.setColor youngerNode.getSavedColor()
+    # otherwise young node grows older
     else
         graphVars.nodeS[1] = graphVars.nodeS[0]
-        graphVars.nodeS[0] = node # selected node update
-        node.saveColor()
-        node.setColor vars.colorS
+        # if old node was selected, don't re-select it
+        if oldestNode != node
+            graphVars.nodeS[0] = node # selected node update
+            node.saveColor()
+            node.setColor vars.colorS
     redraw()
 
 drawEdge = () ->

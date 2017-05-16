@@ -550,7 +550,7 @@ class PebbleGraph extends Graph
         @remainingEdges.length == @enlargeCoverIteration == 0
 
     isLamanRigid: () ->
-        if not this.algorithmComplete():
+        if not this.algorithmComplete()
             throw AlgorithmNotCompleteException("The pebble algorithm must be run completely before querying rigidity!")
         @independentEdges.length == 2 * @nodes.length - 3
 

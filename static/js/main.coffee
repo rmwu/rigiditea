@@ -447,6 +447,14 @@ class Node
     saveColor: () -> @attr.fillOld = @attr.fill
     getSavedColor: () -> @attr.fillOld
 
+countOccurences = (array, elt) ->
+    count = 0
+    cur_index = -1
+    while ((cur_index = array.indexOf(elt, cur_index + 1)) != -1)
+        count += 1
+    return count
+
+
 class PebbleGraph extends Graph
     constructor: (@nodes, @edges, @attr) ->
         super(@nodes, @edges, @attr)
@@ -490,19 +498,49 @@ class PebbleGraph extends Graph
         @pebbleIndex[vertex.id][index] = newval
         return true
 
+    ###
+    Attempt to allocate a free pebble from `vertex` to `edge`,
+    returning true if successful.
+    See `hasFreePebble` for a definition of "free pebble".
+    ###
     allocatePebble: (vertex, edge) ->
         if vertex not in [edge.source, edge.target]
             raise ValueError("Edge #{edge} not incident to vertex #{vertex}")
-        return this._reassignPebble(vertex, -1, edge)
+        if this._reassignPebble(vertex, -1, edge)
+            return true
 
+        pebIndVertEntry = @pebbleIndex[vertex.id]
+        redundantlyCoveredEdges = [x for x in pebIndVertEntry if x != -1 and edgeRedundantlyCovered(x)]
+        if redundantlyCoveredEdges.length > 0
+            return this._reassignPebble(vertex, redundantlyCoveredEdges[0], edge)
+        return false
+
+    ###
+    Reallocate a pebble belonging to `vertex` from `oldedge` to `newedge`.
+    ###
     reallocatePebble: (vertex, oldedge, newedge) ->
         if vertex not in [newedge.source, newedge.target]
             raise ValueError("Edge #{edge} not incident to vertex #{vertex}")
         return this._reassignPebble(vertex, oldedge, newedge)
 
+    ###
+    Return true iff `vertex` has a free pebble:
+    a pebble not assigned to an edge or assigned to a multiply-covered edge.
+    ###
     hasFreePebble: (vertex) ->
-        return @pebbleIndex[vertex.id].indexOf(-1) != -1
+        pebIndVertEntry = @pebbleIndex[vertex.id]
+        # candEdgeFirstOccurence = pebIndVertEntry.indexOf(@curCandIndEdge)
+        pebIndVertEntry.some(elt => elt == -1 or edgeRedundantlyCovered(elt))
+        # return pebIndVertEntry.indexOf(-1) != -1
 
+    edgePebbleCount: (edge) ->
+        [left, right] = [edge.source, edge.target]
+        return countOccurences(@pebbleIndex[left.id], edge) + countOccurences(@pebbleIndex[right.id], edge)
+
+    edgeRedundantlyCovered: (edge) ->
+        # second condition included for completeness; shouldn't ever be needed
+        return (edgePebbleCount > 1 and edge isnt @curCandIndEdge) or edgePebbleCount > 4
+        
     pebbledEdgesAndNeighbors: (vertex) ->
         otherVertex = (edge) ->
             return (x for x in [edge.source, edge.target] when x isnt vertex)[0]

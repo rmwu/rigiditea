@@ -184,6 +184,11 @@ onClickNode = () ->
         toggleNodeSelect(this)
 
 onMouseDownNode = () ->
+    # don't add new node when selecting normally
+    if graphVars.nodeS == null
+        if graphVars.canSelect
+            toggleNodeSelect(this)
+        
     graphVars.canAdd = false
     graphVars.mouseDown = true
     graphVars.mouseUp = false
@@ -191,8 +196,14 @@ onMouseDownNode = () ->
 onMouseUpNode = () ->
     graphVars.mouseDown = false
     graphVars.mouseUp = true
+    
     console.log "thai milk tea (mouse up)"
-
+    if graphVars.edgeN != null
+        if graphVars.mouseEnter
+            drawEdgeEnd()
+         else
+            drawEdgeDrop()
+        graphVars.canAdd = true
 # must leave current node to perform new actions
 onMouseOutNode = () ->
     graphVars.canSelect = true
@@ -200,10 +211,37 @@ onMouseOutNode = () ->
     graphVars.mouseOut = true
     graphVars.mouseEnter = false
     
+    if graphVars.mouseDown && ! graphVars.frozen
+        drawEdgeStart(this)
+    
 onMouseEnterNode = () ->
     graphVars.mouseOut = false
     graphVars.mouseEnter = true
+    
     graphVars.nodeME = d3.select(this).data()[0]
+    
+onClickEdge = () ->
+    if graphVars.canSelect
+        toggleEdgeSelect(this)
+        
+onMouseDownEdge = () ->
+    # don't add new node when selecting
+    graphVars.canAdd = false
+
+# must leave current node to perform new actions
+onMouseOutEdge = () ->
+    graphVars.canAdd = true
+    
+dragEdge = (mouseThis, line) ->
+    if graphVars.edgeN != null
+        coords = d3.mouse mouseThis
+        [x,y] = coords
+        d3.select(line)
+            .attr("x2", x)
+            .attr("y2", y)
+            
+    # redraw()
+    console.log "green bean milk tea (dragEdge)"
         
 redraw = () ->
     drawGraph graphVars.graph, d3Vars.svg
@@ -242,6 +280,10 @@ drawGraph = (graph, svg) ->
         .on("mouseup", onMouseUpNode)
         .on("mouseout", onMouseOutNode)
         .on("mouseenter", onMouseEnterNode)
+    svg.selectAll("line")
+        .on("click", onClickEdge)
+        .on("mousedown", onMouseDownEdge)
+        .on("mouseout", onMouseOutEdge)
     # console.log("boba is delicious (drawGraph)")
 
 # toggles currently selected node
@@ -264,6 +306,24 @@ toggleNodeSelect = (circle) ->
         node.saveColor()
         node.setColor vars.colorS
     redraw()
+    
+toggleEdgeSelect = (line) ->
+    # reset old selected color
+    console.log "red bean milk tea (edge select)"
+    if graphVars.edgeS != null
+        console.log "red bean slush (edgeSelect reset)"
+        console.log graphVars.edgeS.getSavedColor()
+        graphVars.edgeS.setColor graphVars.edgeS.getSavedColor()
+
+    edge = d3.select(line).data()[0]
+    # deselect selected edges
+    if graphVars.edgeS == edge
+        graphVars.edgeS = null
+    else
+        graphVars.edgeS = edge # selected node update
+        edge.saveColor()
+        edge.setColor vars.colorS
+    redraw()
 
 drawEdge = () ->
     if null not in graphVars.nodeS
@@ -275,7 +335,31 @@ drawEdge = () ->
     
         graphVars.edgeN = null
         redraw()
-
+    
+# three functions that work together to draw a new edge
+drawEdgeStart = (elmt) ->
+    console.log "panda milk tea (edge start)"
+    graphVars.canAdd = false
+    source = graphVars.nodeS
+    graphVars.edgeN = new Edge nodeGenID(), source, null, Object.assign({}, graphVars.edgeAttr)
+    
+#    while graphVars.mouseDown
+#        dragEdge(mouseElmt, line)
+    
+drawEdgeEnd = () ->
+    console.log "milk grass jelly (edge end)"
+    # no self loops
+    if graphVars.nodeME != graphVars.edgeN.source
+        graphVars.edgeN.setTarget graphVars.nodeME
+        graphVars.graph.addEdge graphVars.edgeN
+    graphVars.edgeN = null
+    
+    redraw()
+    
+drawEdgeDrop = () ->
+    console.log "hokkaido milk tea (edge drop)"    
+    graphVars.edgeN = null
+    
 nodeGenID = () -> Math.random().toString(36).substr(2, 5)
 
 #####################

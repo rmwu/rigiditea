@@ -407,7 +407,9 @@ Params:
 ###
 matrixRank = (matrix) ->
     # count nonzero singular values
-    return (x for x in numeric.svd(matrix).S when x != 0).length
+    [nRows, nCols] = numeric.dim(matrix)
+    tallMatrix = if nRows < nCols then numeric.transpose(matrix) else matrix
+    return (x for x in numeric.svd(tallMatrix).S when x != 0).length
 
 ###################
 # GRAPH CLASSES
@@ -453,12 +455,13 @@ class Graph
         if numVertices == 0
             return 0
 
-        firstCoords = vertexConfiguration[@nodes[0]]
+        firstCoords = vertexConfiguration[@nodes[0].id]
         embedDim = firstCoords.length
-        displacements = (numeric.sub(coords, firstCoords) for node, coords of vertexConfiguration)
+        displacements = (numeric.sub(coords, firstCoords) for nodeId, coords of vertexConfiguration)
         configDim = matrixRank(displacements)
 
-        rmatRank = matrixRank rigidityMatrix vertexConfiguration
+        rmatRank = matrixRank this.rigidityMatrix vertexConfiguration
+
         euclIsomDim = (embedDim + 1) * embedDim / 2
         symGroupDim = (embedDim - configDim) * (embedDim - configDim - 1) / 2
 
@@ -471,27 +474,28 @@ class Graph
     genericInfDOF: (dimension) ->
         randomVertexConfig = {}
         for node in @nodes
-            randomVertexConfig[node] = numeric.random([dimension])
+            randomVertexConfig[node.id] = numeric.random([dimension])
         return this.infinitesimalDOF(randomVertexConfig)
 
 
     rigidityMatrix: (vertexConfiguration) ->
         numVertices = @nodes.length
-        firstCoords = vertexConfiguration[@nodes[0]]
+        firstCoords = vertexConfiguration[@nodes[0].id]
         embedDim = firstCoords.length
 
-        rigidityMatrixRow: (edge) ->
+        rigidityMatrixRow = (me, edge) ->
             [left, right] = [edge.source, edge.target]
-            [leftInd, rightInd] = [embedDim * @nodes.indexOf(left), embedDim * @nodes.indexOf(right)]
+            [leftInd, rightInd] = [embedDim * me.nodes.indexOf(left), embedDim * me.nodes.indexOf(right)]
             edgeDisplacement =
-                numeric.sub(vertexConfiguration[right],vertexConfiguration[left])
+                numeric.sub(vertexConfiguration[right.id],vertexConfiguration[left.id])
 
             row = (0 for [0...(numVertices*embedDim)])
-            (row[leftInd+i] = -edgeDisplacement for i in [0...embedDim])
-            (row[rightInd+j] = edgeDisplacement for j in [0...embedDim])
+            (row[leftInd+i] = -edgeDisplacement[i] for i in [0...embedDim])
+            (row[rightInd+j] = edgeDisplacement[j] for j in [0...embedDim])
             return row
 
-        return (rigidityMatrixRow(edge) for edge in @edges)
+        me = this
+        return (rigidityMatrixRow(me, edge) for edge in @edges)
 
 ###
 Edge object
@@ -528,6 +532,9 @@ class Node
     saveColor: () -> @attr.fillOld = @attr.fill
     getSavedColor: () -> @attr.fillOld
 
+###
+Give the number of occurrences of `elt` in `array`.
+###
 countOccurences = (array, elt) ->
     count = 0
     cur_index = -1

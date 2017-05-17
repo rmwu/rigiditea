@@ -98,12 +98,7 @@ blah blah blah
 
 \subsection{Interface}
 
-blah
- 
-\subsection{Backend}
-blah
-
-We provide an aesthetic interface
+We provide an aesthetic graphical user interface (GUI)
 to design and analyze linkages as 2D planar graphs.
 
 \begin{figure}[ht]
@@ -138,22 +133,22 @@ Table \ref{tab:ctrl} enumerates the various commands available,
 their functionalities, and keyboard shortcuts.
 
 \begin{table}[ht]
-\caption{Control panel items and descriptions}
+\caption{Control panel items and descriptions.}
 \def\arraystretch{1.5}
 \begin{tabular}{c | c | p{0.5\linewidth} | c}
 & item & description & key \\ \hline
-\multirow{3}{.5cm}{\rotatebox{90}{menu bar items~~}} &
+\multirow{3}{.5cm}{\rotatebox{90}{menu bar items~~}}
+& pebble & advances pebble algorithm one step
+(one pebble exchange) & $\to$\\
+& reset & resets defaults, initializes new graph, wipes canvas & r \\
+& about & background information about algorithms,
+web application, and further reading & a \\\hline
+\multirow{3}{.5cm}{\rotatebox{90}{control panel~~}} &
 edge & draws an edge between two selected vertices & e\\
 & delete & deletes all selected components, including incident edges
 to selected nodes & x \\
 & help & provides information about graph designing interface,
-including keyboard shortcuts & h \\ \hline
-\multirow{3}{.5cm}{\rotatebox{90}{control panel~~}}
-& pebble & advances pebble algorithm one step
-(one pebble exchange) & $\to$\\
-& reset & resets defaults, initializes new graph & r \\
-& about & background information about algorithms,
-web application, and further reading & a \\
+including keyboard shortcuts & h \\
 \end{tabular}
 \label{tab:ctrl}
 \end{table}
@@ -162,6 +157,62 @@ The GUI was created using \texttt{d3.js},
 an open-source data visualization library for web applications.
 We selected this library
 to directly link graph data objects to SVG elements on the canvas.
+
+\subsection{Graph representation}
+
+Graphs were represented as custom Javascript \texttt{Graph} objects,
+each with a list of \texttt{nodes}, \texttt{edges}, and specialized instance methods.
+We will later introduce the \texttt{PebbleGraph} class,
+which is a subclass of \texttt{Graph} with additional rigidity-related capabilities.
+
+Each \texttt{Edge} object keeps track of its unique \texttt{id}, \texttt{source}, \texttt{target}, and \texttt{attributes},
+such as current and previous color.
+Of these fields, \texttt{source} and \texttt{target} are both \texttt{Node} objects,
+which each possess a unique \texttt{id}, its \texttt{x} and \texttt{y} coordinates,
+and a map of \texttt{attributes}.
+Unique \texttt{id}s were randomly generated,
+case-sensitive alphanumeric strings of 5 characters.
+Figure \ref{fig:graphrep} provides a simple example.
+
+Note that nodes are passed to \texttt{edges} by reference.
+Furthermore, we use an absolute coordinate system,
+based on pixels, so for convenience, each node keeps track of its own location.
+
+\begin{figure}[ht]
+\begin{verbatim}
+Graph: {
+   nodes: {
+     Node:
+       {id: a6849, x:68, y:49, attr: {fill: #CEF}},
+     Node:
+       {id: b6867, x:68, y:67, attr: {fill: #FCE}}},
+   edges: {
+     Edge:
+       {source: Node, target: Node,
+         attr: {stroke: #CEF}}},
+         ...
+   [instance methods]
+}
+\end{verbatim}
+\caption{Sample representation of a line segment.}
+\label{fig:graphrep}
+\end{figure}
+
+On top of this basic graph,
+we designed another \texttt{PebbleGraph} class,
+which could run iterations of the pebble algorithm
+and test for infinitesimal rigidity.
+\texttt{PebbleGraph} objects can be easily created
+from standard \texttt{Graph} objects since
+their underlying representations are the same.
+However, \texttt{PebbleGraph} objects also maintain
+an assignment of ``pebbles'' to edges and vertices.
+Thus, once we begin running the Pebble algorithm,
+we disable graph editing in the GUI and generate a mutable \texttt{PebbleGraph}
+for future steps.
+ 
+\subsection{Backend}
+blah
 
 \section{Pebble game visualization}
 
@@ -232,7 +283,51 @@ We present a correction to the  in \cite{gfalop}
 
 
 
-%\section{Discussion}
+\section{Discussion}
+
+\subsection{Comparison to existing implementation}
+
+There currently exists another
+implementation of the pebble algorithm as a Java application.
+[TODO REFERENCE]
+
+Compared to Rigiditea, this implementation
+has more built-in features and is a more mature application,
+but as a fully front-end web application,
+Rigiditea is more accessible, easy-to-use, and pleasing to look at.
+Table \ref{tab:comp} provides an extensive comparison of the two software.
+On a whole, Rigiditea is not meant to replace the existing tool,
+but rather to provide a simpler tool for those casually interested
+in rigidity.
+
+\begin{table*}[ht]
+\def\arraystretch{1.5}
+\caption{Comparison of Rigiditea and existing Java implementation
+across different features and criteria.}
+\begin{tabular}{p{0.4\linewidth} | p{0.4\linewidth}}
+Rigiditea & Java implementation \\ \hline
+minimalist web GUI, completely front-end, can be hosted anywhere
+without a backend &
+Java application, requires download to run (most systems have a JVM) \\
+aesthetic design, fun to play with, keyboard shortcuts convenient &
+standard software developer look, though with intuitive icons
+and a thorough menu\\
+draw graphs completely freehand,
+with simple editing tools &
+select from a set of sample graphs,
+which demonstrate certain concepts \\
+graphs are fixed in location and scale &
+graphs can be rotated and moved around point or segment \\
+visualize individual steps of pebble algorithm &
+visualize individual steps of pebble algorithm\\
+tests for linkage rigidity & tests for linkage rigidity\\
+only provides overall rigidity & finds over-braced components \\
+provides tester for infinitesimal rigidity in $n$ dimensions,
+independent of the pebble algorithm
+& not a design goal
+\end{tabular}
+\label{tab:comp}
+\end{table*}
 
 \section{Extensions}
 

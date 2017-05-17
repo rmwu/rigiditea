@@ -434,9 +434,7 @@ class Graph
         displacements = (numeric.sub(coords, firstCoords) for nodeId, coords of vertexConfiguration)
         configDim = matrixRank(displacements)
 
-        console.log this.rigidityMatrix vertexConfiguration
         rmatRank = matrixRank this.rigidityMatrix vertexConfiguration
-        console.log "rmatRank #{rmatRank}"
 
         euclIsomDim = (embedDim + 1) * embedDim / 2
         symGroupDim = (embedDim - configDim) * (embedDim - configDim - 1) / 2

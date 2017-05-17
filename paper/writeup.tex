@@ -149,28 +149,22 @@ we also provide keyboard shortcuts to streamline the user experience.
 their functionalities, and keyboard shortcuts.
 
 \begin{table}[ht]
-\caption{Menu items and descriptions}
-\begin{tabular}{c | p{0.5\linewidth} | c}
-item & description & shortcut \\ \hline
-pebble & advances pebble algorithm one step
-(one pebble exchange) & $\to$\\
-reset & resets defaults, initializes new graph & r \\
-about & background information about algorithms,
-web application, and further reading & a \\
-\end{tabular}
-\label{tab:menu}
-\end{table}
-
-\begin{table}[ht]
 \caption{Control panel items and descriptions}
-\begin{tabular}{c c | p{0.5\linewidth} | c}
-\multirow{3}{*}{menu} &
-item & description & shortcut \\ \hline
+\def\arraystretch{1.5}
+\begin{tabular}{c | c | p{0.5\linewidth} | c}
+& item & description & key \\ \hline
+\multirow{3}{.5cm}{\rotatebox{90}{menu bar items~~}} &
 edge & draws an edge between two selected vertices & e\\
-delete & deletes all selected components, including incident edges
+& delete & deletes all selected components, including incident edges
 to selected nodes & x \\
-help & provides information about graph designing interface,
-including keyboard shortcuts & h \\
+& help & provides information about graph designing interface,
+including keyboard shortcuts & h \\ \hline
+\multirow{3}{.5cm}{\rotatebox{90}{control panel~~}}
+& pebble & advances pebble algorithm one step
+(one pebble exchange) & $\to$\\
+& reset & resets defaults, initializes new graph & r \\
+& about & background information about algorithms,
+web application, and further reading & a \\
 \end{tabular}
 \label{tab:ctrl}
 \end{table}

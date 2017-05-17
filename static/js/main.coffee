@@ -358,7 +358,15 @@ drawInfinite = () ->
     disableDraw()
     if graphVars.graphP == null
         makePebbleGraph()
-    console.log graphVars.graphP.genericInfDOF(10)
+        
+    dims = prompt "How many dimensions would you like?", 10
+    if dims == null || dims == ""
+        console.log "wintermelon milk tea (inf canceled)"
+    else
+        console.log "jujube date tea (inf with " + dims + " dims)"
+        degOfFreedom = graphVars.graphP.genericInfDOF Number.parseInt(dims)
+        console.log degOfFreedom
+        
     console.log "love you"
     # tony = graphVars.
     

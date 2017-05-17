@@ -108,8 +108,8 @@ initGraph = () ->
         .on("mouseup", onMouseUpNode)
     graphVars.graph = new Graph [], []
     
-    d3Vars.tooltip = d3.select("#graph").append("div")	
-        .attr("class", "tooltip")				
+    d3Vars.tooltip = d3.select("#graph").append("div")
+        .attr("class", "tooltip")
         .style("opacity", 0)
     # console.log("boba is yummy (initGraph)")
 
@@ -595,8 +595,11 @@ class PebbleGraph extends Graph
             return @algState.edgeCounts[id]
 
     edgeRedundantlyCovered: (edge) ->
-        # second condition included for completeness; shouldn't ever be needed
-        return (this.edgePebbleCount(edge) > 1 and edge isnt @curCandIndEdge) or this.edgePebbleCount(edge) > 4
+        # last condition included for completeness; shouldn't ever be needed
+        edgeCount = this.edgePebbleCount(edge)
+        return ((edgeCount > 0 and @independentEdges.indexOf(edge) == -1 and edge isnt @curCandIndEdge) or
+          (edgeCount > 1 and edge isnt @curCandIndEdge) or
+          edgeCount > 4)
         
     _reassignPebble: (vertex, oldval, newval) ->
         index = @pebbleIndex[vertex.id].indexOf(oldval)

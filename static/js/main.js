@@ -716,7 +716,9 @@
     };
 
     PebbleGraph.prototype.edgeRedundantlyCovered = function(edge) {
-      return (this.edgePebbleCount(edge) > 1 && edge !== this.curCandIndEdge) || this.edgePebbleCount(edge) > 4;
+      var edgeCount;
+      edgeCount = this.edgePebbleCount(edge);
+      return (edgeCount > 0 && this.independentEdges.indexOf(edge) === -1 && edge !== this.curCandIndEdge) || (edgeCount > 1 && edge !== this.curCandIndEdge) || edgeCount > 4;
     };
 
     PebbleGraph.prototype._reassignPebble = function(vertex, oldval, newval) {

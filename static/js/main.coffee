@@ -212,7 +212,15 @@ onMouseDownEdge = () ->
 
 # must leave current node to perform new actions
 onMouseOutEdge = () ->
+    graphVars.canSelect = true
     graphVars.canAdd = true
+    graphVars.mouseOut = true
+    graphVars.mouseEnter = false
+    
+    if graphVars.frozen
+        d3Vars.tooltip.transition()
+            .duration(500)
+            .style("opacity",0)
         
 redraw = () ->
     drawGraph graphVars.graph, d3Vars.svg

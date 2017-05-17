@@ -201,7 +201,13 @@
   };
 
   onMouseOutEdge = function() {
-    return graphVars.canAdd = true;
+    graphVars.canSelect = true;
+    graphVars.canAdd = true;
+    graphVars.mouseOut = true;
+    graphVars.mouseEnter = false;
+    if (graphVars.frozen) {
+      return d3Vars.tooltip.transition().duration(500).style("opacity", 0);
+    }
   };
 
   redraw = function() {

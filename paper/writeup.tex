@@ -307,7 +307,10 @@ At any instance TODO TODO TODO
    \includegraphics[width=.19\linewidth]{img/l3}
    \includegraphics[width=.19\linewidth]{img/l4}
    \includegraphics[width=.19\linewidth]{img/l5}
-   \caption{Pebble cover on a single segment.}
+   \caption{Pebble cover on a single segment.
+   We start by drawing the segment
+   and proceed to cover it with pebbles,
+   until determining that a segment is rigid.}
    \label{fig:seg}
 \end{figure}
 
@@ -464,27 +467,6 @@ So testing generic rigidity reduces to testing infinitesimal rigidity.
 
 \section{Discussion}
 
-While it explores a seemingly esoteric concept,
-Rigiditea is not the first application to visualize linkage rigidity.
-There currently exists another
-implementation of the pebble algorithm as a Java application~\cite{stjohnapplet}.
-
-Compared to Rigiditea, this implementation
-has more built-in features and is a more mature application,
-but as a fully front-end web application,
-Rigiditea is more accessible, easy-to-use, and pleasing to look at.
-Rigiditea also offers complete flexibility in graph design,
-instead of using several existing shapes for demonstration purposes.
-\Cref{tab:comp} provides an extensive comparison of the two implementations.
-On a whole, Rigiditea is not meant to replace the existing tool,
-but rather to provide a simpler tool for those casually interested
-in rigidity.
-
-Moreover, we envision Rigiditea as a means for laypersons
-to learn more about rigidity in general.
-Towards these aspects, we should perhaps add additional features,
-but due to time constraints, we opted for just a rigidity tester.
-
 \begin{table*}[ht]
 \def\arraystretch{1.5}
 \caption{Comparison of Rigiditea and existing Java implementation
@@ -513,6 +495,27 @@ independent of the pebble algorithm
 \end{tabular}
 \label{tab:comp}
 \end{table*}
+
+While it explores a seemingly esoteric concept,
+Rigiditea is not the first application to visualize linkage rigidity.
+There currently exists another
+implementation of the pebble algorithm as a Java application~\cite{stjohnapplet}.
+
+Compared to Rigiditea, this implementation
+has more built-in features and is a more mature application,
+but as a fully front-end web application,
+Rigiditea is more accessible, easy-to-use, and pleasing to look at.
+Rigiditea also offers complete flexibility in graph design,
+instead of using several existing shapes for demonstration purposes.
+\Cref{tab:comp} provides an extensive comparison of the two implementations.
+On a whole, Rigiditea is not meant to replace the existing tool,
+but rather to provide a simpler tool for those casually interested
+in rigidity.
+
+Moreover, we envision Rigiditea as a means for laypersons
+to learn more about rigidity in general.
+Towards these aspects, we should perhaps add additional features,
+but due to time constraints, we opted for just a rigidity tester.
 
 \section{Future work}
 

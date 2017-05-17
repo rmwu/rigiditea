@@ -40,6 +40,7 @@ graphVars =
 d3Vars =
     svg: null
     drag: null
+    tooltip: null
     
 resetGraphVars = () ->
     graphVars.graph = null
@@ -106,6 +107,10 @@ initGraph = () ->
         .on("click", onClick)
         .on("mouseup", onMouseUpNode)
     graphVars.graph = new Graph [], []
+    
+    d3Vars.tooltip = d3.select("#graph").append("div")	
+        .attr("class", "tooltip")				
+        .style("opacity", 0)
     # console.log("boba is yummy (initGraph)")
 
 onClick = () ->
@@ -173,10 +178,29 @@ onMouseOutNode = () ->
     graphVars.mouseOut = true
     graphVars.mouseEnter = false
     
+    if graphVars.frozen
+        d3Vars.tooltip.transition()
+            .duration(500)
+            .style("opacity",0)
+    
 onMouseEnterNode = () ->
     graphVars.mouseOut = false
     graphVars.mouseEnter = true
     graphVars.nodeME = d3.select(this).data()[0]
+
+# tooltip magics
+onMouseOverNode = () ->
+    data = d3.select(this).data()[0]
+    coords = d3.mouse this
+    [x,y] = coords
+    if graphVars.frozen
+        d3Vars.tooltip.transition()
+            .duration(200)
+            .style("opacity", 1)
+        pebbles = graphVars.graphP.getPebbles data
+        d3Vars.tooltip.html(pebbles)
+            .style("left", (x) + "px")
+            .style("top", (y) + "px")
     
 onClickEdge = () ->
     if graphVars.canSelect
@@ -227,10 +251,12 @@ drawGraph = (graph, svg) ->
         .on("mouseup", onMouseUpNode)
         .on("mouseout", onMouseOutNode)
         .on("mouseenter", onMouseEnterNode)
+        .on("mouseover", onMouseOverNode)
     svg.selectAll("line")
         .on("click", onClickEdge)
         .on("mousedown", onMouseDownEdge)
         .on("mouseout", onMouseOutEdge)
+        .on("mouseover", onMouseOverNode)
     # console.log("boba is delicious (drawGraph)")
 
 # toggles currently selected node
@@ -365,7 +391,7 @@ drawInfinite = () ->
     else
         console.log "jujube date tea (inf with " + dims + " dims)"
         degOfFreedom = graphVars.graphP.genericInfDOF Number.parseInt(dims)
-        console.log degOfFreedom
+        alert "Your graph has " + degOfFreedom.toString() + " degrees of freedom."
         
     console.log "love you"
     # tony = graphVars.
@@ -539,13 +565,21 @@ class PebbleGraph extends Graph
                     vertexCounts[vertexid] += 1
                 else
                     edgeCounts[entry.id] += 1
-
-        {
+        @algState = {
             "edgeCounts": edgeCounts,
             "vertexCounts": vertexCounts,
             "independentEdges": @independentEdges,
-            "candidateIndEdge": @curCandIndEdge
-        }
+            "candidateIndEdge": @curCandIndEdge}
+        
+        @algState
+
+    getPebbles: (element) ->
+        # returns the pebble count of a node or edge
+        id = element.id.toString()
+        if id of @algState.vertexCounts
+            return @algState.vertexCounts[id]
+        else
+            return @algState.edgeCounts[id]
 
     edgeRedundantlyCovered: (edge) ->
         # second condition included for completeness; shouldn't ever be needed

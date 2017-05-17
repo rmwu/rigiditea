@@ -254,6 +254,10 @@ so both can be colored.
 Figure \ref{fig:pebbles} demonstrates this process
 for a triangle.
 
+At any given point during the pebble game,
+a user can view the number of pebbles on an edge or node by
+mousing over that element.
+
 \begin{figure*}[t]
    \centering
    \includegraphics[width=.24\linewidth]{img/t1}
@@ -389,8 +393,6 @@ So testing generic rigidity reduces to testing infinitesimal rigidity.
 
 \section{Discussion}
 
-\subsection{Comparison to existing implementation}
-
 There currently exists another
 implementation of the pebble algorithm as a Java application.
 [TODO REFERENCE]
@@ -438,32 +440,71 @@ independent of the pebble algorithm
 
 \section{Extensions}
 
-There are several extensions we may explore for our web application.
+There are several extensions we may explore for Rigiditea.
 
-On the web interface side,
-it would be convenient to scroll through the pebble algorithm's steps
+\subsection{Web interface}
+
+It would be convenient to scroll through the pebble algorithm's steps
 in a timeline, similar to that of the existing Java implementation.
 This feature could be easy to implement,
 if we simply maintain a history of the \texttt{PebbleGraph} objects
 and display one of them depending on the time step.
+Afterwards, we could optimize this history by storing a log
+of updates and changes to the \texttt{PebbleGraph},
+rather than replicating the object $t$ times for $t$ time steps.
+
 Furthermore, it would be convenient to export the resultant graph into FOLD,
 as a linkage. However, we did not prioritize this goal since
 linkages can be adequately visualized as planar graphs,
-which are general in concept.
+which are quite conceptually general.
+FOLD may also present alternative means of visualizing the linkage,
+though we are quite satisfied with our current visualization.
+
+\subsection{Algorithmic extensions}
 
 Algorithmically, we would also like to visualize rigid components of a linkage.
 It would be ideal to color the over-braced,
 under-braced, and minimally rigid components so a user
 can distinguish between them.
-The pebble algorithm can determine such components [TODO],
-but we did not have the time to implement this element here.
+The existing Java implementation shows rigid components,
+though it only applies the algorithm to a few pre-determined linkages.
+The pebble algorithm can be used to determine such components,
+but we did not have the time to implement that element here.
 
 Finally, we would like to extend this web application to other pebble games
-such as [lee08, chubynsky07]
+such as [lee08, chubynsky07].
+Since we have already built a web interface for visualizing pebble games,
+it would be a shame not to use it.
 
+\section*{Challenges}
+
+We encountered several challenges along the way.
+First, Tony didn't realize his Coffeescript didn't compile---until the ``morning''
+of the presentation.
+Second, Rachel didn't realize that a button would be easier to use
+and infinitely easier to implement than click-and-drag.
+
+We opted to use fewer ``out-of-the-box'' \texttt{d3.js} solutions such as
+the force-directed graph, so we weren't able to provide more advanced features
+like bouncing our graph around and stretching edges.
+However, we realized that it was more important to develop a working product,
+so we remained with our simpler representations.
+
+\section*{Remarks}
+
+The two authors distributed the work equally.
+Tony primarily worked on the pebble algorithm and infinitesimal rigidity implementations,
+while Menghua designed and created the GUI.
+Both contributed equally to the writing of this paper.
 
 \section*{Acknowledgements}
 
+We would like to thank Professor Erik Demaine for his instruction,
+humor, and guidance. We would also like to thank the 6.849 course staff,
+Martin Demaine, Dr. Jason Ku, Adam Hesterberg, and Jayson Lynch
+for their continual support throughout the semester.
+Finally, we would like to thank Ludwig van Beethoven for providing
+music in early hours of the morning.
 
 \bibliography{rigiditea}{}
 \bibliographystyle{plain}

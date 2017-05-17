@@ -230,7 +230,40 @@ blah
 \section{Pebble game visualization}
 \label{sec:pebble}
 
-blahbiy blah
+Rigiditea primarily provides a pebble game visualization,
+in which we attempt to add edges and see if they contribute
+to the graph's overall rigidity.
+
+At each phase, we randomly select an edge to ``add'' to our current set.
+For four rounds, we attempt to cover the edge with four pebbles.
+This is reflected in our GUI with a spectrum of blue and green,
+where zero pebbles is a darker blue and four pebbles is a light yellow-green.
+Pebbles can reside in both nodes and edges,
+so both can be colored.
+Figure \ref{fig:pebbles} demonstrates this process
+for a triangle.
+
+\begin{figure*}[t]
+   \centering
+   \includegraphics[width=.24\linewidth]{img/t1}
+   \includegraphics[width=.24\linewidth]{img/t2}
+   \includegraphics[width=.24\linewidth]{img/t3}
+   \includegraphics[width=.24\linewidth]{img/t4}
+   \includegraphics[width=.24\linewidth]{img/t5}
+   \includegraphics[width=.24\linewidth]{img/t6}
+   \includegraphics[width=.24\linewidth]{img/t7}
+   \includegraphics[width=.24\linewidth]{img/t8}
+   \includegraphics[width=.24\linewidth]{img/t9}
+   \includegraphics[width=.24\linewidth]{img/t10}
+   \includegraphics[width=.24\linewidth]{img/t11}
+   \includegraphics[width=.24\linewidth]{img/t12}
+   \caption{Process of a single pebble game for a triangle.
+   The labels on each edge or node show the number of pebbles on that element.
+   We can see that the number of pebbles increases each time from 1 to 4,
+   as the pebbles on nodes are transferred to edges.
+   In the final frame, we see that the triangle is successfully identified as rigid.}
+   \label{fig:pebbles}
+\end{figure*}
 
 \section{Infinitesimal rigidity}
 \label{sec:infrigid}
@@ -355,10 +388,13 @@ Compared to Rigiditea, this implementation
 has more built-in features and is a more mature application,
 but as a fully front-end web application,
 Rigiditea is more accessible, easy-to-use, and pleasing to look at.
+Rigiditea also offers complete flexibility in graph design,
+instead of using several existing shapes for demonstration purposes.
 Table \ref{tab:comp} provides an extensive comparison of the two software.
 On a whole, Rigiditea is not meant to replace the existing tool,
 but rather to provide a simpler tool for those casually interested
 in rigidity.
+
 
 \begin{table*}[ht]
 \def\arraystretch{1.5}
@@ -391,16 +427,28 @@ independent of the pebble algorithm
 
 \section{Extensions}
 
-\begin{itemize}
-    \item
-    Undo feature
-    \item
-    Graph export into FOLD
-    \item
-    Visualize rigid components
-    \item
-    Extend to other pebble games like in \cite{lee08, chubynsky07}
-\end{itemize}
+There are several extensions we may explore for our web application.
+
+On the web interface side,
+it would be convenient to scroll through the pebble algorithm's steps
+in a timeline, similar to that of the existing Java implementation.
+This feature could be easy to implement,
+if we simply maintain a history of the \texttt{PebbleGraph} objects
+and display one of them depending on the time step.
+Furthermore, it would be convenient to export the resultant graph into FOLD,
+as a linkage. However, we did not prioritize this goal since
+linkages can be adequately visualized as planar graphs,
+which are general in concept.
+
+Algorithmically, we would also like to visualize rigid components of a linkage.
+It would be ideal to color the over-braced,
+under-braced, and minimally rigid components so a user
+can distinguish between them.
+The pebble algorithm can determine such components [TODO],
+but we did not have the time to implement this element here.
+
+Finally, we would like to extend this web application to other pebble games
+such as [lee08, chubynsky07]
 
 
 \section*{Acknowledgements}

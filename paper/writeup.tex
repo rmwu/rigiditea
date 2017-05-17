@@ -13,6 +13,9 @@
 \usepackage{amsmath,amssymb}
 \usepackage{siunitx}
 
+\usepackage{cleveref}
+
+
 %\usepackage{mathpazo}
 \usepackage{microtype}
 
@@ -89,7 +92,17 @@ for the infinitesimal algorithm,
 and only found a Java applet for the pebble game \cite{stjohnapplet}.
 
 
+TODO TODO
+
+Let us outline the remainder of this paper.
+In \cref{sec:arch}, we describe the structure of our web application.
+We next develop the theory behind the two rigidity algorithms
+in \cref{sec:pebble,sec:infrigid}
+to the level of detail necessary for understanding our work.
+We conclude with a discussion of possible extensions to Rigiditea.
+
 \section{Architecture}
+\label{sec:arch}
 
 blah blah blah
 
@@ -101,9 +114,11 @@ blah
 blah
 
 \section{Pebble game visualization}
+\label{sec:pebble}
 
 blahbiy blah
 \section{Infinitesimal rigidity}
+\label{sec:infrigid}
 
 The algorithm is straightforwardly presented in \cite[\S4.4.2]{gfalop},
 so we provide a brief sketch.

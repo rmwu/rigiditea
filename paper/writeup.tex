@@ -87,17 +87,14 @@ there are no algebraic dependence between coordinates),
 rigidity (and more generally, the number of degrees of freedom)
 becomes a function only of the graph and the embedding dimension.
 
-We implemented two major algorithms for generic rigidity.
-The first, which works in $n$ dimensions,
+We implemented two major algorithms for generic rigidity
+as well as a web-based interface for using them.
+The first algorithm, which works in $d$ dimensions,
 considers a random embedding of the graph into $\RR^n$
-and computes the number of infinitesimal degrees of freedom (dof)
+and computes the number of \emph{infinitesimal} degrees of freedom (dof)
 as described in \cite[\S4.4.2]{gfalop}.
-Infinitesimal rigidity of the random embedding always implies generic rigidity;
-the converse holds with high probability.
-
-The second algorithm is the famous \emph{pebble game algorithm},
+The second is the famous \emph{pebble game algorithm},
 first introduced by Jacobs and Hendrickson in 1997~\cite{jacobs97}.
-Briefly, it considers TODO TOOD
 
 To the best of our knowledge,
 there did not exist convenient implementations of

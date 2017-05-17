@@ -13,7 +13,6 @@
 \usepackage{amsmath,amssymb}
 \usepackage{siunitx}
 
-\usepackage{cleveref}
 
 %\usepackage{mathpazo}
 \usepackage{microtype}
@@ -27,8 +26,16 @@
 
 \usepackage{tikz}
 
+\usepackage{hyperref}
+\usepackage{cleveref}
+
+
+
 \newcommand\RR{\mathbb{R}}
 \DeclareMathOperator\im{im}
+
+\newcommand{\abs}[1]{|#1|}
+
 
 \newcommand{\mb}{\mathbf}
 
@@ -87,17 +94,14 @@ there are no algebraic dependence between coordinates),
 rigidity (and more generally, the number of degrees of freedom)
 becomes a function only of the graph and the embedding dimension.
 
-We implemented two major algorithms for generic rigidity.
-The first, which works in $n$ dimensions,
+We implemented two major algorithms for generic rigidity
+as well as a web-based interface for using them.
+The first algorithm, which works in $d$ dimensions,
 considers a random embedding of the graph into $\RR^n$
-and computes the number of infinitesimal degrees of freedom (dof)
+and computes the number of \emph{infinitesimal} degrees of freedom (dof)
 as described in \cite[\S4.4.2]{gfalop}.
-Infinitesimal rigidity of the random embedding always implies generic rigidity;
-the converse holds with high probability.
-
-The second algorithm is the famous \emph{pebble game algorithm},
+The second is the famous \emph{pebble game algorithm},
 first introduced by Jacobs and Hendrickson in 1997~\cite{jacobs97}.
-Briefly, it considers TODO TOOD
 
 To the best of our knowledge,
 there did not exist convenient implementations of
@@ -196,7 +200,7 @@ which each possess a unique \texttt{id}, its \texttt{x} and \texttt{y} coordinat
 and a map of \texttt{attributes}.
 Unique \texttt{id}s were randomly generated,
 case-sensitive alphanumeric strings of 5 characters.
-Figure \ref{fig:graphrep} provides a simple example.
+\Cref{fig:graphrep} provides a simple example.
 
 Note that nodes are passed to \texttt{edges} by reference.
 Furthermore, we use an absolute coordinate system,
@@ -234,12 +238,67 @@ an assignment of ``pebbles'' to edges and vertices.
 Thus, once we begin running the Pebble algorithm,
 we disable graph editing in the GUI and generate a mutable \texttt{PebbleGraph}
 for future steps.
- 
-\subsection{Backend}
-blah
 
 \section{Pebble game visualization}
 \label{sec:pebble}
+
+We shall sketch the pebble game algorithm
+for generic two-dimensional rigidity testing
+and describe our visualization for it.
+For a more detailed exposition on the algorithm,
+we refer the reader to the original paper~\cite{jacobs97}.
+
+\subsection{The algorithm}
+
+Before describing the algorithm,
+we present some basic definitions.
+Consider undirected graph $G = (V, E)$
+with $n$ vertices and $m$ edges.
+We say a subset of the edges is \emph{independent}
+if they produce independent constraints on the motion of the vertices
+in a generic embedding.
+An independent set is maximal if we can't add another edge
+while preserving independence.
+
+In two dimensions, $n$ unconstrained vertices have $2n-3$ degrees of freedom,
+where we have excluded rigid motion.
+Now each independent edge reduces this freedom by one,
+so that
+\[
+    \text{degrees of freedom} = 2n - 3 - \abs{\text{maximal independent set}}.
+\]
+It follows that our graph is generically rigid
+if we can find $2n-3$ independent edges.\footnote{It makes sense
+to talk about \emph{the} size 
+of maximal independent sets
+for the same reason that the dimension of a span of vectors
+is independent of the order in which we consider them;
+indeed, edges correspond to vectors in $\RR^{dn}$,
+as we shall see in the next section.}
+
+On a high level,
+the pebble algorithm builds an independent set of edges
+by arbitrarily ordering the edges
+and accepting an edge into the current independent set
+if and only if doing so would preserve independence.
+After all edges are considered,
+we have a maximal independent set,
+so testing rigidity becomes a simple matter.
+
+The key insight of the algorithm
+is the observation that we can test independence of a new edge $e$
+and a known independent set $\hat E$
+by playing the namesake pebble game.
+We shall largely follow \cite{stjohnapplet}.
+
+Each vertex is given two pebbles it can use to cover incident edges.
+At any instance TODO TODO TODO
+
+% runtime
+% mention how we screw over runtime
+
+\subsection{Visualization}
+
 
 Rigiditea primarily provides a pebble game visualization,
 in which we attempt to add edges and see if they contribute
@@ -292,7 +351,7 @@ More importantly, however,
 we shall prove a correction to the formula the algorithm uses
 to compute the infinitesimal degrees of freedom.
 
-Suppose we have a graph $G = (V, E)$ of $n$ vertices and $m$ edges.
+As before, suppose we have $G = (V, E)$ of $n$ vertices and $m$ edges.
 Given a $d$-dimensional embedding of the vertices,
 each edge provides a linear constraint
 on the allowed infinitesimal motions of $V$.
@@ -394,8 +453,7 @@ So testing generic rigidity reduces to testing infinitesimal rigidity.
 \section{Discussion}
 
 There currently exists another
-implementation of the pebble algorithm as a Java application.
-[TODO REFERENCE]
+implementation of the pebble algorithm as a Java application~\cite{stjohnapplet}.
 
 Compared to Rigiditea, this implementation
 has more built-in features and is a more mature application,
@@ -403,7 +461,7 @@ but as a fully front-end web application,
 Rigiditea is more accessible, easy-to-use, and pleasing to look at.
 Rigiditea also offers complete flexibility in graph design,
 instead of using several existing shapes for demonstration purposes.
-Table \ref{tab:comp} provides an extensive comparison of the two software.
+\Cref{tab:comp} provides an extensive comparison of the two implementations.
 On a whole, Rigiditea is not meant to replace the existing tool,
 but rather to provide a simpler tool for those casually interested
 in rigidity.
@@ -472,7 +530,10 @@ The pebble algorithm can be used to determine such components,
 but we did not have the time to implement that element here.
 
 Finally, we would like to extend this web application to other pebble games
-such as [lee08, chubynsky07].
+such as those presented in \cite{lee08, chubynsky07}.
+% TODO TODO TODO TODO describe these more
+TODO TODOTODO
+
 Since we have already built a web interface for visualizing pebble games,
 it would be a shame not to use it.
 

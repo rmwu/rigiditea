@@ -117,12 +117,19 @@ in \cref{sec:pebble,sec:infrigid}
 to the level of detail necessary for understanding our work.
 (Notably, we introduce a correction in \cref{sec:infrigid}
 to the well-known formula for the infinitesimal dof of a linkage.)
-We conclude with a discussion of possible extensions to Rigiditea.
+We conclude with a comparison of to the existing Java applet
+and a discussion of possible extensions to Rigiditea in \cref{sec:discuss}.
 
 \section{Architecture}
 \label{sec:arch}
 
-blah blah blah
+In this section,
+we describe the structure of our app.
+All of our code was written in CoffeeScript,
+which was transpiled down to JavaScript.
+Thus, our entire app runs in the browser.
+We now discuss the design decisions we made in detail.
+
 
 \subsection{Interface}
 
@@ -167,7 +174,7 @@ their functionalities, and keyboard shortcuts.
 & item & description & key \\ \hline
 \multirow{3}{.5cm}{\rotatebox{90}{menu bar items~~}}
 & pebble & advances pebble algorithm one step
-(one pebble exchange) & $\to$\\
+(one cover enlargement; see \cref{sec:pebble}) & $\to$\\
 & reset & resets defaults, initializes new graph, wipes canvas & r \\
 & about & background information about algorithms,
 web application, and further reading & a \\\hline
@@ -286,16 +293,45 @@ we have a maximal independent set,
 so testing rigidity becomes a simple matter.
 
 The key insight of the algorithm
-is the observation that we can test independence of a new edge $e$
-and a known independent set $\hat E$
+is the observation that we can test independence of a new edge
+and a known independent set
 by playing the namesake pebble game.
 We shall largely follow \cite{stjohnapplet}.
 
 Each vertex is given two pebbles it can use to cover incident edges.
-At any instance TODO TODO TODO
+At any given moment, we are attempting to add some edge $e$
+to the partially-built independent set $\hat E$.
+We already have a pebber covering such that all edges in $\hat E$
+are covered by at least one pebble.
 
-% runtime
-% mention how we screw over runtime
+To test independence of $e$,
+it actually suffices to check whether we can \emph{enlarge} the covering of $\hat E$
+to a covering of $\hat E \cup \{e\}$
+such that $e$ is covered by \emph{four} pebbles,
+while keeping all of $\hat E$ covered.
+
+To find such a covering,
+we define the following enlargement subroutine,
+which tries to get an extra pebble to cover $e$.
+Starting at one of the endpoints of $e$,
+we look for a vertex or an edge with a free pebble
+(that is, a pebble not covering an edge
+or one redundantly covering an edge)
+via depth-first search.
+Should we find a free pebble,
+we rearrange pebbles along the path so that $e$ has an extra pebble.
+Otherwise, we attempt the same operation on the other endpoint of $e$.
+
+If we cannot successfully apply this subroutine four times to $e$,
+we discard $e$ from consideration.
+Otherwise, we add it to $\hat E$ and consider a new $e$.
+
+This algorithm runs in $O(mn)$ time:
+we have $O(m)$ iterations,
+each of which involves at most four $O(n)$ depth-first searches.
+In practice, we did not bother with making our implementation particularly efficient,
+since the performance bottleneck was the rendering code.
+
 
 \subsection{Visualization}
 
@@ -451,6 +487,10 @@ So testing generic rigidity reduces to testing infinitesimal rigidity.
 
 
 \section{Discussion}
+\label{sec:discuss}
+
+\subsection{Comparison with existing applet}
+
 
 There currently exists another
 implementation of the pebble algorithm as a Java application~\cite{stjohnapplet}.
@@ -496,11 +536,11 @@ independent of the pebble algorithm
 \label{tab:comp}
 \end{table*}
 
-\section{Extensions}
+\subsection{Potential extensions}
 
 There are several extensions we may explore for Rigiditea.
 
-\subsection{Web interface}
+\subsubsection{Web interface}
 
 It would be convenient to scroll through the pebble algorithm's steps
 in a timeline, similar to that of the existing Java implementation.
@@ -518,7 +558,7 @@ which are quite conceptually general.
 FOLD may also present alternative means of visualizing the linkage,
 though we are quite satisfied with our current visualization.
 
-\subsection{Algorithmic extensions}
+\subsubsection{Algorithmic extensions}
 
 Algorithmically, we would also like to visualize rigid components of a linkage.
 It would be ideal to color the over-braced,
@@ -537,13 +577,19 @@ TODO TODOTODO
 Since we have already built a web interface for visualizing pebble games,
 it would be a shame not to use it.
 
-\section*{Challenges}
+\section*{Miscellaneous remarks}
+
+\subsection*{Challenges}
 
 We encountered several challenges along the way.
-First, Tony didn't realize his Coffeescript didn't compile---until the ``morning''
+First, Tony didn't realize his CoffeeScript didn't compile---until the ``morning''
 of the presentation.
 Second, Rachel didn't realize that a button would be easier to use
 and infinitely easier to implement than click-and-drag.
+
+In seriousness, both of us were new to CoffeeScript;
+overzealous extrapolation from Python syntax resulting
+in many unpleasant debugging experiences.
 
 We opted to use fewer ``out-of-the-box'' \texttt{d3.js} solutions such as
 the force-directed graph, so we weren't able to provide more advanced features
@@ -551,21 +597,21 @@ like bouncing our graph around and stretching edges.
 However, we realized that it was more important to develop a working product,
 so we remained with our simpler representations.
 
-\section*{Remarks}
+\subsection*{Work distribution}
 
 The two authors distributed the work equally.
 Tony primarily worked on the pebble algorithm and infinitesimal rigidity implementations,
 while Menghua designed and created the GUI.
 Both contributed equally to the writing of this paper.
 
-\section*{Acknowledgements}
-
+\begin{acknowledgments}
 We would like to thank Professor Erik Demaine for his instruction,
 humor, and guidance. We would also like to thank the 6.849 course staff,
 Martin Demaine, Dr. Jason Ku, Adam Hesterberg, and Jayson Lynch
 for their continual support throughout the semester.
 Finally, we would like to thank Ludwig van Beethoven for providing
-music in early hours of the morning.
+music in the wee hours of the morning.
+\end{acknowledgments}
 
 \bibliography{rigiditea}{}
 \bibliographystyle{plain}

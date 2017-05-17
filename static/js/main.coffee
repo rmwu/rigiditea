@@ -299,17 +299,17 @@ nodeGenID = () -> Math.random().toString(36).substr(2, 5)
 
 disableDraw = () ->
     graphVars.frozen = true
+    
+makePebbleGraph = () ->
+    graph = graphVars.graph
+    graphVars.graphP = new PebbleGraph graph.nodes, graph.edges, {}
 
 drawPebble = () ->
     disableDraw()
     # TODO can display original state later
     # console.log "lychee black tea (drawPebble)"
-
-    # if graphVars.edgeS != null
     if graphVars.graphP == null
-        graph = graphVars.graph
-        graphVars.graphP = new PebbleGraph graph.nodes, graph.edges, {}
-        # graphVars.graphP.enlargeCover graphVars.edgeS
+        makePebbleGraph()
     
     algorithmDone = graphVars.graphP.stepAlgorithm()
     if algorithmDone
@@ -347,6 +347,10 @@ getColor = (count) ->
     "rgb(" + r + "," + g + "," + b + ")"
 
 drawInfinite = () ->
+    disableDraw()
+    if graphVars.graphP == null
+        makePebbleGraph()
+    console.log graphVars.graphP.genericInfDOF(10)
     console.log "love you"
     # tony = graphVars.
     

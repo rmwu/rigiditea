@@ -86,27 +86,29 @@
 
 The theory of linkages has long been of interest
 not only for its mathematical appeal
-but also for its many obvious applications
-(e.g. modeling robots, proteins, trusses).
-An obvious question is that of \emph{rigidity}:
+but also for its many obvious applications;
+indeed, linkages have been used to model everything
+from trusses to robot arms to proteins.
+An obvious question that arises is that of \emph{rigidity}:
 whether a linkage can move at all.
 
-It's not hard to see that rigidity does not depend
-only on the combinatorial structure of the linkage
+It's not hard to see that rigidity depends on more than
+the combinatorial structure of the linkage
 (usually specified as an undirected graph).
-Indeed, the number of dimensions in which we embed the linkage
-and the particular configuration changes the rigidity.
+The number of dimensions in which we embed the linkage
+and the particular configuration of the linkage
+affects its rigidity.
 
 Fortunately, if we only consider \emph{generic} embeddings
 (which we take for simplicity to mean
-there are no algebraic dependence between coordinates),
+there are no algebraic dependences between coordinates),
 rigidity (and more generally, the number of degrees of freedom)
 becomes a function only of the graph and the embedding dimension.
 
-We implemented two major algorithms for generic rigidity
-as well as a web-based interface for using them.
-The first algorithm, which works in $d$ dimensions,
-considers a random embedding of the graph into $\RR^n$
+We implemented two major algorithms for determining generic rigidity,
+as well as a web-based interface for interacting with them.
+The first algorithm, which works for arbitrarily many dimensions~$d$,
+considers a random embedding of the graph into $\RR^d$
 and computes the number of \emph{infinitesimal} degrees of freedom (dof)
 as described in \cite[\S4.4.2]{gfalop}.
 The second is the famous \emph{pebble game algorithm},
@@ -138,12 +140,9 @@ All of our code was written in CoffeeScript,
 which was transpiled down to JavaScript.
 Thus, our entire app runs in the browser.
 Still, there was a clear divide between user interface code
-and ``backend", algorithmic code.
+and ``backend," algorithmic code.
 
 \subsection{Interface}
-
-We designed an aesthetic graphical user interface (GUI)
-to create and analyze linkages as 2D planar graphs.
 
 \begin{figure}[ht]
 \begin{tikzpicture}
@@ -164,13 +163,18 @@ We aimed for a simple, but powerful design.}
 \label{fig:ui}
 \end{figure}
 
-First, a user may click anywhere on the canvas to add a new node to the graph.
+We built an intuitive and aesthetically-pleasing
+graphical user interface (GUI)
+to create and analyze linkages as 2D planar graphs.
+We outline the main components of our GUI in \cref{fig:ui}.
+
+Users may click anywhere on the canvas to add a new node to the graph.
 After creating nodes,
-a user can control the user interface through one of two ways:
-the menu bar and the control panel.
+users can interact with the interface
+through either the menu bar or the control panel.
 The former focuses on algorithm running and general information,
 while the latter is tailored towards graph creation.
-\Cref{fig:ui} points out these elements in the actual interface.
+\Cref{fig:ui} identifies these elements in the actual interface.
 In addition to the menu and control panel,
 we also provide keyboard shortcuts to streamline the user experience.
 \Cref{tab:menu} enumerates the various commands available,
@@ -197,30 +201,39 @@ including keyboard shortcuts & h \\
 \label{tab:menu}
 \end{table}
 
-The GUI was created using \texttt{d3.js},
-an open-source data visualization library for web applications.
-We selected this library
-to directly link graph data objects to SVG elements on the canvas.
+The GUI was created using the open-source library \texttt{d3.js},
+one of the most widely used for data visualization.
+Conveniently, \texttt{d3} allowed us to link graph data objects
+directly to SVG elements on the canvas.
 
 \subsection{Graph representation}
 
 Graphs were represented as custom Javascript \texttt{Graph} objects,
-each with a list of \texttt{nodes}, \texttt{edges}, and specialized instance methods.
-We will later introduce the \texttt{PebbleGraph} class,
-which is a subclass of \texttt{Graph} with additional rigidity-related capabilities.
+each with a list of \texttt{Node} objects,
+a list of \texttt{Edge} objects,
+and other specialized instance methods,
+such as the infinitesimal-rigidity-based generic rigidity algorithm.
 
-Each \texttt{Edge} object keeps track of its unique \texttt{id}, \texttt{source}, \texttt{target}, and \texttt{attributes},
+Each \texttt{Edge} object keeps track of
+its unique \texttt{id},
+\texttt{source} and \texttt{target} \texttt{Node} objects,
+and miscellaneous \texttt{attributes},
 such as current and previous color.
-Of these fields, \texttt{source} and \texttt{target} are both \texttt{Node} objects,
-which each possess a unique \texttt{id}, its \texttt{x} and \texttt{y} coordinates,
+The \texttt{Node} objects
+each possess a unique \texttt{id}, \texttt{x} and \texttt{y} coordinates,
 and a map of \texttt{attributes}.
-Unique \texttt{id}s were randomly generated,
+All unique \texttt{id}s mentioned above are randomly generated,
 case-sensitive alphanumeric strings of 5 characters.
-\Cref{fig:graphrep} provides a simple example.
+We provide an example \texttt{Graph} in \Cref{fig:graphrep}.
 
-Note that nodes are passed to \texttt{edges} by reference.
-Furthermore, we use an absolute coordinate system,
-based on pixels, so for convenience, each node keeps track of its own location.
+
+We use an absolute pixel-based coordinate system to position nodes.
+Each \texttt{Node} keeps track of its own location on the canvas.
+\texttt{Edge} objects are then drawn to connect its endpoints.
+All elements also keep track of their own colors,
+which change upon selection
+or visualization of the pebble algorithm,
+as we shall discuss.
 
 \begin{figure}[ht]
 \begin{verbatim}
@@ -238,22 +251,24 @@ Graph: {
    [instance methods]
 }
 \end{verbatim}
-\caption{Sample representation of a line segment.}
+\caption{Possible representation of the graph $K_2$ (two nodes joined with a single edge) as a \texttt{Graph}.}
 \label{fig:graphrep}
 \end{figure}
 
-On top of this basic graph,
-we designed another \texttt{PebbleGraph} class,
-which could run iterations of the pebble algorithm
-and test for infinitesimal rigidity.
-\texttt{PebbleGraph} objects can be easily created
-from standard \texttt{Graph} objects since
-their underlying representations are the same.
-However, \texttt{PebbleGraph} objects also maintain
-an assignment of ``pebbles'' to edges and vertices.
-Thus, once we begin running the Pebble algorithm,
-we disable graph editing in the GUI and generate a mutable \texttt{PebbleGraph}
-for future steps.
+We also implemented a child \texttt{PebbleGraph} class,
+whose additional data structures and instance methods
+allow us to run (and in particular, to step through) the pebble algorithm.
+%\texttt{PebbleGraph} objects can be easily created
+%from standard \texttt{Graph} objects since
+%their underlying representations are the same.
+In particular, \texttt{PebbleGraph} objects also track
+assignments of ``pebbles'' to edges and vertices
+(as we shall explain).
+Once we start the pebble game algorithm,
+of course, we cannot continue mutating the combinatorial structure of the graph.
+Thus, once we begin running the algorithm,
+we disable graph editing in the GUI
+and generate a \texttt{PebbleGraph}.
 
 \section{Pebble game visualization}
 \label{sec:pebble}
@@ -273,7 +288,7 @@ with $n$ vertices and $m$ edges.
 We say a subset of the edges is \emph{independent}
 if they produce independent constraints on the motion of the vertices
 in a generic embedding.
-An independent set is maximal if we can't add another edge
+An independent set is \emph{maximal} if we can't add another edge
 while preserving independence.
 
 In two dimensions, $n$ unconstrained vertices have $2n-3$ degrees of freedom,
@@ -281,10 +296,10 @@ where we have excluded rigid motion.
 Now each independent edge reduces this freedom by one,
 so that
 \[
-    \text{degrees of freedom} = 2n - 3 - \abs{\text{maximal independent set}}.
+    \text{dof} = 2n - 3 - \abs{\text{maximal independent set}}.
 \]
 It follows that our graph is generically rigid
-if we can find $2n-3$ independent edges.\footnote{It makes sense
+if and only if we can find $2n-3$ independent edges.\footnote{It makes sense
 to talk about \emph{the} size 
 of maximal independent sets
 for the same reason that the dimension of a span of vectors
@@ -293,24 +308,25 @@ indeed, edges correspond to vectors in $\RR^{dn}$,
 as we shall see in the next section.}
 
 On a high level,
-the pebble algorithm builds an independent set of edges
+the pebble algorithm builds an independent set of edges $\hat E$
 by arbitrarily ordering the edges
-and accepting an edge into the current independent set
+and accepting an edge into $\hat E$
 if and only if doing so would preserve independence.
+Of course, we initialize $\hat E = \varnothing$.
 After all edges are considered,
 we have a maximal independent set,
 so testing rigidity becomes a simple matter.
 
 The key insight of the algorithm
-is the observation that we can test independence of a new edge
-and a known independent set
-by playing the namesake pebble game.
-We shall largely follow \cite{stjohnapplet}.
+is the observation that we can test independence of a new edge $e$
+and the current independent set $\hat E$
+by playing the namesake pebble game,
+which we now describe, largely following \cite{stjohnapplet}.
 
 Each vertex is given two pebbles it can use to cover incident edges.
 At any given moment, we are attempting to add some edge $e$
-to the partially-built independent set $\hat E$.
-We already have a pebber covering such that all edges in $\hat E$
+to the partially-built independent set~$\hat E$.
+We begin with a pebble covering such that all edges in $\hat E$
 are covered by at least one pebble.
 
 To test independence of $e$,
@@ -321,25 +337,25 @@ while keeping all of $\hat E$ covered.
 
 To find such a covering,
 we define the following enlargement subroutine,
-which tries to get an extra pebble to cover $e$.
-Starting at one of the endpoints of $e$,
+which tries to find an extra pebble to cover $e = (u, v)$.
+Starting at endpoint $u$,
 we look for a vertex or an edge with a free pebble
 (that is, a pebble not covering an edge
 or one redundantly covering an edge)
 via depth-first search.
 Should we find a free pebble,
 we rearrange pebbles along the path so that $e$ has an extra pebble.
-Otherwise, we attempt the same operation on the other endpoint of $e$.
+Otherwise, we attempt the same operation on $v$.
 
 If we cannot successfully apply this subroutine four times to $e$,
 we discard $e$ from consideration.
 Otherwise, we add it to $\hat E$ and consider a new $e$.
-
-This algorithm runs in $O(mn)$ time:
-we have $O(m)$ iterations,
+As a result,
+we see that this algorithm runs in $O(mn)$ time.
+We have $O(m)$ iterations,
 each of which involves at most four $O(n)$ depth-first searches.
 In practice, we did not bother with making our implementation particularly efficient,
-since the performance bottleneck was the rendering code.
+since GUI rendering proved to be our performance bottleneck.
 
 
 \subsection{Visualization}
@@ -354,27 +370,29 @@ since the performance bottleneck was the rendering code.
    \caption{Pebble cover on a single segment.
    We start by drawing the segment
    and proceed to cover it with pebbles,
-   until determining that a segment is rigid.}
+   until determining that a segment is rigid.
+   Note the color change on the endpoints
+   as their pebbles are allocated to the edge.}
    \label{fig:seg}
 \end{figure}
 
-Rigiditea primarily provides a pebble game visualization,
-in which we attempt to add edges and see if they contribute
-to the graph's overall rigidity.
-
-At each phase, we randomly select an edge to ``add'' to our current set.
-For four rounds, we attempt to cover the edge with four pebbles.
-This is reflected in our GUI with a spectrum of blue and green,
+Rigiditea primarily provides a visualization of the pebble game algorithm.
+In particular, it allows the user to trigger individual cover enlargement steps.
+Edges and vertices are color-coded by the number of pebbles covering them,
+making it clear which edges we've added to $\hat E$
+(those always covered by pebbles)
+and which edge $e$ we're adding
+(the one accumulating pebbles).
+We use a spectrum of blue and green,
 where zero pebbles is a darker blue and four pebbles is a light yellow-green.
-Pebbles can reside in both nodes and edges,
-so both can be colored.
-Figure \ref{fig:seg} shows a simplified version for a single segment,
-and figure \ref{fig:pebbles} demonstrates this process
+\Cref{fig:seg} shows a simplified version of this process for a single segment,
+and \cref{fig:pebbles} demonstrates multiple phases of the algorithm
 for a triangle.
 
-At any given point during the pebble game,
-a user can view the number of pebbles on an edge or node by
-mousing over that element.
+For additional clarity,
+a user can view the number of pebbles on an edge or node
+at any given point during the pebble game
+by mousing over that element.
 
 \begin{figure*}[t]
    \centering
@@ -518,12 +536,14 @@ So testing generic rigidity reduces to testing infinitesimal rigidity.
    \label{fig:inf}
 \end{figure*}
 
-Any graph drawn with our GUI can also be tested for infinitesimal rigidity.
+Any graph drawn with our GUI can be tested for infinitesimal rigidity.
 Though we can only draw graphs in two dimensions,
-we may assume that these exist as planes in $n$ dimensional space.
+we may randomly embed them in $n$ dimensional space.
+This is possible because in the infinitesimal case,
+we are only concerned with the combinatorial structure of the graph.
 Thus, the user is prompted to enter the desired number of dimensions
 when running infinitesimal rigidity.
-Figure \ref{fig:inf} shows this process for a triangle.
+\Cref{fig:inf} shows this process for a triangle.
 
 \section{Discussion}
 \label{sec:discuss}
@@ -609,9 +629,10 @@ Finally, it would be convenient to export graphs into the FOLD format
 However, we did not prioritize this goal since
 linkages can be adequately visualized as planar graphs,
 which are quite conceptually general.
-We also did not envision Rigiditea as a graph-sharing website.
-And while FOLD may also present alternative means of visualizing the linkage,
-we are quite satisfied with our current visualization.
+We also did not envision this application as a graph-sharing website,
+but rather as a visual tutorial or linkage playground.
+And while FOLD may also present alternative means of linkage visualization,
+we are quite satisfied with ours.
 
 \subsubsection{Algorithmic extensions}
 
@@ -646,13 +667,14 @@ Second, Rachel didn't realize that a button would be easier to use
 and infinitely easier to implement than click-and-drag.
 
 In seriousness, both of us were new to CoffeeScript;
-overzealous extrapolation from Python syntax resulting
+overzealous extrapolation from Python syntax resulted
 in many unpleasant debugging experiences.
 
 We opted to use fewer ``out-of-the-box'' \texttt{d3.js} solutions such as
 the force-directed graph, so we weren't able to provide more advanced features
 like bouncing our graph around and stretching edges.
 However, we realized that it was more important to develop a working product,
+and graphs are not typically squishy (as the force-directed graph may suggest),
 so we remained with our simpler representations.
 
 \subsection{Work distribution}

@@ -19,4 +19,8 @@ old/*
 *.vrb
 *.fdb_latexmk
 *.fls
+*.bbl
+*.blg
+*.xwm
+*Notes.bib
 

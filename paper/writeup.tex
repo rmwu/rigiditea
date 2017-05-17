@@ -1,0 +1,120 @@
+\newif\ifrevtex
+\revtextrue
+
+\ifrevtex
+    \documentclass[aps,final,twocolumn,letterpaper,nofootinbib]{revtex4-1}
+\else
+    \documentclass[twocolumn]{article}
+\fi
+
+%\usepackage[letterpaper,hmargin=0.8in,vmargin=0.8in]{geometry}
+\usepackage{graphicx}
+
+\usepackage{amsmath,amssymb}
+\usepackage{siunitx}
+
+%\usepackage{mathpazo}
+\usepackage{microtype}
+
+\usepackage{diagbox}
+
+\usepackage{color}
+\usepackage[dvipsnames]{xcolor}
+\usepackage[printwatermark]{xwatermark}
+\newwatermark[allpages,color=red!10,angle=45,scale=3,xpos=0,ypos=0]{DRAFT}
+
+\newcommand\RR{\mathbb{R}}
+
+%\usepackage{tikz}
+%\usetikzlibrary{arrows}
+%\usetikzlibrary{angles,patterns,calc}
+
+\newcommand\headers{
+    \title{Rigiditea: web-based rigidity algorithms}
+    \author{Tony Zhang and Menghua Wu}
+    \date{May 17, 2017}    
+    \begin{abstract}
+        We present Rigiditea,
+        a native client-side web-based implementation of two algorithms
+        for testing generic rigidty of graphs:
+        the $n$-dimensional randomized infinitesimal-rigidity-based algorithm
+        and the deterministic pebble game algorithm for two-dimensional rigidity.
+        For the latter, we provide a step-by-step visualization of the algorithm
+        for aid in understanding the algorithm.
+    \end{abstract}
+}
+
+
+\ifrevtex\relax\else\headers\fi
+\begin{document}
+\ifrevtex\headers\fi
+
+\maketitle
+
+
+
+% % % % % % % % % %
+%    INTRODUCTION
+% % % % % % % % % %
+
+\tableofcontents
+
+\section{Introduction}
+
+The theory of linkages TODO TODO TODO
+
+We implemented two major algorithms for generic rigidity.
+The first, which works in $n$ dimensions,
+considers a random embedding of the graph into $\RR^n$
+and computes the number of infinitesimal degrees of freedom (dof).
+Infinitesimal rigidity of the random embedding always implies generic rigidity;
+the converse holds with high probability.
+
+The second algorithm is the famous \emph{pebble game algorithm},
+first introduced by Jacobs and Hendrickson in 1997~\cite{jacobs97}.
+Briefly, it considers TODO TOOD
+
+To the best of our knowledge,
+there do not exist convenient implementations of
+either rigidity algorithms.
+In particular,
+we were unable to find an sort of graphical interface
+for the infinitesimal algorithm,
+and only found a Java applet for the pebble game \cite{stjohnapplet}.
+
+
+\section{Interface}
+
+\section{Pebble game visualization}
+
+\section{Infinitesimal rigidity}
+
+\section{Discussion}
+
+\section{Extensions}
+
+\begin{itemize}
+    \item
+    Undo feature
+    \item
+    Graph export into FOLD
+    \item
+    Visualize rigid components
+    \item
+    Extend to other pebble games like in \cite{lee08}
+\end{itemize}
+
+
+\section*{Acknowledgements}
+
+
+\bibliography{rigiditea}{}
+\bibliographystyle{plain}
+
+
+
+
+
+
+\end{document}
+

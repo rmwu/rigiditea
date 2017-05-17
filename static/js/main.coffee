@@ -68,7 +68,6 @@ attachBindings = () ->
         drawPebble()
 
     $("#reset").on "click", () ->
-        resetGraphVars()
         initGraph()
         
     $("#inf").on "click", () ->
@@ -97,6 +96,8 @@ attachBindings = () ->
 ###################
     
 initGraph = () ->
+    resetGraphVars()
+    
     $("#graph").html ""
     d3Vars.svg = d3.select("#graph").append("svg")
         .attr("width", vars.width)
@@ -134,6 +135,15 @@ onKeyDown = (e) ->
     # this is the "right arrow" key
     else if e.keyCode == 39
         drawPebble()
+    # this is the "r" key
+    else if e.keyCode == 82
+        initGraph()
+    # this is the "h" key
+    else if e.keyCode == 72
+        showHelp()
+    # this is the "a" key
+    else if e.keyCode == 65
+        showAbout()
     
 onKeyUp = (e) ->
     d3Vars.svg.style("cursor", "crosshair")
@@ -327,9 +337,7 @@ drawPebble = () ->
     for edge in graphVars.graphP.edges
         count = algState.edgeCounts[edge.id]
         edge.setColor getColor(count)
-        console.log(edge.getSavedColor())
         edge.saveColor()
-        console.log(edge.getSavedColor())
             
     redraw()
  
@@ -350,7 +358,15 @@ drawInfinite = () ->
     disableDraw()
     if graphVars.graphP == null
         makePebbleGraph()
-    console.log graphVars.graphP.genericInfDOF(10)
+        
+    dims = prompt "How many dimensions would you like?", 10
+    if dims == null || dims == ""
+        console.log "wintermelon milk tea (inf canceled)"
+    else
+        console.log "jujube date tea (inf with " + dims + " dims)"
+        degOfFreedom = graphVars.graphP.genericInfDOF Number.parseInt(dims)
+        console.log degOfFreedom
+        
     console.log "love you"
     # tony = graphVars.
     
@@ -617,7 +633,11 @@ class PebbleGraph extends Graph
     ###
     stepAlgorithm: () ->
         if this.algorithmComplete()
-            alert "algorithm complete!"
+            rigid = this.isLamanRigid()
+            if rigid
+                alert "algorithm complete! graph is rigid."
+            else
+                alert "algorithm complete! graph is not rigid."
             return ""
 
         if @enlargeCoverIteration == 0
@@ -709,12 +729,19 @@ class PebbleGraph extends Graph
 ####################
 
 showAbout = () ->
+    # graphVars.aboutOpen = true
     $("#aboutPanel").show()
     
 showHelp = () ->
+    # graphVars.helpOpen = true
     $("#helpPanel").show()
     
 hideHelp = (element) ->
     # console.log "yogurt milk tea (hide parent)"
+    # if graphVars.helpOpen = true
+    #     graphVars.helpOpen = false
+    # else if graphVars.aboutOpen = true
+    #    graphVars.aboutOpen = false
+    
     $(element).parent().hide()
 

@@ -68,7 +68,6 @@
       return drawPebble();
     });
     $("#reset").on("click", function() {
-      resetGraphVars();
       return initGraph();
     });
     $("#inf").on("click", function() {
@@ -94,6 +93,7 @@
   };
 
   initGraph = function() {
+    resetGraphVars();
     $("#graph").html("");
     d3Vars.svg = d3.select("#graph").append("svg").attr("width", vars.width).attr("height", vars.height).style("fill", "none").on("click", onClick).on("mouseup", onMouseUpNode);
     return graphVars.graph = new Graph([], []);
@@ -124,6 +124,12 @@
       return deleteNodes();
     } else if (e.keyCode === 39) {
       return drawPebble();
+    } else if (e.keyCode === 82) {
+      return initGraph();
+    } else if (e.keyCode === 72) {
+      return showHelp();
+    } else if (e.keyCode === 65) {
+      return showAbout();
     }
   };
 
@@ -322,9 +328,7 @@
       edge = ref1[l];
       count = algState.edgeCounts[edge.id];
       edge.setColor(getColor(count));
-      console.log(edge.getSavedColor());
       edge.saveColor();
-      console.log(edge.getSavedColor());
     }
     return redraw();
   };
@@ -340,11 +344,19 @@
   };
 
   drawInfinite = function() {
+    var degOfFreedom, dims;
     disableDraw();
     if (graphVars.graphP === null) {
       makePebbleGraph();
     }
-    console.log(graphVars.graphP.genericInfDOF(10));
+    dims = prompt("How many dimensions would you like?", 10);
+    if (dims === null || dims === "") {
+      console.log("wintermelon milk tea (inf canceled)");
+    } else {
+      console.log("jujube date tea (inf with " + dims + " dims)");
+      degOfFreedom = graphVars.graphP.genericInfDOF(Number.parseInt(dims));
+      console.log(degOfFreedom);
+    }
     return console.log("love you");
   };
 
@@ -809,9 +821,14 @@
      */
 
     PebbleGraph.prototype.stepAlgorithm = function() {
-      var enlargementSuccessful;
+      var enlargementSuccessful, rigid;
       if (this.algorithmComplete()) {
-        alert("algorithm complete!");
+        rigid = this.isLamanRigid();
+        if (rigid) {
+          alert("algorithm complete! graph is rigid.");
+        } else {
+          alert("algorithm complete! graph is not rigid.");
+        }
         return "";
       }
       if (this.enlargeCoverIteration === 0) {

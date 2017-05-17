@@ -317,14 +317,14 @@
   makePebbleGraph = function() {
     var graph;
     graph = graphVars.graph;
-    return graphVars.graphP = new PebbleGraph(graph.nodes, graph.edges, {});
+    return new PebbleGraph(graph.nodes, graph.edges, {});
   };
 
   drawPebble = function() {
     var algState, algorithmDone, count, edge, k, l, len, len1, node, ref, ref1;
     disableDraw();
     if (graphVars.graphP === null) {
-      makePebbleGraph();
+      graphVars.graphP = makePebbleGraph();
     }
     algorithmDone = graphVars.graphP.stepAlgorithm();
     if (algorithmDone) {
@@ -361,17 +361,14 @@
   };
 
   drawInfinite = function() {
-    var degOfFreedom, dims;
-    disableDraw();
-    if (graphVars.graphP === null) {
-      makePebbleGraph();
-    }
+    var degOfFreedom, dims, graphP;
+    graphP = makePebbleGraph();
     dims = prompt("How many dimensions would you like?", 10);
     if (dims === null || dims === "") {
       console.log("wintermelon milk tea (inf canceled)");
     } else {
       console.log("jujube date tea (inf with " + dims + " dims)");
-      degOfFreedom = graphVars.graphP.genericInfDOF(Number.parseInt(dims));
+      degOfFreedom = graphP.genericInfDOF(Number.parseInt(dims));
       alert("Your graph has " + degOfFreedom.toString() + " degrees of freedom.");
     }
     return console.log("love you");

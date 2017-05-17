@@ -338,14 +338,14 @@ disableDraw = () ->
     
 makePebbleGraph = () ->
     graph = graphVars.graph
-    graphVars.graphP = new PebbleGraph graph.nodes, graph.edges, {}
+    new PebbleGraph graph.nodes, graph.edges, {}
 
 drawPebble = () ->
     disableDraw()
     # TODO can display original state later
     # console.log "lychee black tea (drawPebble)"
     if graphVars.graphP == null
-        makePebbleGraph()
+        graphVars.graphP = makePebbleGraph()
     
     algorithmDone = graphVars.graphP.stepAlgorithm()
     if algorithmDone
@@ -381,16 +381,14 @@ getColor = (count) ->
     "rgb(" + r + "," + g + "," + b + ")"
 
 drawInfinite = () ->
-    disableDraw()
-    if graphVars.graphP == null
-        makePebbleGraph()
+    graphP = makePebbleGraph()
         
     dims = prompt "How many dimensions would you like?", 10
     if dims == null || dims == ""
         console.log "wintermelon milk tea (inf canceled)"
     else
         console.log "jujube date tea (inf with " + dims + " dims)"
-        degOfFreedom = graphVars.graphP.genericInfDOF Number.parseInt(dims)
+        degOfFreedom = graphP.genericInfDOF Number.parseInt(dims)
         alert "Your graph has " + degOfFreedom.toString() + " degrees of freedom."
         
     console.log "love you"

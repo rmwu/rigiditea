@@ -68,9 +68,24 @@
 
 \section{Introduction}
 
-The theory of linkages TODO TODO TODO
-finds obvious applications.
-For example, 
+The theory of linkages has long been of interest
+not only for its mathematical appeal
+but also for its many obvious applications
+(e.g. modeling robots, proteins, trusses).
+An obvious question is that of \emph{rigidity}:
+whether a linkage can move at all.
+
+It's not hard to see that rigidity does not depend
+only on the combinatorial structure of the linkage
+(usually specified as an undirected graph).
+Indeed, the number of dimensions in which we embed the linkage
+and the particular configuration changes the rigidity.
+
+Fortunately, if we only consider \emph{generic} embeddings
+(which we take for simplicity to mean
+there are no algebraic dependence between coordinates),
+rigidity (and more generally, the number of degrees of freedom)
+becomes a function only of the graph and the embedding dimension.
 
 We implemented two major algorithms for generic rigidity.
 The first, which works in $n$ dimensions,
@@ -85,15 +100,11 @@ first introduced by Jacobs and Hendrickson in 1997~\cite{jacobs97}.
 Briefly, it considers TODO TOOD
 
 To the best of our knowledge,
-there do not exist convenient implementations of
+there did not exist convenient implementations of
 either rigidity algorithm.
 In particular,
-we were unable to find an sort of graphical interface
-for the infinitesimal algorithm,
+we were unable to find any implementation of the infinitesimal algorithm,
 and only found a Java applet for the pebble game \cite{stjohnapplet}.
-
-
-TODO TODO
 
 Let us outline the remainder of this paper.
 In \cref{sec:arch}, we describe the structure of our web application.

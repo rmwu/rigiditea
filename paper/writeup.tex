@@ -64,6 +64,11 @@
         and the deterministic pebble game algorithm for two-dimensional rigidity.
         For the latter, we provide a step-by-step visualization of the algorithm
         for aid in understanding the algorithm.
+        We describe the design decisions we made and
+        the theory behind the algorithms,
+        including a hitherto unknown correction to the infinitesimal algorithm.
+        Finally, we compare our implementation of the pebble algorithm
+        to an existing one and outline potential extensions to Rigiditea.
     \end{abstract}
 }
 
@@ -658,20 +663,18 @@ we should include the ability to drag nodes around with \texttt{ALT+click}.
 It would also be ideal to snap nodes to a grid,
 so the overall design looks neater.
 
-Finally, it would be convenient to export graphs into the FOLD format
-However, we did not prioritize this goal since
-linkages can be adequately visualized as planar graphs,
-which are quite conceptually general.
-We also did not envision this application as a graph-sharing website,
+Finally, it would be convenient to export graphs into the FOLD format.
+However, we did not prioritize this goal,
+as we did not envision this application as a graph-sharing website,
 but rather as a visual tutorial or linkage playground.
 And while FOLD may also present alternative means of linkage visualization,
 we are quite satisfied with ours.
 
 \subsubsection{Algorithmic extensions}
 
-The pebble game algorithm is actually able to determine
+The pebble game algorithm can actually determine
 the rigid components of a linkage,
-which we would also have liked to visualize
+which we would have liked to visualize
 as distinctly-colored clusters of edges.
 %It would be ideal to color the over-braced,
 %under-braced, and minimally rigid components so a user
@@ -694,7 +697,7 @@ These generalized pebble games and sparsity conditions
 also find practice use.
 Our $(2,3)$ case corresponded to two dimensional rigidity,
 which was used to simulate two-dimensional glasses
-as linkages in the original paper \cite{jacobs97}.
+as linkages in the original paper~\cite{jacobs97}.
 Other pebble games extend this approach to three-dimensions \cite{chubynsky07};
 indeed, pebble games have found great use in \emph{percolation theory},
 which studies rigid components and other cluster behavior in random graphs.
@@ -702,46 +705,54 @@ The applications to physics and materials science are manifest.
 
 
 
-\appendix*
 \section{Miscellaneous remarks}
 
 \subsection{Challenges}
 
 We encountered several challenges along the way.
-First, Tony didn't realize his CoffeeScript didn't compile---until the ``morning''
-of the presentation.
-Second, Rachel didn't realize that a button would be easier to use
-and infinitely easier to implement than click-and-drag.
-
-In seriousness, both of us were new to CoffeeScript;
-overzealous extrapolation from Python syntax resulted
+%First, Tony didn't realize his CoffeeScript didn't compile---until the ``morning''
+%of the presentation.
+%Second, Rachel didn't realize that a button would be easier to use
+%and infinitely easier to implement than click-and-drag.
+%
+Both of us were new to CoffeeScript,
+which we hoped to learn through this project.
+Overzealous extrapolation from Python syntax resulted
 in many unpleasant debugging experiences.
+Furthermore,
+unfamiliarity with the language led us to forgo unit tests,
+so we relied entirely on end-to-end tests to debug.
+Finally, lacking a well-supported import system,
+we wrote all our code in one file.
 
-We opted to use fewer ``out-of-the-box'' \texttt{d3.js} solutions such as
-the force-directed graph, so we weren't able to provide more advanced features
+We also used fewer ``out-of-the-box'' \texttt{d3.js} solutions
+such as the force-directed graph,
+so we weren't able to provide more 
 like bouncing our graph around and stretching edges.
-However, we realized that it was more important to develop a working product.
-Besides, graphs are not typically squishy (as the force-directed graph may suggest),
-so we remained with our simpler representations.
+However, we realized that it was more important to develop a working product
+than to attach more bells and whistles.
 
 \subsection{Work distribution}
 
 The two authors distributed the work equally.
-Tony primarily worked on the pebble algorithm and infinitesimal rigidity implementations,
+Tony primarily worked on
+the pebble algorithm and infinitesimal rigidity implementations,
 while Menghua designed and created the GUI.
-Both contributed equally to the writing of this paper.
+Both contributed equally to the preparation of the oral presentation
+and the writing of this paper.
 
-\subsection{Code}
+\subsection{Demo and source code}
 
 A live demonstration of this application may be found at
 \url{http://web.mit.edu/rmwu/www/rigid/} for the time being.
-Rigiditea's source code is located in a public git repository,
+Rigiditea's entire source code is located in a public git repository,
 \url{https://github.com/rmwu/rigiditea}.
 
 The project was named after bubble tea since we really like bubble tea.
 For the interested reader, we used many \texttt{console.log} statements
 with different flavors of bubble tea to quickly track errors.
 Many remain for the entertainment of confused and/or curious users.
+
 
 \begin{acknowledgments}
 We would like to thank Professor Erik Demaine for his instruction,

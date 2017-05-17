@@ -597,6 +597,11 @@ class PebbleGraph extends Graph
     algorithmComplete: () ->
         @remainingEdges.length == @enlargeCoverIteration == 0
 
+    isLamanRigid: () ->
+        if not this.algorithmComplete()
+            throw AlgorithmNotCompleteException("The pebble algorithm must be run completely before querying rigidity!")
+        @independentEdges.length == 2 * @nodes.length - 3
+
     ###
     Returns:
         true if algorithm is complete, false otherwise
@@ -703,3 +708,4 @@ showHelp = () ->
 hideHelp = (element) ->
     # console.log "yogurt milk tea (hide parent)"
     $(element).parent().hide()
+

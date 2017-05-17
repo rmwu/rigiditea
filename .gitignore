@@ -3,6 +3,8 @@
 static/img/*
 **.sass-cache/*
 **.sassc
+*.js
+!static/js/lib/*
 old/*
 .DS_Store
 *.pdf

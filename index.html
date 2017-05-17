@@ -39,8 +39,42 @@
                 <p>Welcome to Rigiditea, our humble little web app!</p>
                 
                 <p>
-                INSERT DESCRIPTION AND LINKS
-                ABOUT ALGORITHMS and rigidity.
+                Rigiditea is a simple web application for visualizing the pebble game algorithm,
+                which determines the generic two-dimensional rigidity of an arbitrary unidrected graph.
+                The algorithm works by building a maximal set of <em>independent edges</em>
+                (i.e. edges that impose linearly independent constraints on the motion of the graph).
+                A graph with 2<em>n</em> - 3 independent edges
+                (corresponding to the 2<em>n</em> - 3 degrees of freedome)
+                is generically rigid in two dimensions,
+                so determining rigidity once we have a maximal independent set is trivial.
+                </p>
+                <p>
+                The pebble game algorithm builds the maximal set in stages;
+                at each stage, it tests whether it can add an edge to the independent set.
+                The algorithm proceeds until all edges have been tried,
+                at which point we have a maximal independent set.
+                </p>
+                <p>
+                It happens that we can add an edge to the current independent set
+                if and only if we can play the following pebble game successfully.
+                In the graph consisting of the current independent set
+                and the candidate edge,
+                assign each vertex two pebbles;
+                vertices can use their pebbles to cover edges incident to them.
+                The objective is to cover each edge in the current independent set with one pebble
+                and the candidate edge with four.
+                </p>
+                <p>
+                We illustrate this algorithm here by allowing the user to step through it.
+                At each stage, we mark the candidate indepedent edge
+                and show the number of pebbles on each vertex and edge.
+                </p>
+                <h3>Further reading</h3>
+                <p><a href="https://doi.org/10.1006/jcph.1997.5809">
+                D. J. Jacobs, B. Hendrickson,
+                <em>An Algorithm for Two-Dimensional Rigidity Percolation: The Pebble Game</em>,
+                J. Comp. Phys., 137, 346 (1997).
+                </a>
                 </p>
                 
                 <p>Rigiditea was designed by <a href="http://web.mit.edu/txz/www/">Tony Zhang '19</a> and <a href="http://web.mit.edu/rmwu/www/">Menghua Wu '19</a> for the Spring 2017 offering of <a href="http://courses.csail.mit.edu/6.849/spring17/">Geometric Folding Algorithms (6.849)</a>, taught by the ever-so-cool <a href="http://erikdemaine.org/">Professor Erik Demaine.</a>

@@ -322,9 +322,7 @@
       edge = ref1[l];
       count = algState.edgeCounts[edge.id];
       edge.setColor(getColor(count));
-      console.log(edge.getSavedColor());
       edge.saveColor();
-      console.log(edge.getSavedColor());
     }
     return redraw();
   };
@@ -787,6 +785,13 @@
       return (this.remainingEdges.length === (ref = this.enlargeCoverIteration) && ref === 0);
     };
 
+    PebbleGraph.prototype.isLamanRigid = function() {
+      if (!this.algorithmComplete()) {
+        throw AlgorithmNotCompleteException("The pebble algorithm must be run completely before querying rigidity!");
+      }
+      return this.independentEdges.length === 2 * this.nodes.length - 3;
+    };
+
 
     /*
     Returns:
@@ -794,9 +799,14 @@
      */
 
     PebbleGraph.prototype.stepAlgorithm = function() {
-      var enlargementSuccessful;
+      var enlargementSuccessful, rigid;
       if (this.algorithmComplete()) {
-        alert("algorithm complete!");
+        rigid = this.isLamanRigid();
+        if (rigid) {
+          alert("algorithm complete! graph is rigid.");
+        } else {
+          alert("algorithm complete! graph is not rigid.");
+        }
         return "";
       }
       if (this.enlargeCoverIteration === 0) {

@@ -327,9 +327,7 @@ drawPebble = () ->
     for edge in graphVars.graphP.edges
         count = algState.edgeCounts[edge.id]
         edge.setColor getColor(count)
-        console.log(edge.getSavedColor())
         edge.saveColor()
-        console.log(edge.getSavedColor())
             
     redraw()
  
@@ -608,7 +606,11 @@ class PebbleGraph extends Graph
     ###
     stepAlgorithm: () ->
         if this.algorithmComplete()
-            alert "algorithm complete!"
+            rigid = this.isLamanRigid()
+            if rigid
+                alert "algorithm complete! graph is rigid."
+            else
+                alert "algorithm complete! graph is not rigid."
             return ""
 
         if @enlargeCoverIteration == 0

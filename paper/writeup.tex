@@ -348,7 +348,8 @@ we rearrange pebbles along the path so that $e$ has an extra pebble.
 Otherwise, we attempt the same operation on $v$.
 
 If we cannot successfully apply this subroutine four times to $e$,
-we discard $e$ from consideration.
+we discard $e$ from consideration
+and do not require it to be covered by a pebble in future iterations.
 Otherwise, we add it to $\hat E$ and consider a new $e$.
 As a result,
 we see that this algorithm runs in $O(mn)$ time.
@@ -419,6 +420,9 @@ by mousing over that element.
 \section{Infinitesimal rigidity}
 \label{sec:infrigid}
 
+\subsection{Formula for infinitesimal dof}
+
+
 In this section,
 we outline the algorithm for determining the infinitesimal degrees of freedom
 of a $d$-dimensional linkage embedding.
@@ -427,6 +431,10 @@ so we only provide a brief sketch.
 More importantly, however,
 we shall prove a correction to the formula the algorithm uses
 to compute the infinitesimal degrees of freedom.
+Though of theoretical interest,
+this correction does not prove particularly important for us,
+since it only applies to non-generic embeddings
+in which the linkage lives in a lower-dimensional flat.
 
 As before, suppose we have $G = (V, E)$ of $n$ vertices and $m$ edges.
 Given a $d$-dimensional embedding of the vertices,
@@ -446,7 +454,7 @@ However, some of these motions are rigid,
 corresponding to the infinitesimal generators of rigid motions in $\RR^d$,
 which form a $\binom{d+1}{2}$-dimensional vector space:
 the Lie algebra $\mathfrak{se}(d)$ of the \emph{special Euclidean group},
-the orientation-preserving isometry group of $\RR^d$.
+the Lie group of orientation-preserving isometries of $\RR^d$.
 
 Once we exclude these trivial motions,
 we would naively expect the subspace of nontrivial infinitesimal motions
@@ -474,11 +482,10 @@ was $\binom{d+1}{2}$-dimensional:
 that is, each nontrivial infinitesimal isometry of $\RR^d$
 produced a nontrivial infintiesimal motion of our graph.
 This assumption is generally false.
-In our $K_2$ example,
-if $d=3$, 
+If we embed $K_2$ in $\RR^3$,
 the infinitesimal generator
 of the rotation about the single edge
-produces the trivial infinitesimal motion 0
+produces the trivial infinitesimal motion~0
 of the two vertices.
 
 We'd like to find $\dim M_0$,
@@ -515,18 +522,41 @@ Then $\ker\phi\cong\mathfrak{so}(d-k)$, which has dimension $\binom{d-k}{2}$.
 it's really a $d-k$-dimensional rotation.)
 
 As a result, the correct formula we want is
-\begin{equation}
+\begin{equation}\label{eq:correctdof}
     dn - \dim\im R - \binom{d+1}{2} + \binom{d-k}{2}.
 \end{equation}
 We are not aware of prior work mentioning the final correction term we derived.
 
-Note that this algorithm immediately turns into an algorithm
+\subsection{Testing generic rigidity}
+
+
+This algorithm immediately turns into an algorithm
 for testing generic linkage rigidity in arbitrarily many dimensions $d$.
 Since random embeddings are generic with high probability,
 the infinitesimal dof will almost always match the generic dof.
-So testing generic rigidity reduces to testing infinitesimal rigidity.
+So testing generic rigidity reduces to testing infinitesimal rigidity,
+which is just straightforward evaluation of \cref{eq:correctdof}.
 
-\subsection{Web interface}
+The only nontrivial portions of the algorithm involve
+computing the rank of the rigidity matrix~$R$
+and the dimension~$k$.
+The rigidity matrix itself is straightforward to build from definition.
+Determination of $k$
+reduces to determining the dimension of the span
+of the $d$-dimensional displacement vectors $\mb q_v = \mb p_v - \mb p_{v_0}$
+to all vertices $v\in V$ from some fixed vertex $v_0$.
+Putting the $\mb q_v$ into a matrix~$Q$,
+we find $k=\dim\im Q$.
+
+For numerical computing, we used the \texttt{numeric.js} library,
+which provided a number of convenient functions for matrix and vector manipulation.
+Interestingly, the library did not provide a matrix rank function,
+so we computed rank of matrices $T$
+as the number of nonzero diagonal elements in matrix $\Sigma$
+obtained by singular value decomposition
+\[
+    T = U\Sigma V^*.
+\]
 
 \begin{figure*}[ht]
    \centering
@@ -536,11 +566,12 @@ So testing generic rigidity reduces to testing infinitesimal rigidity.
    \label{fig:inf}
 \end{figure*}
 
-Any graph drawn with our GUI can be tested for infinitesimal rigidity.
-Though we can only draw graphs in two dimensions,
-we may randomly embed them in $n$ dimensional space.
-This is possible because in the infinitesimal case,
-we are only concerned with the combinatorial structure of the graph.
+Any graph drawn with our GUI can be tested for infinitesimal rigidity
+in this manner with arbitrarily high dimension.
+Though we can only \emph{draw} graphs in two dimensions,
+the algorithm only relies on the combinatorial structure of the graphs,
+discarding the two-dimensional embedding provided by the user
+and randomly embedding graphs in $\RR^d$.
 Thus, the user is prompted to enter the desired number of dimensions
 when running infinitesimal rigidity.
 \Cref{fig:inf} shows this process for a triangle.
@@ -586,20 +617,20 @@ There currently exists another
 implementation of the pebble algorithm as a Java application~\cite{stjohnapplet}.
 
 Compared to Rigiditea, this implementation
-has more built-in features and is a more mature application,
-but as a fully front-end web application,
-Rigiditea is more accessible, easy-to-use, and pleasing to look at.
-Rigiditea also offers complete flexibility in graph design,
-instead of using several existing shapes for demonstration purposes.
+has more built-in features and is a more mature application.
+As a fully front-end web application, however,
+Rigiditea is more accessible, easy-to-use, and aesthetically pleasing.
+%Rigiditea also offers complete flexibility in graph design,
+%instead of using several existing shapes for demonstration purposes.
 \Cref{tab:comp} provides an extensive comparison of the two implementations.
-On a whole, Rigiditea is not meant to replace the existing tool,
-but rather to provide a simpler tool for those casually interested
-in rigidity.
 
-Moreover, we envision Rigiditea as a means for laypersons
-to learn more about rigidity in general.
-Towards these aspects, we should perhaps add additional features,
-but due to time constraints, we opted for just a rigidity tester.
+We stress that Rigiditea is not meant to replace the existing applet;
+rather, we aim to provide a simpler tool
+for those casually interested in rigidity.
+Indeed, we envision Rigiditea as a means for laypersons
+to learn more about rigidity theory in general.
+To this end, we hoped to add additional features;
+time constraints limited us to implementing only two rigidity algorithms.
 
 \subsection{Future work}
 
@@ -611,15 +642,17 @@ to improve its functionality and user-friendliness.
 
 It would be convenient to scroll through the pebble algorithm's steps
 in a timeline, similar to that of the existing Java implementation.
-This feature could be easy to implement,
-if we simply maintain a history of the \texttt{PebbleGraph} objects
+In particular, it would be nice to be able to step \emph{backward}
+through the algorithm.
+This feature would be easy to implement;
+we could simply maintain a history of the \texttt{PebbleGraph} objects
 and display one of them depending on the time step.
-Afterwards, we could optimize this history by storing a log
-of updates and changes to the \texttt{PebbleGraph},
-rather than replicating the object $t$ times for $t$ time steps.
+We could optimize this history by storing a log
+of deltas to the \texttt{PebbleGraph},
+rather than replicating the object once for each of $O(m)$ time steps.
 
-Furthermore, there are several GUI features that would be nice to have,
-which we ran out of time to implement.
+Furthermore, there are several GUI features
+we would have implemented given more time.
 To improve our graph editing capabilities,
 we should include the ability to drag nodes around with \texttt{ALT+click}.
 It would also be ideal to snap nodes to a grid,
@@ -636,14 +669,17 @@ we are quite satisfied with ours.
 
 \subsubsection{Algorithmic extensions}
 
-Algorithmically, we would also like to visualize rigid components of a linkage.
-It would be ideal to color the over-braced,
-under-braced, and minimally rigid components so a user
-can distinguish between them.
-The existing Java implementation shows rigid components,
-though it only applies the algorithm to a few pre-determined linkages.
-The pebble algorithm can be used to determine such components,
-but we did not have the time to implement that element here.
+The pebble game algorithm is actually able to determine
+the rigid components of a linkage,
+which we would also have liked to visualize
+as distinctly-colored clusters of edges.
+%It would be ideal to color the over-braced,
+%under-braced, and minimally rigid components so a user
+%can distinguish between them.
+Indeed, the existing Java implementation does precisely this.
+%though it only applies the algorithm to a few pre-determined linkages.
+%The pebble algorithm can be used to determine such components,
+%but we did not have the time to implement that element here.
 
 Finally, we would like to extend this web application to other pebble games
 such as those presented in \cite{lee08}.
@@ -653,6 +689,17 @@ This sparsity condition rather resembles the Laman condition:
 it requires that the subgraph induced by $n'$ vertices have at most $kn' - \ell$ vertices.
 Indeed, the Laman condition, which our pebble algorithm tests,
 is simply $(2,3)$-sparsity.
+
+These generalized pebble games and sparsity conditions
+also find practice use.
+Our $(2,3)$ case corresponded to two dimensional rigidity,
+which was used to simulate two-dimensional glasses
+as linkages in the original paper \cite{jacobs97}.
+Other pebble games extend this approach to three-dimensions \cite{chubynsky07};
+indeed, pebble games have found great use in \emph{percolation theory},
+which studies rigid components and other cluster behavior in random graphs.
+The applications to physics and materials science are manifest.
+
 
 
 \appendix*
@@ -673,8 +720,8 @@ in many unpleasant debugging experiences.
 We opted to use fewer ``out-of-the-box'' \texttt{d3.js} solutions such as
 the force-directed graph, so we weren't able to provide more advanced features
 like bouncing our graph around and stretching edges.
-However, we realized that it was more important to develop a working product,
-and graphs are not typically squishy (as the force-directed graph may suggest),
+However, we realized that it was more important to develop a working product.
+Besides, graphs are not typically squishy (as the force-directed graph may suggest),
 so we remained with our simpler representations.
 
 \subsection{Work distribution}
@@ -701,8 +748,8 @@ We would like to thank Professor Erik Demaine for his instruction,
 humor, and guidance. We would also like to thank the 6.849 course staff,
 Martin Demaine, Dr. Jason Ku, Adam Hesterberg, and Jayson Lynch
 for their continual support throughout the semester.
-Finally, we would like to thank Ludwig van Beethoven for providing
-music in the wee hours of the morning.
+Finally, we would like to thank Ludwig van Beethoven for livening
+the wee hours we spent working on this project with his music.
 \end{acknowledgments}
 
 \bibliography{rigiditea}{}

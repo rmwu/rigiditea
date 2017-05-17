@@ -13,15 +13,18 @@
 \usepackage{amsmath,amssymb}
 \usepackage{siunitx}
 
+
 %\usepackage{mathpazo}
 \usepackage{microtype}
 
 \usepackage{diagbox}
+\usepackage{multirow}
 
 \usepackage{color}
-\usepackage[dvipsnames]{xcolor}
 \usepackage[printwatermark]{xwatermark}
 \newwatermark[allpages,color=red!10,angle=45,scale=3,xpos=0,ypos=0]{DRAFT}
+
+\usepackage{tikz}
 
 \newcommand\RR{\mathbb{R}}
 
@@ -36,7 +39,7 @@
     \begin{abstract}
         We present Rigiditea,
         a native client-side web-based implementation of two algorithms
-        for testing generic rigidty of graphs:
+        for testing generic rigidity of graphs:
         the $n$-dimensional randomized infinitesimal-rigidity-based algorithm
         and the deterministic pebble game algorithm for two-dimensional rigidity.
         For the latter, we provide a step-by-step visualization of the algorithm
@@ -84,6 +87,72 @@ and only found a Java applet for the pebble game \cite{stjohnapplet}.
 
 
 \section{Interface}
+
+We provide an aesthetic interface
+to design and analyze linkages as 2D planar graphs.
+
+\begin{figure}[ht]
+\begin{tikzpicture}
+\node at (0,0) {
+\includegraphics[scale=.3]{img/ui}
+};
+\draw (-3,-2.7) rectangle (3,2);
+\node at (0,-1.5) {\large graph-drawing canvas};
+
+\draw (-2,2.2) rectangle (2,2.7);
+\node at (-2.5,2.45) {menu};
+
+\draw (-1.5,-3) rectangle (1.5,-3.3);
+\node at (-2.4,-3.15) {controls};
+\end{tikzpicture}
+\caption{HIgh level overview of graphical user interface.
+We aimed for a simple, but powerful design.}
+\label{fig:ui}
+\end{figure}
+
+First, a user may click anywhere on the canvas to add a new node to the graph.
+After creating nodes,
+a user can control the user interface through one of two ways:
+the menu bar and the control panel.
+The former focuses on algorithm running and general information,
+while the latter is tailored towards graph creation.
+Figure \ref{fig:ui} points out these elements in the actual interface.
+In addition to the menu and control panel,
+we also provide keyboard shortcuts to streamline the user experience.
+Table \ref{tab:menu} enumerates the various commands available,
+their functionalities, and keyboard shortcuts.
+
+\begin{table}[ht]
+\caption{Menu items and descriptions}
+\begin{tabular}{c | p{0.5\linewidth} | c}
+item & description & shortcut \\ \hline
+pebble & advances pebble algorithm one step
+(one pebble exchange) & $\to$\\
+reset & resets defaults, initializes new graph & r \\
+about & background information about algorithms,
+web application, and further reading & a \\
+\end{tabular}
+\label{tab:menu}
+\end{table}
+
+\begin{table}[ht]
+\caption{Control panel items and descriptions}
+\begin{tabular}{c c | p{0.5\linewidth} | c}
+\multirow{3}{*}{menu} &
+item & description & shortcut \\ \hline
+edge & draws an edge between two selected vertices & e\\
+delete & deletes all selected components, including incident edges
+to selected nodes & x \\
+help & provides information about graph designing interface,
+including keyboard shortcuts & h \\
+\end{tabular}
+\label{tab:ctrl}
+\end{table}
+
+The GUI was created using \texttt{d3.js},
+an open-source data visualization library for web applications.
+We selected this library
+to directly link graph data objects to SVG elements on the canvas.
 
 \section{Pebble game visualization}
 

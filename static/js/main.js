@@ -356,13 +356,15 @@
    */
 
   matrixRank = function(matrix) {
-    var x;
+    var nCols, nRows, ref, tallMatrix, x;
+    ref = numeric.dim(matrix), nRows = ref[0], nCols = ref[1];
+    tallMatrix = nRows < nCols ? numeric.transpose(matrix) : matrix;
     return ((function() {
-      var k, len, ref, results;
-      ref = numeric.svd(matrix).S;
+      var k, len, ref1, results;
+      ref1 = numeric.svd(tallMatrix).S;
       results = [];
-      for (k = 0, len = ref.length; k < len; k++) {
-        x = ref[k];
+      for (k = 0, len = ref1.length; k < len; k++) {
+        x = ref1[k];
         if (x !== 0) {
           results.push(x);
         }
@@ -428,24 +430,26 @@
      */
 
     Graph.prototype.infinitesimalDOF = function(vertexConfiguration) {
-      var configDim, coords, displacements, embedDim, euclIsomDim, firstCoords, node, numVertices, rmatRank, symGroupDim;
+      var configDim, coords, displacements, embedDim, euclIsomDim, firstCoords, nodeId, numVertices, rmatRank, symGroupDim;
       numVertices = this.nodes.length;
       if (numVertices === 0) {
         return 0;
       }
-      firstCoords = vertexConfiguration[this.nodes[0]];
+      firstCoords = vertexConfiguration[this.nodes[0].id];
       embedDim = firstCoords.length;
       displacements = (function() {
         var results;
         results = [];
-        for (node in vertexConfiguration) {
-          coords = vertexConfiguration[node];
+        for (nodeId in vertexConfiguration) {
+          coords = vertexConfiguration[nodeId];
           results.push(numeric.sub(coords, firstCoords));
         }
         return results;
       })();
       configDim = matrixRank(displacements);
-      rmatRank = matrixRank(rigidityMatrix(vertexConfiguration));
+      console.log(this.rigidityMatrix(vertexConfiguration));
+      rmatRank = matrixRank(this.rigidityMatrix(vertexConfiguration));
+      console.log("rmatRank " + rmatRank);
       euclIsomDim = (embedDim + 1) * embedDim / 2;
       symGroupDim = (embedDim - configDim) * (embedDim - configDim - 1) / 2;
       return embedDim * numVertices - rmatRank - euclIsomDim + symGroupDim;
@@ -463,46 +467,45 @@
       ref = this.nodes;
       for (k = 0, len = ref.length; k < len; k++) {
         node = ref[k];
-        randomVertexConfig[node] = numeric.random([dimension]);
+        randomVertexConfig[node.id] = numeric.random([dimension]);
       }
       return this.infinitesimalDOF(randomVertexConfig);
     };
 
     Graph.prototype.rigidityMatrix = function(vertexConfiguration) {
-      var edge, embedDim, firstCoords, numVertices;
+      var edge, embedDim, firstCoords, me, numVertices, rigidityMatrixRow;
       numVertices = this.nodes.length;
-      firstCoords = vertexConfiguration[this.nodes[0]];
+      firstCoords = vertexConfiguration[this.nodes[0].id];
       embedDim = firstCoords.length;
-      ({
-        rigidityMatrixRow: function(edge) {
-          var edgeDisplacement, i, j, k, l, left, leftInd, ref, ref1, ref2, ref3, right, rightInd, row;
-          ref = [edge.source, edge.target], left = ref[0], right = ref[1];
-          ref1 = [embedDim * this.nodes.indexOf(left), embedDim * this.nodes.indexOf(right)], leftInd = ref1[0], rightInd = ref1[1];
-          edgeDisplacement = numeric.sub(vertexConfiguration[right], vertexConfiguration[left]);
-          row = (function() {
-            var k, ref2, results;
-            results = [];
-            for (k = 0, ref2 = numVertices * embedDim; 0 <= ref2 ? k < ref2 : k > ref2; 0 <= ref2 ? k++ : k--) {
-              results.push(0);
-            }
-            return results;
-          })();
-          for (i = k = 0, ref2 = embedDim; 0 <= ref2 ? k < ref2 : k > ref2; i = 0 <= ref2 ? ++k : --k) {
-            row[leftInd + i] = -edgeDisplacement;
+      rigidityMatrixRow = function(me, edge) {
+        var edgeDisplacement, i, j, k, l, left, leftInd, ref, ref1, ref2, ref3, right, rightInd, row;
+        ref = [edge.source, edge.target], left = ref[0], right = ref[1];
+        ref1 = [embedDim * me.nodes.indexOf(left), embedDim * me.nodes.indexOf(right)], leftInd = ref1[0], rightInd = ref1[1];
+        edgeDisplacement = numeric.sub(vertexConfiguration[right.id], vertexConfiguration[left.id]);
+        row = (function() {
+          var k, ref2, results;
+          results = [];
+          for (k = 0, ref2 = numVertices * embedDim; 0 <= ref2 ? k < ref2 : k > ref2; 0 <= ref2 ? k++ : k--) {
+            results.push(0);
           }
-          for (j = l = 0, ref3 = embedDim; 0 <= ref3 ? l < ref3 : l > ref3; j = 0 <= ref3 ? ++l : --l) {
-            row[rightInd + j] = edgeDisplacement;
-          }
-          return row;
+          return results;
+        })();
+        for (i = k = 0, ref2 = embedDim; 0 <= ref2 ? k < ref2 : k > ref2; i = 0 <= ref2 ? ++k : --k) {
+          row[leftInd + i] = -edgeDisplacement[i];
         }
-      });
+        for (j = l = 0, ref3 = embedDim; 0 <= ref3 ? l < ref3 : l > ref3; j = 0 <= ref3 ? ++l : --l) {
+          row[rightInd + j] = edgeDisplacement[j];
+        }
+        return row;
+      };
+      me = this;
       return (function() {
         var k, len, ref, results;
         ref = this.edges;
         results = [];
         for (k = 0, len = ref.length; k < len; k++) {
           edge = ref[k];
-          results.push(rigidityMatrixRow(edge));
+          results.push(rigidityMatrixRow(me, edge));
         }
         return results;
       }).call(this);
@@ -596,6 +599,11 @@
     return Node;
 
   })();
+
+
+  /*
+  Give the number of occurrences of `elt` in `array`.
+   */
 
   countOccurences = function(array, elt) {
     var count, cur_index;
@@ -785,6 +793,13 @@
     PebbleGraph.prototype.algorithmComplete = function() {
       var ref;
       return (this.remainingEdges.length === (ref = this.enlargeCoverIteration) && ref === 0);
+    };
+
+    PebbleGraph.prototype.isLamanRigid = function() {
+      if (!this.algorithmComplete()) {
+        throw AlgorithmNotCompleteException("The pebble algorithm must be run completely before querying rigidity!");
+      }
+      return this.independentEdges.length === 2 * this.nodes.length - 3;
     };
 
 

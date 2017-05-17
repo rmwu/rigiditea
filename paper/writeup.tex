@@ -21,12 +21,15 @@
 \usepackage{multirow}
 
 \usepackage{color}
-\usepackage[printwatermark]{xwatermark}
-\newwatermark[allpages,color=red!10,angle=45,scale=3,xpos=0,ypos=0]{DRAFT}
+%\usepackage[printwatermark]{xwatermark}
+%\newwatermark[allpages,color=red!10,angle=45,scale=3,xpos=0,ypos=0]{DRAFT}
 
 \usepackage{tikz}
 
 \newcommand\RR{\mathbb{R}}
+\DeclareMathOperator\im{im}
+
+\newcommand{\mb}{\mathbf}
 
 %\usepackage{tikz}
 %\usetikzlibrary{arrows}
@@ -65,11 +68,14 @@
 \section{Introduction}
 
 The theory of linkages TODO TODO TODO
+finds obvious applications.
+For example, 
 
 We implemented two major algorithms for generic rigidity.
 The first, which works in $n$ dimensions,
 considers a random embedding of the graph into $\RR^n$
-and computes the number of infinitesimal degrees of freedom (dof).
+and computes the number of infinitesimal degrees of freedom (dof)
+as described in \cite[\S4.4.2]{gfalop}.
 Infinitesimal rigidity of the random embedding always implies generic rigidity;
 the converse holds with high probability.
 
@@ -79,14 +85,23 @@ Briefly, it considers TODO TOOD
 
 To the best of our knowledge,
 there do not exist convenient implementations of
-either rigidity algorithms.
+either rigidity algorithm.
 In particular,
 we were unable to find an sort of graphical interface
 for the infinitesimal algorithm,
 and only found a Java applet for the pebble game \cite{stjohnapplet}.
 
 
-\section{Interface}
+\section{Architecture}
+
+blah blah blah
+
+\subsection{Interface}
+
+blah
+ 
+\subsection{Backend}
+blah
 
 We provide an aesthetic interface
 to design and analyze linkages as 2D planar graphs.
@@ -156,9 +171,74 @@ to directly link graph data objects to SVG elements on the canvas.
 
 \section{Pebble game visualization}
 
+blahbiy blah
 \section{Infinitesimal rigidity}
 
-\section{Discussion}
+The algorithm is straightforwardly presented in \cite[\S4.4.2]{gfalop},
+so we provide a brief sketch.
+Suppose we have a graph $G = (V, E)$ of $n$ vertices and $m$ edges.
+Given a $d$-dimensional embedding of the vertices,
+each edge provides a linear constraint
+on the allowed infinitesimal motions of $V$.
+In matrix form, we can write
+\begin{equation}
+    R\mb v = 0
+\end{equation}
+for a \emph{rigidity matrix}~$R$ of shape $dn \times m$
+and an infinitesimal motion $\mb v \in \RR^{dn}$,
+whose components are the $d$ components
+of the infinitesimal motion of each of $n$ vertices.
+
+The space of allowed infinitesimal motions is then $\ker R$.
+However, some of these motions are trivial,
+corresponding to the infinitesimal generators of rigid motions in $\RR^d$,
+which form a $\binom{d+1}{2}$-dimensional vector space:
+the Lie algebra $\mathfrak e(d)$ of the \emph{Euclidean group},
+the isometry group of $\RR^d$.
+
+Once we exclude these trivial motions,
+we would naively expect the subspace of nontrivial infinitesimal motions
+to have dimension
+\begin{equation}
+    \dim\ker R - \binom{d+1}{2} = dn - \dim\im R - \binom{d+1}{2},
+\end{equation}
+as presented in \cite{gfalop}.
+
+This formula is generally correct,
+but fails badly for some elementary examples.
+For instance, take $K_2$, the graph of two vertices joined by an edge.
+The rigidity matrix will have rank 1,
+so for sufficiently large $d$,
+we expect negative degrees of freedom:
+\[
+    dn - 1 - \binom{d+1}{2} < 0.
+\]
+Of course, $K_2$ should have no degrees of freedom for any~$d$.
+
+Indeed, the naive analysis above
+assumed that the subspace of trivial motions in $\ker R$
+was $\binom{d+1}{2}$ dimensional:
+that is, each nontrivial infinitesimal isometry of $\RR^d$
+produced a nontrivial infintiesimal motion of our graph.
+This assumption is generally false.
+In our $K_2$ example,
+if $d=3$, 
+the infinitesimal generator
+of the rotation about the single edge
+produces the trivial infinitesimal motion 0
+of the two vertices.
+
+
+MORE PROFO MORE PROOF TODO 
+
+\subsection{Correction to dof formula}
+
+We present a correction to the  in \cite{gfalop}
+
+
+
+
+%\section{Discussion}
 
 \section{Extensions}
 
@@ -170,7 +250,7 @@ to directly link graph data objects to SVG elements on the canvas.
     \item
     Visualize rigid components
     \item
-    Extend to other pebble games like in \cite{lee08}
+    Extend to other pebble games like in \cite{lee08, chubynsky07}
 \end{itemize}
 
 

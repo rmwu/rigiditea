@@ -123,18 +123,18 @@ and a discussion of possible extensions to Rigiditea in \cref{sec:discuss}.
 \section{Architecture}
 \label{sec:arch}
 
-In this section,
-we describe the structure of our app.
+We provide a high-level overview of our web application
+and algorithms to acquaint users with Rigiditea.
 All of our code was written in CoffeeScript,
 which was transpiled down to JavaScript.
 Thus, our entire app runs in the browser.
-We now discuss the design decisions we made in detail.
-
+Still, there was a clear divide between user interface code
+and ``backend", algorithmic code.
 
 \subsection{Interface}
 
-We provide an aesthetic graphical user interface (GUI)
-to design and analyze linkages as 2D planar graphs.
+We designed an aesthetic graphical user interface (GUI)
+to create and analyze linkages as 2D planar graphs.
 
 \begin{figure}[ht]
 \begin{tikzpicture}
@@ -492,6 +492,8 @@ So testing generic rigidity reduces to testing infinitesimal rigidity.
 \subsection{Comparison with existing applet}
 
 
+While it explores a seemingly esoteric concept,
+Rigiditea is not the first application to visualize linkage rigidity.
 There currently exists another
 implementation of the pebble algorithm as a Java application~\cite{stjohnapplet}.
 
@@ -506,6 +508,10 @@ On a whole, Rigiditea is not meant to replace the existing tool,
 but rather to provide a simpler tool for those casually interested
 in rigidity.
 
+Moreover, we envision Rigiditea as a means for laypersons
+to learn more about rigidity in general.
+Towards these aspects, we should perhaps add additional features,
+but due to time constraints, we opted for just a rigidity tester.
 
 \begin{table*}[ht]
 \def\arraystretch{1.5}
@@ -536,9 +542,12 @@ independent of the pebble algorithm
 \label{tab:comp}
 \end{table*}
 
-\subsection{Potential extensions}
 
-There are several extensions we may explore for Rigiditea.
+\subsection{Future work}
+
+While Rigiditea is currently a simple, functional web application,
+there are several extensions we may explore for Rigiditea
+to improve its functionality and user-friendliness.
 
 \subsubsection{Web interface}
 
@@ -551,10 +560,18 @@ Afterwards, we could optimize this history by storing a log
 of updates and changes to the \texttt{PebbleGraph},
 rather than replicating the object $t$ times for $t$ time steps.
 
-Furthermore, it would be convenient to export the resultant graph into FOLD,
+Furthermore, there are several GUI features that would be nice to have,
+which we ran out of time to implement.
+To improve our graph editing capabilities,
+we should include the ability to drag nodes around with \texttt{ALT+click}.
+It would also be ideal to snap nodes to a grid,
+so the overall design looks neater.
+
+Finally, it would be convenient to export the resultant graph into FOLD,
 as a linkage. However, we did not prioritize this goal since
 linkages can be adequately visualized as planar graphs,
 which are quite conceptually general.
+We also did not envision this application as a graph-sharing website.
 FOLD may also present alternative means of visualizing the linkage,
 though we are quite satisfied with our current visualization.
 
@@ -577,9 +594,11 @@ TODO TODOTODO
 Since we have already built a web interface for visualizing pebble games,
 it would be a shame not to use it.
 
-\section*{Miscellaneous remarks}
 
-\subsection*{Challenges}
+\appendix*
+\section{Miscellaneous remarks}
+
+\subsection{Challenges}
 
 We encountered several challenges along the way.
 First, Tony didn't realize his CoffeeScript didn't compile---until the ``morning''
@@ -597,12 +616,24 @@ like bouncing our graph around and stretching edges.
 However, we realized that it was more important to develop a working product,
 so we remained with our simpler representations.
 
-\subsection*{Work distribution}
+\subsection{Work distribution}
 
 The two authors distributed the work equally.
 Tony primarily worked on the pebble algorithm and infinitesimal rigidity implementations,
 while Menghua designed and created the GUI.
 Both contributed equally to the writing of this paper.
+
+\subsection{Code}
+
+A live demonstration of this application may be found at
+\url{http://web.mit.edu/rmwu/www/rigid/} for the time being.
+Rigiditea's source code is located in a public git repository,
+\url{https://github.com/rmwu/rigiditea}.
+
+The project was named after bubble tea since we really like bubble tea.
+For the interested reader, we used many \texttt{console.log} statements
+with different flavors of bubble tea to quickly track errors.
+Many remain for the entertainment of confused and/or curious users.
 
 \begin{acknowledgments}
 We would like to thank Professor Erik Demaine for his instruction,

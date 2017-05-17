@@ -118,7 +118,6 @@
       e = event;
     }
     if (e.altKey) {
-      console.log("lemon black tea (alt down)");
       return d3Vars.svg.style("cursor", "move");
     } else if (e.keyCode === 69) {
       return drawEdge();
@@ -337,8 +336,6 @@
       console.log("pebble algorithm complete!");
     }
     algState = graphVars.graphP.algorithmState();
-    console.log(graphVars.graphP);
-    console.log(algState);
     ref = graphVars.graphP.nodes;
     for (k = 0, len = ref.length; k < len; k++) {
       node = ref[k];
@@ -747,8 +744,6 @@
         return true;
       }
       pebIndVertEntry = this.pebbleIndex[vertex.id];
-      console.log("xcxc pebIndVertEntry");
-      console.log(pebIndVertEntry);
       redundantlyCoveredEdges = (function() {
         var k, len, results;
         results = [];
@@ -760,10 +755,7 @@
         }
         return results;
       }).call(this);
-      console.log("xcxc redundantlyCoveredEdges");
-      console.log(redundantlyCoveredEdges);
       if (redundantlyCoveredEdges.length > 0) {
-        console.log("reassigning from edge " + redundantlyCoveredEdges[0].id);
         return this._reassignPebble(vertex, redundantlyCoveredEdges[0], edge);
       }
       return false;
@@ -875,7 +867,6 @@
       } else {
         this.enlargeCoverIteration = 0;
       }
-      console.log(this.remainingEdges);
       return this.algorithmComplete();
     };
 
@@ -919,7 +910,6 @@
       if (this.hasFreePebble(vertex)) {
         return true;
       }
-      console.log(this.pebbledEdgesAndNeighbors(vertex));
       ref = this.pebbledEdgesAndNeighbors(vertex), (ref1 = ref[0], x = ref1[0], xedge = ref1[1]), (ref2 = ref[1], y = ref2[0], yedge = ref2[1]);
       if (!seen[x.id.toString()]) {
         path[vertex.id.toString()] = [x, xedge];

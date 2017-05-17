@@ -129,7 +129,7 @@ onKeyDown = (e) ->
     if !e
         e = event
     if e.altKey
-        console.log "lemon black tea (alt down)"
+        # console.log "lemon black tea (alt down)"
         d3Vars.svg.style("cursor", "move")
     # this is the "e" key
     else if e.keyCode == 69
@@ -360,8 +360,8 @@ drawPebble = () ->
         console.log "pebble algorithm complete!"
     
     algState = graphVars.graphP.algorithmState()
-    console.log graphVars.graphP
-    console.log(algState)
+    # console.log graphVars.graphP
+    # console.log(algState)
 
     for node in graphVars.graphP.nodes
         count = algState.vertexCounts[node.id]
@@ -620,13 +620,9 @@ class PebbleGraph extends Graph
             return true
 
         pebIndVertEntry = @pebbleIndex[vertex.id]
-        console.log "xcxc pebIndVertEntry"
-        console.log pebIndVertEntry
         redundantlyCoveredEdges = (x for x in pebIndVertEntry when (x != -1 and this.edgeRedundantlyCovered(x)))
-        console.log "xcxc redundantlyCoveredEdges"
-        console.log redundantlyCoveredEdges
         if redundantlyCoveredEdges.length > 0
-            console.log("reassigning from edge " + redundantlyCoveredEdges[0].id)
+            # console.log("reassigning from edge " + redundantlyCoveredEdges[0].id)
             return this._reassignPebble(vertex, redundantlyCoveredEdges[0], edge)
         return false
 
@@ -693,7 +689,7 @@ class PebbleGraph extends Graph
         else
             @enlargeCoverIteration = 0
 
-        console.log @remainingEdges
+        # console.log @remainingEdges
         return this.algorithmComplete()
 
     ###
@@ -730,7 +726,7 @@ class PebbleGraph extends Graph
             return true
     
         # taken from the paper; probably should clean up code smell
-        console.log this.pebbledEdgesAndNeighbors(vertex)
+        # console.log this.pebbledEdgesAndNeighbors(vertex)
         [[x, xedge], [y, yedge]] = this.pebbledEdgesAndNeighbors(vertex)
         if not seen[x.id.toString()]
             path[vertex.id.toString()] = [x, xedge]

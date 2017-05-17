@@ -68,7 +68,6 @@
       return drawPebble();
     });
     $("#reset").on("click", function() {
-      resetGraphVars();
       return initGraph();
     });
     $("#inf").on("click", function() {
@@ -94,6 +93,7 @@
   };
 
   initGraph = function() {
+    resetGraphVars();
     $("#graph").html("");
     d3Vars.svg = d3.select("#graph").append("svg").attr("width", vars.width).attr("height", vars.height).style("fill", "none").on("click", onClick).on("mouseup", onMouseUpNode);
     return graphVars.graph = new Graph([], []);
@@ -124,6 +124,12 @@
       return deleteNodes();
     } else if (e.keyCode === 39) {
       return drawPebble();
+    } else if (e.keyCode === 82) {
+      return initGraph();
+    } else if (e.keyCode === 72) {
+      return showHelp();
+    } else if (e.keyCode === 65) {
+      return showAbout();
     }
   };
 

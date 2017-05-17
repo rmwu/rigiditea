@@ -68,7 +68,6 @@ attachBindings = () ->
         drawPebble()
 
     $("#reset").on "click", () ->
-        resetGraphVars()
         initGraph()
         
     $("#inf").on "click", () ->
@@ -97,6 +96,8 @@ attachBindings = () ->
 ###################
     
 initGraph = () ->
+    resetGraphVars()
+    
     $("#graph").html ""
     d3Vars.svg = d3.select("#graph").append("svg")
         .attr("width", vars.width)
@@ -134,6 +135,15 @@ onKeyDown = (e) ->
     # this is the "right arrow" key
     else if e.keyCode == 39
         drawPebble()
+    # this is the "r" key
+    else if e.keyCode == 82
+        initGraph()
+    # this is the "h" key
+    else if e.keyCode == 72
+        showHelp()
+    # this is the "a" key
+    else if e.keyCode == 65
+        showAbout()
     
 onKeyUp = (e) ->
     d3Vars.svg.style("cursor", "crosshair")
@@ -702,12 +712,19 @@ class PebbleGraph extends Graph
 ####################
 
 showAbout = () ->
+    # graphVars.aboutOpen = true
     $("#aboutPanel").show()
     
 showHelp = () ->
+    # graphVars.helpOpen = true
     $("#helpPanel").show()
     
 hideHelp = (element) ->
     # console.log "yogurt milk tea (hide parent)"
+    # if graphVars.helpOpen = true
+    #     graphVars.helpOpen = false
+    # else if graphVars.aboutOpen = true
+    #    graphVars.aboutOpen = false
+    
     $(element).parent().hide()
 

@@ -2,7 +2,7 @@
 \revtextrue
 
 \ifrevtex
-    \documentclass[aps,final,twocolumn,letterpaper,nofootinbib]{revtex4-1}
+    \documentclass[aps,prd,final,twocolumn,letterpaper,nofootinbib]{revtex4-1}
 \else
     \documentclass[twocolumn]{article}
 \fi
@@ -100,6 +100,8 @@ In \cref{sec:arch}, we describe the structure of our web application.
 We next develop the theory behind the two rigidity algorithms
 in \cref{sec:pebble,sec:infrigid}
 to the level of detail necessary for understanding our work.
+(Notably, we introduce a correction in \cref{sec:infrigid}
+to the well-known formula for the infinitesimal dof of a linkage.)
 We conclude with a discussion of possible extensions to Rigiditea.
 
 \section{Architecture}
@@ -178,11 +180,19 @@ to directly link graph data objects to SVG elements on the canvas.
 \label{sec:pebble}
 
 blahbiy blah
+
 \section{Infinitesimal rigidity}
 \label{sec:infrigid}
 
+In this section,
+we outline the algorithm for determining the infinitesimal degrees of freedom
+of a $d$-dimensional linkage embedding.
 The algorithm is straightforwardly presented in \cite[\S4.4.2]{gfalop},
-so we provide a brief sketch.
+so we only provide a brief sketch.
+More importantly, however,
+we shall prove a correction to the formula the algorithm uses
+to compute the infinitesimal degrees of freedom.
+
 Suppose we have a graph $G = (V, E)$ of $n$ vertices and $m$ edges.
 Given a $d$-dimensional embedding of the vertices,
 each edge provides a linear constraint
@@ -197,16 +207,16 @@ whose components are the $d$ components
 of the infinitesimal motion of each of $n$ vertices.
 
 The space of allowed infinitesimal motions is then $\ker R$.
-However, some of these motions are trivial,
+However, some of these motions are rigid,
 corresponding to the infinitesimal generators of rigid motions in $\RR^d$,
 which form a $\binom{d+1}{2}$-dimensional vector space:
-the Lie algebra $\mathfrak e(d)$ of the \emph{Euclidean group},
-the isometry group of $\RR^d$.
+the Lie algebra $\mathfrak{se}(d)$ of the \emph{special Euclidean group},
+the orientation-preserving isometry group of $\RR^d$.
 
 Once we exclude these trivial motions,
 we would naively expect the subspace of nontrivial infinitesimal motions
 to have dimension
-\begin{equation}
+\begin{equation}\label{eq:wrong-infdof}
     \dim\ker R - \binom{d+1}{2} = dn - \dim\im R - \binom{d+1}{2},
 \end{equation}
 as presented in \cite{gfalop}.
@@ -218,13 +228,14 @@ The rigidity matrix will have rank 1,
 so for sufficiently large $d$,
 we expect negative degrees of freedom:
 \[
-    dn - 1 - \binom{d+1}{2} < 0.
+    dn - 1 - \underbrace{\binom{d+1}{2}}_{\Theta(d^2)} < 0.
 \]
-Of course, $K_2$ should have no degrees of freedom for any~$d$.
+Of course, $K_2$ should have no degrees of freedom for any~$d$,
+so we're clearly overcompensating in accounting for rigid motions.
 
 Indeed, the naive analysis above
-assumed that the subspace of trivial motions in $\ker R$
-was $\binom{d+1}{2}$ dimensional:
+assumed that the subspace~$M_0$ of trivial motions in $\ker R$
+was $\binom{d+1}{2}$-dimensional:
 that is, each nontrivial infinitesimal isometry of $\RR^d$
 produced a nontrivial infintiesimal motion of our graph.
 This assumption is generally false.
@@ -235,14 +246,50 @@ of the rotation about the single edge
 produces the trivial infinitesimal motion 0
 of the two vertices.
 
+We'd like to find $\dim M_0$,
+which will give the correct number of independent rigid motions
+for which we need to compensate in \cref{eq:wrong-infdof}.
+To this end,
+consider the linear map $\phi\colon\mathfrak{se}(d) \to M_0$
+that takes an infinitesimal Euclidean isometry
+and gives the associated rigid motion of the linkage.
 
-MORE PROFO MORE PROOF TODO 
+The dimension formula gives
+\[
+    \dim M_0 = \dim\mathfrak{se}(d) - \dim\ker\phi.
+\]
+The first term is the well-known dimensionality $\binom{d+1}{2}$
+of rigid motions in $\RR^d$.
+The second term takes more care.
 
-\subsection{Correction to dof formula}
+By definition, $\ker\phi$ gives the infinitesimal isometries
+that fix the vertices of the linkage,
+Let the origin of $\RR^d$ be one of these vertices
+and note that any $u\in \mathfrak{se}(d)$ fixes the origin;
+therefore, $u\in\mathfrak{so}(d)$
+(the Lie algebra of the group
+of orientation-preserving orthogonal linear maps on $\RR^d$)
+is a linear operator on $\RR^d$.
 
-We present a correction to the  in \cite{gfalop}
+Since $u$ generates an isometry fixing all vertices of the linkage,
+$u$ vanishes on all of them.
+So $u$ vanishes on the lowest-dimensional flat containing all the vertices;
+say this flat has dimension $k$.
+Then $\ker\phi\cong\mathfrak{so}(d-k)$, which has dimension $\binom{d-k}{2}$.
+(Intuitively: if a $d$-dimensional rotation fixes a $k$-dimensional subspace,
+it's really a $d-k$-dimensional rotation.)
 
+As a result, the correct formula we want is
+\begin{equation}
+    dn - \dim\im R - \binom{d+1}{2} + \binom{d-k}{2}.
+\end{equation}
+We are not aware of prior work mentioning the final correction term we derived.
 
+Note that this algorithm immediately turns into an algorithm
+for testing generic linkage rigidity in arbitrarily many dimensions $d$.
+Since random embeddings are generic with high probability,
+the infinitesimal dof will almost always match the generic dof.
+So testing generic rigidity reduces to testing infinitesimal rigidity.
 
 
 %\section{Discussion}

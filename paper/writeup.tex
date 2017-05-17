@@ -30,6 +30,15 @@
 \usepackage{cleveref}
 
 
+\usepackage{etoolbox} % for \appto
+
+\makeatletter
+\appto{\appendix}{%
+  \@ifstar{\def\thesection{\unskip}\def\theequation@prefix{A.}}%
+          {\def\thesection{\Alph {section}}}%
+}
+\makeatother
+
 
 \newcommand\RR{\mathbb{R}}
 \DeclareMathOperator\im{im}
@@ -596,13 +605,13 @@ we should include the ability to drag nodes around with \texttt{ALT+click}.
 It would also be ideal to snap nodes to a grid,
 so the overall design looks neater.
 
-Finally, it would be convenient to export the resultant graph into FOLD,
-as a linkage. However, we did not prioritize this goal since
+Finally, it would be convenient to export graphs into the FOLD format
+However, we did not prioritize this goal since
 linkages can be adequately visualized as planar graphs,
 which are quite conceptually general.
-We also did not envision this application as a graph-sharing website.
-FOLD may also present alternative means of visualizing the linkage,
-though we are quite satisfied with our current visualization.
+We also did not envision Rigiditea as a graph-sharing website.
+And while FOLD may also present alternative means of visualizing the linkage,
+we are quite satisfied with our current visualization.
 
 \subsubsection{Algorithmic extensions}
 
@@ -616,12 +625,13 @@ The pebble algorithm can be used to determine such components,
 but we did not have the time to implement that element here.
 
 Finally, we would like to extend this web application to other pebble games
-such as those presented in \cite{lee08, chubynsky07}.
-% TODO TODO TODO TODO describe these more
-TODO TODOTODO
-
-Since we have already built a web interface for visualizing pebble games,
-it would be a shame not to use it.
+such as those presented in \cite{lee08}.
+These generalize our pebble games to a whole family of $(k,\ell)$-pebble games
+which test $(k,\ell)$-sparsity.
+This sparsity condition rather resembles the Laman condition:
+it requires that the subgraph induced by $n'$ vertices have at most $kn' - \ell$ vertices.
+Indeed, the Laman condition, which our pebble algorithm tests,
+is simply $(2,3)$-sparsity.
 
 
 \appendix*
